@@ -1,0 +1,1 @@
+//Receives requests from the frontend, such as uploading a PDF or requesting a quiz, then calls the appropriate service.

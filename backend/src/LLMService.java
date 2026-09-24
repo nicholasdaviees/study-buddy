@@ -1,0 +1,1 @@
+//Communicates with the local LLM to generate flashcards, quizzes, true/false questions, and answers

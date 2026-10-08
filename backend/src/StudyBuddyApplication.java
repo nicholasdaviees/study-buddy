@@ -1,1 +1,0 @@
-//Starts the Spring Boot application. It contains the main() method

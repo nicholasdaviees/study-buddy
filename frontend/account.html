@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Buddy</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <section>
+        <div class="title">
+          <h1>Study Buddy</h1>
+        </div>
+        <p>
+          Upload your course material and generate flashcards, quizzes, and get
+          answers
+        </p>
+      </section>
+      <section class="auth-card" aria-labelledby="form-title">
+        <h1 id="form-title">Log In</h1>
+        <p class="card-description" id="form-description">
+          Welcome back! Sign in to keep studying.
+        </p>
+        <form id="auth-form">
+          <div class="field hidden" id="name-wrap">
+            <label for="name">Full Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              maxlength="120"
+              placeholder="Your full name"
+            />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              maxlength="255"
+              placeholder="name@example.com"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-row">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                minlength="8"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                class="show-password"
+                id="show-password"
+                type="button"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                Show
+              </button>
+            </div>
+          </div>
+          <div class="field hidden" id="confirm-wrap">
+            <label for="confirm">Confirm Password</label>
+            <input
+              id="confirm"
+              name="confirm"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Confirm your password"
+            />
+          </div>
+          <p id="message" class="message" role="alert" aria-live="polite"></p>
+          <button class="primary-button" id="submit-button" type="submit">
+            Log In
+          </button>
+        </form>
+        <p class="switch-prompt" id="login-prompt">
+          Don't have an account?
+          <button type="button" class="text-link" id="signup-tab">
+            Sign Up
+          </button>
+        </p>
+        <p class="switch-prompt hidden" id="signup-prompt">
+          Already have an account?
+          <button type="button" class="text-link" id="login-tab">Log In</button>
+        </p>
+      </section>
+    </main>
+    <script src="auth.js"></script>
+  </body>
+</html>

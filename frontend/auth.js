@@ -103,7 +103,7 @@ form.addEventListener('submit', async (event) => {
     }
 });
 
-// This checks if the user is already logged in and is sent to the dashboard
+// This redirects to the page
 fetch('api/auth/me', {credentials: 'same-origin'})
     .then((response) => {
         if (response.ok) window.location.replace('app');

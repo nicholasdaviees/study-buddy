@@ -196,15 +196,62 @@ public class LlmService {
 
     // Sends a request to generate a quiz, true/false questions, or flashcards
     public String generateStudyMaterial(String materialText, String studyMaterialType) {
-        // 1. perform validation on material text
-            // - blank study material
-        // 2. pull prompt based on study material type
-        // 3. call buildGenerateRequestBody
-        // 4. callsendGenerateRequest
-        // 5. validate json
-        // 6. regenerate json if validation fails
-        // 7. return json/error if applicable
-        return null;
+        // Validate material text
+        if (materialText == null || materialText.isBlank()) {
+            throw new IllegalArgumentException("Study material cannot be blank");
+        }
+
+        if (studyMaterialType == null || studyMaterialType.isBlank()) {
+            throw new IllegalArgumentException("Study material type is required");
+        }
+
+        String prompt;
+        String jsonRequestBody;
+        String llmResponse;
+
+        // Pull prompt based on study material type
+        if ("flashcards".equals(studyMaterialType)) {
+            prompt = buildFlashcardPrompt(materialText);
+        } 
+
+        else if ("multiple-choice".equals(studyMaterialType)) {
+            prompt = buildMultipleChoicePrompt(materialText);
+        }
+
+        else if ("true-false".equals(studyMaterialType)) {
+            prompt = buildTrueFalsePrompt(materialText);
+        }
+
+        else {throw new IllegalArgumentException("Unsupported study material type: " + studyMaterialType);}
+
+        // Build request body
+        jsonRequestBody = buildGenerateRequestBody(prompt);
+
+        // Send request to LLM and obtain response
+        JsonResponseValidator validator = new JsonResponseValidator();
+        final int maxAttempts = 2;
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                llmResponse = sendGenerateRequest(jsonRequestBody);
+
+                // Validate returned json from LLM
+                // Retry generation one more time if validation fails, otherwise return llmResponse or error if applicable
+                if ("flashcards".equals(studyMaterialType)) {
+                    validator.validateFlashcardJson(llmResponse);
+                } else {
+                    validator.validateQuizJson(llmResponse, studyMaterialType);
+                }
+
+                return llmResponse;
+            }
+            catch (RuntimeException e) {
+                if (attempt == maxAttempts) {
+                    throw new RuntimeException("Ollama returned invalid study material after two attempts", e);
+                }
+            }
+        }
+        throw new RuntimeException("Study material generation failed");
     }
 
     // Answers a user's question using the uploaded material

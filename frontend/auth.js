@@ -27,10 +27,10 @@ function switchMode(nextMode) {
 
     document.querySelector('#form-title').textContent = signup ? 'Create an Account' : 'Log In';
     document.querySelector('#form-description').textContent = signup
-        ? 'Join Study Buddy to start studying smarter.'
+        ? 'Study Buddy is a personal study assistant.'
         : 'Welcome back! Sign in to keep studying.';
     document.querySelector('#hero-tagline').textContent = signup
-        ? 'Create an Account'
+        ? 'Welcome to Study Buddy'
         : 'Your Personal Study Assistant';
     document.querySelector('#hero-description').textContent = signup
         ? 'Join Study Buddy to start studying smarter.'

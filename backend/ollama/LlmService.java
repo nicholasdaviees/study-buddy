@@ -21,6 +21,18 @@ public class LlmService {
             .build();
     }
 
+    private String buildFlashcardPrompt(String materialText) {
+        return null;
+    }
+
+    private String buildMultipleChoicePrompt(String materialText) {
+        return null;
+    }
+    
+    private String buildTrueFalsePrompt(String materialText) {
+        return null;
+    }
+
     private String sendGenerateRequest(String requestBody){
         URI endpoint = URI.create(ollamaBaseUrl + "/api/generate"); 
         // Build POST request
@@ -31,7 +43,14 @@ public class LlmService {
         try {
             // Send request
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.body();
+            int rc = response.statusCode();
+            if (rc == 200){
+                return response.body();
+            }
+            else {
+                throw new RuntimeException("Ollama returned HTTP status " + rc);
+            }
+            
         } 
         catch (IOException e) {
             throw new RuntimeException("Could not connect to Ollama", e);
@@ -42,8 +61,25 @@ public class LlmService {
         }
     }
 
+    private String buildGenerateRequestBody(String prompt) {
+        String jsonRequestBody = "{\"model\":\"" + modelName
+                        + "\",\"prompt\":\"" + prompt
+                        + "\",\"stream\":false"
+                        + ",\"think\":false"
+                        + ",\"format\":\"json\"}";
+        return jsonRequestBody;
+    }
+
     // Sends a request to generate a quiz, true/false questions, or flashcards
     public String generateStudyMaterial(String materialText, String studyMaterialType) {
+        // 1. perform validation on material text
+            // - blank study material
+        // 2. pull prompt based on study material type
+        // 3. call buildGenerateRequestBody
+        // 4. callsendGenerateRequest
+        // 5. validate json
+        // 6. regenerate json if validation fails
+        // 7. return json/error if applicable
         return null;
     }
 

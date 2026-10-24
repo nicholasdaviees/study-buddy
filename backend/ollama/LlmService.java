@@ -4,12 +4,15 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.io.IOException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LlmService {
 
     private final String ollamaBaseUrl;
     private final String modelName;
     private final HttpClient httpClient;
+    private final ObjectMapper objectMapper;
 
     public LlmService() {
         this.ollamaBaseUrl = "http://localhost:11434";
@@ -19,6 +22,7 @@ public class LlmService {
         this.httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
             .build();
+        this.objectMapper = new ObjectMapper();
     }
 
     private String sendGenerateRequest(String requestBody){
@@ -233,7 +237,24 @@ public class LlmService {
 
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                llmResponse = sendGenerateRequest(jsonRequestBody);
+                String ollamaResponse = sendGenerateRequest(jsonRequestBody);
+                /*
+                Ollama responds with JSON structured like:
+                    {
+                        "model": "qwen3:4b",
+                        "response": "{\"flashcards\":[]}",
+                        "done": true
+                    }
+                We want to grab the generated response field
+                */
+                JsonNode responseEnvelope = objectMapper.readTree(ollamaResponse); // convert JSON string into JsonNode tree
+                JsonNode responseNode = responseEnvelope.get("response"); // grab response field
+
+                if (responseNode == null || !responseNode.isTextual()) {
+                    throw new RuntimeException("Ollama response did not contain generated text");
+                }
+
+                llmResponse = responseNode.asText(); // extract JSON string
 
                 // Validate returned json from LLM
                 // Retry generation one more time if validation fails, otherwise return llmResponse or error if applicable
@@ -244,6 +265,11 @@ public class LlmService {
                 }
 
                 return llmResponse;
+            }
+            catch (IOException e) {
+                if (attempt == maxAttempts) {
+                    throw new RuntimeException("Ollama returned invalid JSON after two attempts", e);
+                }
             }
             catch (RuntimeException e) {
                 if (attempt == maxAttempts) {

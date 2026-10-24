@@ -6,6 +6,7 @@ import java.net.http.HttpResponse;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class LlmService {
 
@@ -54,12 +55,21 @@ public class LlmService {
     }
 
     private String buildGenerateRequestBody(String prompt) {
-        String jsonRequestBody = "{\"model\":\"" + modelName
-                        + "\",\"prompt\":\"" + prompt
-                        + "\",\"stream\":false"
-                        + ",\"think\":false"
-                        + ",\"format\":\"json\"}";
-        return jsonRequestBody;
+        try {
+            ObjectNode request = objectMapper.createObjectNode(); // create JSON object
+
+            // Populate object:
+            request.put("model", modelName);
+            request.put("prompt", prompt);
+            request.put("stream", false);
+            request.put("think", false);
+            request.put("format", "json");
+
+            return objectMapper.writeValueAsString(request); // convert Java JSON object to JSON text
+        }
+        catch (IOException e) {
+            throw new RuntimeException("Could not serialize Ollama request body", e);
+        }
     }
 
     private String buildFlashcardPrompt(String materialText) {

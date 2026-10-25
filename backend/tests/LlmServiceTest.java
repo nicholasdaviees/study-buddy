@@ -1,3 +1,5 @@
+package tests;
+
 // Tests communication with the local LLM.
 public class LlmServiceTest {
 
@@ -25,4 +27,3 @@ public class LlmServiceTest {
     public void handlesLlmConnectionFailure() {
     }
 }
-

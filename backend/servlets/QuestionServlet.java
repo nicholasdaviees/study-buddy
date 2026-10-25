@@ -1,3 +1,5 @@
+package servlets;
+
 // Endpoint: POST /studybuddy/api/questions
 public class QuestionServlet {
 
@@ -5,4 +7,3 @@ public class QuestionServlet {
     public void doPost(String materialId, String question) {
     }
 }
-

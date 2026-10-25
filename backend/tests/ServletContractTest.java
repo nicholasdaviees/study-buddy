@@ -1,3 +1,5 @@
+package tests;
+
 // Tests HTTP-facing behavior of the servlet endpoints.
 public class ServletContractTest {
 
@@ -21,4 +23,3 @@ public class ServletContractTest {
     public void deletesQuiz() {
     }
 }
-

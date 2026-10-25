@@ -1,3 +1,5 @@
+package database;
+
 public class DatabaseConnection {
 
     // Opens a JDBC connection to the MySQL database.

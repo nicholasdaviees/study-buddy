@@ -20,6 +20,7 @@ public class LlmService {
     private final ObjectMapper objectMapper; // for dealing with JSON text in a safe manner
     private final PromptBuilder promptBuilder;
 
+    // Class constructor
     public LlmService() {
         this.ollamaBaseUrl = "http://localhost:11434";
         this.modelName = "qwen3:4b";
@@ -35,9 +36,11 @@ public class LlmService {
     // Sends request to LLM
     private String sendGenerateRequest(String requestBody){
         URI endpoint = URI.create(ollamaBaseUrl + "/api/generate"); 
-        // Build POST request
+        // Build POST request with a timeout of 6 minutes since generation can take awhile
         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(endpoint).header("Content-Type", "application/json")
+                                .uri(endpoint)
+                                .timeout(Duration.ofMinutes(6))
+                                .header("Content-Type", "application/json")
                                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                                 .build();
         try {
@@ -182,6 +185,21 @@ public class LlmService {
 
     // Checks whether the local LLM is reachable
     public boolean isAvailable() {
-        return false;
+        URI endpoint = URI.create(ollamaBaseUrl + "/api/tags");
+
+        // Build POST request with a timeout of 5 seconds
+        HttpRequest request = HttpRequest.newBuilder().uri(endpoint).timeout(Duration.ofSeconds(5)).GET().build();
+
+        try {
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode() == 200;
+        }
+        catch (IOException e) {
+            return false;
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 }

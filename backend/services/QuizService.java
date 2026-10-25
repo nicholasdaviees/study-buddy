@@ -1,3 +1,5 @@
+package services;
+
 public class QuizService {
 
     // Places a quiz-generation task in the background task manager.

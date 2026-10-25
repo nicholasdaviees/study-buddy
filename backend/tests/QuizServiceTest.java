@@ -1,4 +1,6 @@
 // Tests quiz and true/false generation, validation, persistence, and deletion.
+package tests;
+
 public class QuizServiceTest {
 
     // Verifies multiple-choice generation returns a task ID.
@@ -33,4 +35,3 @@ public class QuizServiceTest {
     public void deletesRequestedQuiz() {
     }
 }
-

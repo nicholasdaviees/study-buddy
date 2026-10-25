@@ -1,3 +1,5 @@
+package validation;
+
 public class JsonResponseValidator {
 
     // Validates required fields in multiple-choice or true/false quiz JSON.

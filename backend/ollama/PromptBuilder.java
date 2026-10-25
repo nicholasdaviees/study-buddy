@@ -1,3 +1,5 @@
+package ollama;
+
 public class PromptBuilder {
 
     public String buildFlashcardPrompt(String materialText) {

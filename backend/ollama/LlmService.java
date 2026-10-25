@@ -1,3 +1,5 @@
+package ollama;
+
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.net.URI;
@@ -7,6 +9,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import validation.JsonResponseValidator;
 import java.util.function.Consumer;
 
 public class LlmService {

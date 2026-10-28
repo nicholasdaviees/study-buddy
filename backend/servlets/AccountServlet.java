@@ -72,7 +72,7 @@ public class AccountServlet extends HttpServlet {
 
             // Display the account page.
             request.getRequestDispatcher(
-                    "/WEB-INF/account.jsp"
+                    "/WEB-INF/index.html"
             ).forward(request, response);
 
         } catch (SQLException exception) {

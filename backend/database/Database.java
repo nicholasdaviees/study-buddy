@@ -51,6 +51,8 @@ public final class Database {
         }
 
         // Connect to the database.
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        
         return DriverManager.getConnection(
             url,
             username,

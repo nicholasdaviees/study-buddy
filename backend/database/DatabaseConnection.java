@@ -1,14 +1,39 @@
+package database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+// Manages JDBC connections
 public class DatabaseConnection {
 
-    // Opens a JDBC connection to the MySQL database.
-    public java.sql.Connection openConnection(
+    // Opens a new connection.
+    public Connection openConnection(
             String jdbcUrl,
             String username,
-            String password) {
-        return null;
+            String password
+    ) throws SQLException {
+
+        // DriverManager connects Java to MySQL
+        return DriverManager.getConnection(
+            jdbcUrl,
+            username,
+            password
+        );
     }
 
-    // Closes a JDBC connection when database operations are finished.
-    public void closeConnection(java.sql.Connection databaseConnection) {
+    // Closes database connection
+    public void closeConnection(
+            Connection databaseConnection
+    ) throws SQLException {
+
+        // Check that the connection exists.
+        if (databaseConnection != null
+                && !databaseConnection.isClosed()) {
+
+            // Release the database connection.
+            databaseConnection.close();
+        }
     }
 }
+

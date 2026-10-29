@@ -15,6 +15,9 @@ public class FlashcardService {
 
     // Generates flashcards from uploaded material only.
     public String generateFlashcards(String materialId) {
+        if (materialId == null || materialId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Need Material ID.");
+        }
         String uploadedMaterial = materialService.getMaterialText(materialId);
 
         return llmService.generateStudyMaterial(uploadedMaterial, "flashcards");

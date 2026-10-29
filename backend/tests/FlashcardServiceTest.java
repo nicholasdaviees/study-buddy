@@ -2,6 +2,7 @@
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
@@ -28,7 +29,15 @@ public class FlashcardServiceTest {
                 String result = service.generateFlashcards("material-1");
                 assertEquals("{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}", result);
              }
+
+        @Test
+        public void rejectsBlankMaterialId() {
+            FlashcardService service = new FlashcardService(null, null);
+            assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
+        }
 }
+
+    
 /* 
     @Test
     public void startsFlashcardGeneration() {

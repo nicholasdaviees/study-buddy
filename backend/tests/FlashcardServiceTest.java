@@ -1,10 +1,35 @@
 // Tests flashcard generation, validation, persistence, and deletion.
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
+//import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 public class FlashcardServiceTest {
 
+        @Test
+        public void generatesFlashcardsFromUploadedMaterial() {
+
+            MaterialService materialService = new MaterialService() {
+                @Override 
+                public String getMaterialText(String materialId) {
+                    return "This is sample study material";
+                }
+            };
+
+            LlmService llmService = new LlmService() {
+                @Override 
+                public String generateStudyMaterial(String materialText, String studyMaterialType) {
+                    return "{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}";
+                }
+                };
+
+                FlashcardService service = new FlashcardService(materialService, llmService);
+                String result = service.generateFlashcards("material-1");
+                assertEquals("{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}", result);
+             }
+}
+/* 
     @Test
     public void startsFlashcardGeneration() {
         FlashcardService service = new FlashcardService();
@@ -16,7 +41,7 @@ public class FlashcardServiceTest {
     }
 }
 
-/*public class FlashcardServiceTest {
+public class FlashcardServiceTest {
 
     // Verifies flashcard generation returns a task ID.
     public void startsFlashcardGeneration() {

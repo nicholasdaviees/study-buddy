@@ -1,5 +1,13 @@
 public class FlashcardService {
 
+    private MaterialService materialService;
+    private LlmService llmService;
+
+    public FlashcardService(MaterialService materialService, LlmService llmService) {
+        this.materialService = materialService;
+        this.llmService = llmService;
+    }
+
     // Places a flashcard-generation task in the background task manager.
     public String startFlashcardGeneration(String materialId) {
         return null;
@@ -7,7 +15,10 @@ public class FlashcardService {
 
     // Generates flashcards from uploaded material only.
     public String generateFlashcards(String materialId) {
-        return null;
+        String uploadedMaterial = materialService.getMaterialText(materialId);
+
+        return llmService.generateStudyMaterial(uploadedMaterial, "flashcards");
+        
     }
 
     // Validates generated JSON and saves valid flashcards.

@@ -19,6 +19,9 @@ public class FlashcardService {
             throw new IllegalArgumentException("Need Material ID.");
         }
         String uploadedMaterial = materialService.getMaterialText(materialId);
+        if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) {
+            throw new IllegalStateException("Uploaded material unavailable.");
+        }
 
         return llmService.generateStudyMaterial(uploadedMaterial, "flashcards");
         

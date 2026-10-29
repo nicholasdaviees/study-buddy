@@ -35,8 +35,19 @@ public class FlashcardServiceTest {
             FlashcardService service = new FlashcardService(null, null);
             assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
         }
-}
+        @Test 
+        public void rejectsMissingUploadedMaterial() {
+            MaterialService materialService = new MaterialService() {
+                @Override 
+                public String getMaterialText(String materialId) {
+                    return "";
+            }
+        };
+        FlashcardService service = new FlashcardService(materialService, null);
+        assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
 
+}
+}
     
 /* 
     @Test

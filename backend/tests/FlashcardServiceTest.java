@@ -21,6 +21,8 @@ public class FlashcardServiceTest {
             LlmService llmService = new LlmService() {
                 @Override 
                 public String generateStudyMaterial(String materialText, String studyMaterialType) {
+                    assertEquals("This is sample study material", materialText);
+                    assertEquals("flashcards", studyMaterialType);
                     return "{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}";
                 }
                 };

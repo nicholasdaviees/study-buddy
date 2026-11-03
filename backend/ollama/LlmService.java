@@ -183,16 +183,42 @@ public class LlmService {
         return requestAndValidate(prompt, response -> validator.validateAnswerJson(response));
     }
 
-    // Checks whether the local LLM is reachable
-    public boolean isAvailable() {
+    // Checks that Ollama is reachable and the correct model is installed
+    public boolean isOllamaReady() {
         URI endpoint = URI.create(ollamaBaseUrl + "/api/tags");
 
-        // Build POST request with a timeout of 5 seconds
+        // Build GET request with a timeout of 5 seconds.
         HttpRequest request = HttpRequest.newBuilder().uri(endpoint).timeout(Duration.ofSeconds(5)).GET().build();
 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.statusCode() == 200;
+            if (response.statusCode() != 200) {
+                return false;
+            }
+            /*
+            Ollama should respond with JSON structured like:
+                {
+                    "model": "qwen3:4b",
+                    "response": "{\"flashcards\":[]}",
+                    "done": true
+                }
+            We want to grab the models field
+            */
+            JsonNode responseJson = objectMapper.readTree(response.body()); // parse Ollama's JSON envelope
+            JsonNode models = responseJson.get("models"); // extract the models array from the response
+
+            if (models == null || !models.isArray()) {
+                return false;
+            }
+
+            for (JsonNode model : models) {
+                JsonNode modelNameNode = model.get("name");
+                if (modelNameNode != null && modelName.equals(modelNameNode.asText())) {
+                    return true;
+                }
+            }
+
+            return false;
         }
         catch (IOException e) {
             return false;

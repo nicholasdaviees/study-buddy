@@ -2,6 +2,8 @@ package tests;
 
 import ollama.LlmService;
 import validation.JsonResponseValidator;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // Tests communication with the local LLM
 public class LlmServiceTest {
@@ -12,6 +14,7 @@ public class LlmServiceTest {
                 """;
 
     // Tests quiz generation requests
+    @Test
     public void generatesRequestedStudyMaterial() {
         LlmService service = new LlmService();
         String multipleChoice = service.generateStudyMaterial(testMaterial, "multiple-choice");
@@ -20,6 +23,7 @@ public class LlmServiceTest {
     }
 
     // Tests true/false generation requests
+    @Test
     public void generatesTrueFalseStudyMaterial() {
         LlmService service = new LlmService();
         String trueFalse = service.generateStudyMaterial(testMaterial, "true-false");
@@ -28,6 +32,7 @@ public class LlmServiceTest {
     }
 
     // Tests flashcard generation requests
+    @Test
     public void generatesFlashcardStudyMaterial() {
         LlmService service = new LlmService();
         String flashcards = service.generateStudyMaterial(testMaterial, "flashcards");
@@ -36,6 +41,7 @@ public class LlmServiceTest {
     }
 
     // Tests answer generation requests
+    @Test
     public void answersQuestionFromUploadedMaterial() {
         LlmService service = new LlmService();
         String answer = service.answerQuestion(testMaterial, "What ordering does a queue use?");
@@ -44,7 +50,11 @@ public class LlmServiceTest {
     }
 
     // Verifies that the service reports whether Ollama is reachable
+    @Test
     public void checksLlmAvailability() {
+        LlmService service = new LlmService();
+        boolean ollamaResponse = service.isOllamaReady();
+        assertTrue(ollamaResponse, "Error, Ollama is not reachable");
     }
 
     // Verifies Ollama failures become safe application errors.

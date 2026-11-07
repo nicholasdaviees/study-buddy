@@ -82,9 +82,10 @@ public class PromptBuilder {
                 - "questions" must be an array.
                 - Every item must contain "question", "choices", "answer", and "type".
                 - "choices" must contain exactly four non-empty strings.
-                - "answer" must exactly match one item in "choices".
-                - "type" must be exactly "multiple-choice".
-                - The correct answer must be supported by the material.
+                 - "answer" must exactly match one item in "choices".
+                 - "type" must be exactly "multiple-choice".
+                 - Write the type with a hyphen: "multiple-choice". Never use a colon.
+                 - The correct answer must be supported by the material.
                 - Incorrect choices must not introduce unrelated outside facts.
                 - If no questions can be supported, return {"questions":[]}.
 
@@ -126,10 +127,11 @@ public class PromptBuilder {
                 - The top-level key must be "questions".
                 - "questions" must be an array.
                 - Every item must contain "question", "answer", and "type".
-                - "question" must be a non-empty string.
-                - "answer" must be the JSON boolean true or false, not a string.
-                - "type" must be exactly "true-false".
-                - The answer must be supported by the material.
+                 - "question" must be a non-empty string.
+                 - "answer" must be the JSON boolean true or false, not a string.
+                 - "type" must be exactly "true-false".
+                 - Write the type with a hyphen: "true-false". Never use a colon.
+                 - The answer must be supported by the material.
                 - If no questions can be supported, return {"questions":[]}.
 
                 <material>

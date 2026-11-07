@@ -109,9 +109,11 @@ public class LlmService {
                 }
 
                 String generatedJson = generatedResponseNode.asText(); // extract generated JSON text
+                generatedJson = normalizeQuizTypes(generatedJson);
 
                 // Validate returned json from LLM
                 // Retry generation one more time if validation fails, otherwise return llmResponse or error if applicable
+                System.out.println("Generated JSON: " + generatedJson); // Line mainly for debugging
                 responseValidator.accept(generatedJson);
                 return generatedJson;
             } catch (IOException e) {
@@ -126,6 +128,40 @@ public class LlmService {
         }
 
         throw new RuntimeException("Ollama request failed");
+    }
+
+    // Ran into a periodic issue where the model would return a colon instead of a hyphen in type (e.g. true:false instead of true-false)
+    // This is a helper function to fix that typo. There may be a better fix in the future, but this fixes it for now
+    // It seems the model was ignoring the prompt regarding this...
+    private String normalizeQuizTypes(String generatedJson) {
+        try {
+            JsonNode root = objectMapper.readTree(generatedJson);
+            JsonNode questions = root == null ? null : root.get("questions");
+            if (questions == null || !questions.isArray()) {
+                return generatedJson;
+            }
+
+            for (JsonNode question : questions) {
+                if (!question.isObject()) {
+                    continue;
+                }
+
+                JsonNode type = question.get("type");
+                if (type == null || !type.isTextual()) {
+                    continue;
+                }
+
+                String normalizedType = type.asText().replaceAll("\\s*:\\s*", "-");
+                if ("multiple-choice".equals(normalizedType)
+                        || "true-false".equals(normalizedType)) {
+                    ((ObjectNode) question).put("type", normalizedType);
+                }
+            }
+
+            return objectMapper.writeValueAsString(root);
+        } catch (IOException e) {
+            return generatedJson;
+        }
     }
 
     // Sends a request to generate a quiz, true/false questions, or flashcards

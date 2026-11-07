@@ -1,25 +1,49 @@
 package tests;
 
-// Tests communication with the local LLM.
+import ollama.LlmService;
+import validation.JsonResponseValidator;
+
+// Tests communication with the local LLM
 public class LlmServiceTest {
 
-    // Verifies quiz generation sends uploaded material and the requested type.
+    private final String testMaterial = """
+                A queue is a data structure that follows first-in, first-out ordering.
+                A stack follows last-in, first-out ordering.
+                """;
+
+    // Tests quiz generation requests
     public void generatesRequestedStudyMaterial() {
+        LlmService service = new LlmService();
+        String multipleChoice = service.generateStudyMaterial(testMaterial, "multiple-choice");
+        JsonResponseValidator validator = new JsonResponseValidator();
+        validator.validateQuizJson(multipleChoice, "multiple-choice");
     }
 
-    // Verifies true/false generation requests true/false output.
+    // Tests true/false generation requests
     public void generatesTrueFalseStudyMaterial() {
+        LlmService service = new LlmService();
+        String trueFalse = service.generateStudyMaterial(testMaterial, "true-false");
+        JsonResponseValidator validator = new JsonResponseValidator();
+        validator.validateQuizJson(trueFalse, "true-false");
     }
 
-    // Verifies flashcard generation requests flashcard output.
+    // Tests flashcard generation requests
     public void generatesFlashcardStudyMaterial() {
+        LlmService service = new LlmService();
+        String flashcards = service.generateStudyMaterial(testMaterial, "flashcards");
+        JsonResponseValidator validator = new JsonResponseValidator();
+        validator.validateFlashcardJson(flashcards);
     }
 
-    // Verifies a question is answered using uploaded material.
+    // Tests answer generation requests
     public void answersQuestionFromUploadedMaterial() {
+        LlmService service = new LlmService();
+        String answer = service.answerQuestion(testMaterial, "What ordering does a queue use?");
+        JsonResponseValidator validator = new JsonResponseValidator();
+        validator.validateAnswerJson(answer);
     }
 
-    // Verifies the service reports whether Ollama is reachable.
+    // Verifies that the service reports whether Ollama is reachable
     public void checksLlmAvailability() {
     }
 

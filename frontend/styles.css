@@ -1,2 +1,104 @@
-/* tbd */
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f8ff;
+    color: #14213d;
+}
+
+/* Header and navigation */
+
+.site-header {
+    background-color: #07529c;
+    color: white;
+    padding: 16px 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.site-header h1 {
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Main dashboard */
+
+.dashboard {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.upload-section {
+    background-color: white;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 40px 20px;
+    margin-top: 30px;
+}
+
+#pdf-upload {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+/* Study tool buttons */
+
+.study-tools {
+    margin-top: 30px;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.tool-grid button {
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #087cff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.tool-grid button:hover {
+    background-color: #005fcc;
+}
+
+/* Smaller screens */
+
+@media (max-width: 600px) {
+    .tool-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard {
+        margin: 20px auto;
+    }
+}

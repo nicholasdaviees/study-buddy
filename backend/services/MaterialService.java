@@ -1,48 +1,63 @@
-public class MaterialService {
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
-    // Places PDF parsing on the background task manager and returns a task ID.
-    public String startPdfProcessing(
-            String filePath,
-            String fileName,
-            String contentType,
-            long fileSizeBytes) {
-        return null;
-    }
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.text.PDFTextStripper;
 
-    // Validates, extracts, saves, and returns the uploaded material's database ID.
-    public String processPdf(
-            String filePath,
-            String fileName,
-            String contentType,
-            long fileSizeBytes) {
-        return null;
-    }
+private final TaskManager taskManager;
+private final UploadValidator uploadValidator = new UploadValidator();
 
-    // Extracts readable text from the uploaded PDF using PDFBox.
-    private String extractTextFromPdf(String filePath) {
-        return null;
-    }
+public class MaterialService(TaskManager taskManager) {
+  this.taskManager = Objects.requireNonNull(taskManager, "taskManager");
+}
 
-    // Returns the current parsing status of the uploaded material.
-    public String getMaterialStatus(String materialId) {
-        return null;
-    }
+public String startPdfProcessing(
+        String filePath,
+        String fileName,
+        String contentType,
+        long fileSizeBytes) {
 
-    // Prevents generation until the material is ready.
-    public void requireReadyMaterial(String materialId) {
-    }
+    uploadValidator.validateFile(filePath, fileName, contentType, fileSizeBytes);
 
-    // Saves uploaded material and returns its database-generated ID.
-    public String saveMaterial(String fileName, String extractedText, String status) {
-        return null;
-    }
+    return taskManager.submitTask("PDF_PROCESSING",
+            () -> processPdf(filePath, fileName, contentType, fileSizeBytes));
+}
 
-    // Gets the extracted text for uploaded material by ID.
-    public String getMaterialText(String materialId) {
-        return null;
-    }
+public String processPdf(
+        String filePath,
+        String fileName,
+        String contentType,
+        long fileSizeBytes) {
 
-    // Changes material status to PROCESSING, READY, or FAILED.
-    public void updateMaterialStatus(String materialId, String status) {
+    uploadValidator.validateFile(filePath, fileName, contentType, fileSizeBytes);
+
+    String extractedText = extractTextFromPdf(filePath);
+    return saveMaterial(fileName, extractedText, "READY");
+}
+
+private String extractTextFromPdf(String filePath) {
+    try (PDDocument document = Loader.loadPDF(new File(filePath))) {
+        String text = new PDFTextStripper().getText(document).strip();
+
+        if (text.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "The PDF has no extractable text. Try a PDF with selectable text.");
+        }
+
+        return text;
+    } catch (InvalidPasswordException error) {
+        throw new IllegalArgumentException("The PDF is password protected.", error);
+    } catch (IOException error) {
+        throw new IllegalArgumentException("The uploaded PDF could not be read.", error);
     }
 }
+
+public void requireReadyMaterial(String materialId) {
+    if (!"READY".equals(getMaterialStatus(materialId))) {
+        throw new IllegalStateException("The material is not ready for generation.");
+    }
+}
+ 

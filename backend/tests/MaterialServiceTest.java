@@ -1,31 +1,72 @@
-// Tests PDF processing, material IDs, and material readiness.
-public class MaterialServiceTest {
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.Callable;
 
-    // Verifies PDF processing returns a background task ID immediately.
-    public void startsPdfProcessing() {
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+
+public static void main(String[] args) throws Exception {
+    new MaterialServiceTest().startsPdfProcessing();
+    System.out.println("PDF processing test passed.");
+}
+
+public void startsPdfProcessing() throws Exception {
+    Path pdf = Files.createTempFile("study-buddy-", ".pdf");
+
+    try {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            try (PDPageContentStream content = new PDPageContentStream(document, page)) {
+                content.beginText();
+                content.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 12);
+                content.newLineAtOffset(50, 700);
+                content.showText("Study Buddy notes");
+                content.endText();
+            }
+
+            document.save(pdf.toFile());
+        }
+
+        CapturingTaskManager tasks = new CapturingTaskManager();
+        MaterialService service = new MaterialService(tasks) {
+            @Override
+            public String saveMaterial(String fileName, String extractedText, String status) {
+                if (!"notes.pdf".equals(fileName)
+                        || !"Study Buddy notes".equals(extractedText)
+                        || !"READY".equals(status)) {
+                    throw new AssertionError("Unexpected material passed to saveMaterial.");
+                }
+                return "material-1";
+            }
+        };
+
+        String taskId = service.startPdfProcessing(
+                pdf.toString(), "notes.pdf", "application/pdf", Files.size(pdf));
+
+        if (!"task-1".equals(taskId) || tasks.pendingTask == null) {
+            throw new AssertionError("Expected a task ID and queued PDF work.");
+        }
+
+        String materialId = tasks.pendingTask.call();
+        if (!"material-1".equals(materialId)) {
+            throw new AssertionError("Expected the background task to return the material ID.");
+        }
+    } finally {
+        Files.deleteIfExists(pdf);
     }
+}
 
-    // Verifies valid PDF processing returns a database-generated material ID.
-    public void processesValidPdfAndReturnsMaterialId() {
-    }
+private static class CapturingTaskManager extends TaskManager {
+    private Callable<String> pendingTask;
 
-    // Verifies corrupted or empty PDF content is rejected.
-    public void rejectsUnreadablePdf() {
-    }
-
-    // Verifies extracted PDF text can be retrieved by material ID.
-    public void extractsAndRetrievesMaterialText() {
-    }
-
-    // Verifies material status can be read.
-    public void returnsMaterialStatus() {
-    }
-
-    // Verifies generation is blocked until material is ready.
-    public void blocksGenerationBeforeMaterialIsReady() {
-    }
-
-    // Verifies material status can change to PROCESSING, READY, or FAILED.
-    public void updatesMaterialStatus() {
+    @Override
+    public String submitTask(String taskType, Callable<String> task) {
+        pendingTask = task;
+        return "task-1";
     }
 }

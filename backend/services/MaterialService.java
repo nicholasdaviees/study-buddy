@@ -22,8 +22,19 @@ public String startPdfProcessing(
 
     uploadValidator.validateFile(filePath, fileName, contentType, fileSizeBytes);
 
-    return taskManager.submitTask("PDF_PROCESSING",
-            () -> processPdf(filePath, fileName, contentType, fileSizeBytes));
+    return taskManager.submitTask("PDF_PROCESSING", () -> {
+    try {
+        return processPdf(filePath, fileName, contentType, fileSizeBytes);
+    } finally {
+        try {
+            java.nio.file.Files.deleteIfExists(java.nio.file.Path.of(filePath));
+        } catch (IOException error) {
+            java.util.logging.Logger.getLogger(MaterialService.class.getName())
+                    .log(java.util.logging.Level.WARNING,
+                            "Unable to delete temporary PDF.", error);
+        }
+    }
+});
 }
 
 public String processPdf(

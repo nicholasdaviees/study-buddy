@@ -1,12 +1,12 @@
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.util.Locale;
+import java.util.Locale;
 
 public class UploadValidator {
 
     public static final long MAX_FILE_SIZE_BYTES = 10L * 1024 * 1024;
-    
+
     // Checks that the file exists, is a PDF, and is within the size limit.
     public void validateFile(
             String filePath,

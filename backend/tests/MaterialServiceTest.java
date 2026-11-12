@@ -9,7 +9,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 public static void main(String[] args) throws Exception {
-    new MaterialServiceTest().startsPdfProcessing();
+    startsPdfProcessing();
     System.out.println("PDF processing test passed.");
 }
 

@@ -1,4 +1,6 @@
 // Tests file presence, PDF type, and upload-size rules.
+package tests;
+
 public class UploadValidatorTest {
 
     // Verifies a valid PDF within the size limit is accepted.
@@ -17,4 +19,3 @@ public class UploadValidatorTest {
     public void rejectsOversizedPdf() {
     }
 }
-

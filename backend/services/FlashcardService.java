@@ -1,3 +1,5 @@
+package services;
+
 public class FlashcardService {
 
     // Places a flashcard-generation task in the background task manager.

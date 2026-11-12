@@ -10,15 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-// Tests communication with the local LLM
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LlmServiceTest {
 
-    private final String testMaterial = """
-                A queue is a data structure that follows first-in, first-out ordering.
-                A stack follows last-in, first-out ordering.
-                """;
+    private final String testMaterial = "A queue is a data structure that follows first-in, first-out ordering. A stack follows last-in, first-out ordering.";
 
+    /*****************************BEGIN TEST FUNCTIONS************************************/
     // Verifies that the service reports whether Ollama is reachable
     @Order(1)
     @Test
@@ -109,7 +106,9 @@ public class LlmServiceTest {
         validator.validateAnswerJson(answer);
         System.out.println("Testing of answer generation success\n"); 
     }
+    /*****************************END TEST FUNCTIONS************************************/
 
+    /*****************************BEGIN HELPER FUNCTIONS************************************/
     private boolean waitForReadiness(LlmService service, Process process, boolean expected, int timeoutSeconds) {
         long deadline = System.nanoTime() + timeoutSeconds * 1_000_000_000L;
         while (System.nanoTime() < deadline) {
@@ -145,8 +144,5 @@ public class LlmServiceTest {
             process.destroyForcibly();
         }
     }
-
-    // Verifies Ollama failures become safe application errors.
-    public void handlesLlmConnectionFailure() {
-    }
+    /*****************************END HELPER FUNCTIONS************************************/
 }

@@ -1,5 +1,3 @@
-package servlets;
-
 // Endpoints: POST, GET, and DELETE /studybuddy/api/flashcards
 public class FlashcardServlet {
 

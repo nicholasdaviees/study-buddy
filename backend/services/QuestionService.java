@@ -1,5 +1,3 @@
-package services;
-
 public class QuestionService {
 
     // Places a question-answering task in the background task manager.

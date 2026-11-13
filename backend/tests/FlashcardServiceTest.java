@@ -1,6 +1,4 @@
 // Tests flashcard generation, validation, persistence, and deletion.
-package tests;
-
 public class FlashcardServiceTest {
 
     // Verifies flashcard generation returns a task ID.
@@ -31,3 +29,4 @@ public class FlashcardServiceTest {
     public void deletesRequestedFlashcard() {
     }
 }
+

@@ -193,12 +193,31 @@ text-decoration: underline;
 }
 
 @media (max-width: 520px) {
-.auth-shell { justify-content: flex-start; padding: 44px 17px 26px; }
-.brand-lockup { font-size: 1.85rem; }
-.brand-icon { width: 40px; height: 40px; }
-.auth-card { padding: 26px 22px; }
-.desktop-break { display: none; }
-.account-card { margin: 25px 15px; padding: 24px; }
-.details div { align-items: flex-start; flex-direction: column; gap: 6px; }
+.auth-shell { 
+justify-content: flex-start; 
+padding: 44px 17px 26px;
+            }
+.brand-lockup { 
+font-size: 1.85rem; 
+}
+.brand-icon { 
+width: 40px; 
+height: 40px; 
+}
+.auth-card { 
+padding: 26px 22px; 
+}
+.desktop-break { 
+display: none; 
+}
+.account-card { 
+margin: 25px 15px; 
+padding: 24px; 
+}
+.details div { 
+align-items: flex-start; 
+flex-direction: column; 
+gap: 6px; 
+}
 }
 

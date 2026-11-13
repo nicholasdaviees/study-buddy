@@ -38,7 +38,7 @@ function switchMode(nextMode) {
     submitButton.textContent = signup ? 'Create Account' : 'Log In';
     document.title = signup ? 'Study Buddy | Sign Up' : 'Study Buddy | Log In';
 
-    // Clears information the user previously type.
+    // Clears information the user previously typed.
     passwordInput.value = '';
     confirmInput.value = '';
     passwordInput.type = 'password';
@@ -52,7 +52,7 @@ function switchMode(nextMode) {
 document.querySelector('#login-tab').addEventListener('click', () => switchMode('login'));
 document.querySelector('#signup-tab').addEventListener('click', () => switchMode('signup'));
 
-// Allow for user to check what they type for their password
+// Allow the user to check what they type for their password
 showPasswordButton.addEventListener('click', () => {
     const show = passwordInput.type === 'password';
     passwordInput.type = show ? 'text' : 'password';
@@ -61,13 +61,13 @@ showPasswordButton.addEventListener('click', () => {
     showPasswordButton.setAttribute('aria-pressed', String(show));
 });
 
-// User click the button then they will log in or create their account
+// When the user clicks the button, then they will log in or create their account
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     message.textContent = '';
     submitButton.disabled = true;
 
-// Collects user information and is send to the backend
+// Collects user information and is sent to the backend
     const payload = {
         name: nameInput.value.trim(),
         email: emailInput.value.trim(),
@@ -75,14 +75,14 @@ form.addEventListener('submit', async (event) => {
         confirmPassword: confirmInput.value
     };
 
-// Checks for password and confirm password are match
+// Checks if password is correct and confirm password are match
     if (mode === 'signup' && payload.password !== payload.confirmPassword) {
         message.textContent = 'Passwords do not match.';
         submitButton.disabled = false;
         return;
     }
 
-// This how HTTP request to the backend
+// This is how an HTTP request is sent to the backend
     try {
         const response = await fetch(`api/auth/${mode}`, {
             method: 'POST',
@@ -95,7 +95,7 @@ form.addEventListener('submit', async (event) => {
             throw new Error(body.error || 'Unable to authenticate. Please try again.');
         }
         window.location.assign('app');
-// This handle the error if the server is not connecting
+// This handles the error if the server is not connecting
     } catch (error) {
         message.textContent = error.message || 'Unable to reach the server.';
     } finally {

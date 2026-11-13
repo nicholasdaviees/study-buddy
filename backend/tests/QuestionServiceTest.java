@@ -1,6 +1,4 @@
 // Tests questions about uploaded material.
-package tests;
-
 public class QuestionServiceTest {
 
     // Verifies question answering returns a task ID.
@@ -23,3 +21,4 @@ public class QuestionServiceTest {
     public void waitsForReadyMaterial() {
     }
 }
+

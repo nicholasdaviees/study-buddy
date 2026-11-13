@@ -1,6 +1,4 @@
 // Tests PDF processing, material IDs, and material readiness.
-package tests;
-
 public class MaterialServiceTest {
 
     // Verifies PDF processing returns a background task ID immediately.

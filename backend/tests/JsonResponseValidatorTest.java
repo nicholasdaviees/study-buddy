@@ -1,6 +1,4 @@
 // Tests validation of all JSON responses returned by the LLM.
-package tests;
-
 public class JsonResponseValidatorTest {
 
     // Verifies complete quiz JSON is accepted.
@@ -31,3 +29,4 @@ public class JsonResponseValidatorTest {
     public void rejectsInvalidTrueFalseAnswer() {
     }
 }
+

@@ -1,5 +1,3 @@
-package servlets;
-
 // Endpoint: POST /studybuddy/api/material
 public class UploadServlet {
 

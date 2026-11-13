@@ -1,6 +1,4 @@
 // Tests asynchronous task and worker behavior.
-package tests;
-
 public class TaskManagerTest {
 
     // Verifies submitting work returns a task ID immediately.
@@ -27,3 +25,4 @@ public class TaskManagerTest {
     public void shutsDownWorkerPool() {
     }
 }
+

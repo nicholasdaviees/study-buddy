@@ -1,24 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--Currently coding and testing through Visual Studio, then copying and pasting the working code-->
+<!--Let me know how it looks and I'll keep working on it. Will Upload as often as I can-->
 <head>
-   <title>Study Buddy AI
-   </title>
-   <link rel="stylesheet" href=>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>Study Buddy</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="scripts/main.js" defer></script>
 </head>
 
-<header>
-   <h1>Study Buddy AI</h1>
-</header>
 <body>
-   <h2>How can your Study Buddy help you?</h2>
-   <main>
+    <header class="site-header">
+        <h1>Study Buddy</h1>
 
-    <label for="notes">Enter your study notes:</label><br>
-    <input id="notes" type="file"><br>
-    <button>Generate Flashcards</button><br>
-    <button>Generate Quiz</button><br>
-    
+        <!--The #pages can be made into actual pages-->
+        <nav aria-label="Main navigation">
+            <a href="studybuddy2.html">Home</a>
+            <a href="#flashcards">Flashcards</a>
+            <a href="#quizzes">Practice Quiz</a>
+            <a href="#saved">Saved Materials</a>
+        </nav>
+    </header>
 
-   </main>
+    <main class="dashboard">
+        <h2>Welcome Back!</h2>
+        <p>
+            Upload your course material and generate
+            flashcards, quizzes, and study resources.
+        </p>
+
+        <section class="upload-section">
+            <h3>Upload a PDF</h3>
+
+            <label for="pdf-upload">
+                Select your study material:
+            </label>
+
+            <input
+                type="file"
+                id="pdf-upload"
+                accept=".pdf,application/pdf"
+            >
+
+            <p id="file-status" role="status">
+                No file selected.
+            </p>
+        </section>
+
+        <section class="study-tools">
+            <h3>Study Tools</h3>
+
+            <div class="tool-grid">
+                <button id="flashcard-btn">
+                    Generate Flashcards
+                </button>
+
+                <button id="quiz-btn">
+                    Generate Practice Quiz
+                </button>
+
+                <button id="truefalse-btn">
+                    Generate True/False Quiz
+                </button>
+
+                <button id="ask-btn">
+                    Ask Study Buddy
+                </button>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
+<!--Add sources for html, css, javascript. Source: web design textbook, book: "Coding All-in-One For Dummies", book: "Modern Web Development", website: GeeksforGeeks- HTML, CSS...-->

@@ -5,9 +5,9 @@ public class FlashcardService {
     private TaskManager taskManager;
     //creates flashcard generator with required services it depends on
     public FlashcardService(MaterialService materialService, LlmService llmService, TaskManager taskManager) {
-        this.materialService = materialService;
-        this.llmService = llmService;
-        this.taskManager = null;
+        this.materialService = materialService; // saves the material service for getting uploaded text 
+        this.llmService = llmService; // saves the llmservice for generating flashcards
+        this.taskManager = taskManager; // saves the task manager for running work in background
     }
 
     // TODO: submit flashcard generation to task manager and return generated task ID

@@ -23,7 +23,7 @@ public class QuizService {
 
         }
         if (taskManager == null) {
-            throw new IllegalArgumentException("Taskmanager is currently available."); // checks if taskmanager is available
+            throw new IllegalStateException("Taskmanager is currently not available."); // checks if taskmanager is available
         }
         return taskManager.submitTask("QUIZ_GENERATION", () -> generateQuiz(materialId, questionType)); // this all sends the quiz task to taskmanager
     }
@@ -41,7 +41,7 @@ public class QuizService {
         String uploadedMaterial = materialService.getMaterialText(materialId); // gets the text that was uploaded from the pdf
 
         if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) { // prevents the llm from making questions without any provided pdf
-            throw new IllegalArgumentException("Uploaded material is unavailable");
+            throw new IllegalStateException("Uploaded material is unavailable");
     }
         return llmService.generateStudyMaterial(uploadedMaterial, questionType); // asks the llm to create the quiz from the uploaded pdf
     }

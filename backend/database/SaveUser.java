@@ -4,11 +4,11 @@ public class SaveUser {
 
     public static void main(String[] args) throws SQLException {
         UserDAO userDAO = new UserDAO();
-        long testUserID = 7;
+        long testUserID = 8;
 
         
        
-            userDAO.saveUser(testUserID, "test3", "test@test.com", "pass");
+            userDAO.saveUser("test3", "test@test.com", "pass");
             System.out.println("User saved successfully.");
         
 

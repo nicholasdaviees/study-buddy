@@ -2,26 +2,29 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class UserDAO {
 
-    public void saveUser(
-            long userID, String name, String email, String password)
-            throws SQLException {
+    public void saveUser(String name, String email, String password)
+        throws SQLException {
 
         String sql =
-            "INSERT INTO users (userID, name, email, password) VALUES (?, ?, ?, ?)";
+            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
         try (Connection connection = Database.open();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+            PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setLong(1, userID);
-            statement.setString(2, name);
-            statement.setString(3, email);
-            statement.setString(4, password);
-            statement.executeUpdate();
+            statement.setString(1, name);
+            statement.setString(2, email);
+            statement.setString(3, password);
+
+            if (statement.executeUpdate() != 1) {
+                throw new SQLException("Failed to save the user.");
+            }
         }
     }
+
 
     public User getUserByID(long userID) throws SQLException {
         String sql =

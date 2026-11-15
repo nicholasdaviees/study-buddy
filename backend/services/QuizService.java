@@ -1,5 +1,6 @@
 public class QuizService {
 
+    private static final String TRUE_FALSE_TYPE = "true-false"; // this is the quiz type, this is the only type that is supported no multiple choice
     private MaterialService materialService; // provides access to uploaded study material
     private LlmService llmService; // sends uploaded material to local llm for quiz generation
     
@@ -20,15 +21,15 @@ public class QuizService {
         if (materialId == null || materialId.trim().isEmpty()) { // this makes sure that the material ID was provided
             throw new IllegalArgumentException("Need Material ID")
         }
-        if (questionType == null || questionType.trim().isEmpty()) { // this makes sure that the quiz type was provided
-            throw new IllegalArgumentException("Question type is required.") // so this tells the program if its multiple-choice, or true/false
+        if (!TRUE_FALSE_TYPE.equals(questionType)) { // this makes sure that only true false quizzes are made
+            throw new IllegalArgumentException("Only true-false quizzes are supported.") // so this tells the program if its multiple-choice, or true/false
         }
         String uploadedMaterial = materialService.getMaterialText(materialId); // gets the text that was uploaded from the pdf
 
         if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) { // prevents the llm from making questions without any provided pdf
             throw new IllegalArgumentException("Uploaded material is unavailable");
     }
-        return llmService.generateStudyMaterial(uploadedMaterial, questionType) // asks the llm to create the quiz from the uploaded pdf
+        return llmService.generateStudyMaterial(uploadedMaterial, TRUE_FALSE_TYPE) // asks the llm to create the quiz from the uploaded pdf
     }
 
     // Validates generated JSON and saves valid quiz questions.

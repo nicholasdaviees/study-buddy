@@ -1,5 +1,5 @@
 import java.sql.SQLException;
-
+//this is now just the testing file, SaveUser is old name
 public class SaveUser {
 
     public static void main(String[] args) throws SQLException {

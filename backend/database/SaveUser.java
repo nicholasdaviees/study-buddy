@@ -38,6 +38,8 @@ public class SaveUser {
             ? "User ID 1001 deleted successfully."
             : "No user found with ID 1001.");
         */
+       //commenting out doc saving tests
+       /* 
        long userID = 10;
         UserDAO userDAO = new UserDAO();
 
@@ -45,9 +47,7 @@ public class SaveUser {
             System.out.println("User ID 10 does not exist.");
             return;
         }
-        Path pdfPath = Paths.get(
-            "C:/StuddyBuddy/Project Proposal(PL)-1.pdf"
-        );
+        Path pdfPath = Paths.get("C:/StuddyBuddy/Project Proposal(PL)-1.pdf");
 
         if (Files.size(pdfPath) > DocumentsDAO.MAX_PDF_BYTES) {
             throw new IOException("The PDF exceeds the upload size limit.");
@@ -63,11 +63,38 @@ public class SaveUser {
         );
 
         System.out.println("PDF saved successfully for user ID 10.");
-        System.out.println(
-            "Their document IDs: "
-            + documentsDAO.getDocumentIDsByUserID(userID)
+        System.out.println("Their document IDs: "+ documentsDAO.getDocumentIDsByUserID(userID));
+        */
+
+         long docID = 1; 
+        long userID = 10;
+
+        DocumentsDAO documentsDAO = new DocumentsDAO();
+        Documents document = documentsDAO.getDocumentByID(docID, userID);
+
+        if (document == null) {
+            System.out.println("No matching document found for this user.");
+            return;
+        }
+
+        System.out.println("Document ID: " + document.docID);
+        System.out.println("File name: " + document.fileName);
+        System.out.println("File size: " + document.fileSizeBytes + " bytes");
+        //System.out.println(java.util.Arrays.toString(document.pdfData));
+
+        
+        Path outputPath = Paths.get(
+            "C:/StuddyBuddy/Retrieved Proposal.pdf"
         );
+
+        Files.write(outputPath, document.pdfData);
+        System.out.println("Retrieved PDF saved to: " + outputPath);
     }
-}
+
+        }
+
+
+    
+
 
     

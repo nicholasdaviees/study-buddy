@@ -3,6 +3,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 //this is now just the testing file, SaveUser is old name
 public class SaveUser {
@@ -94,6 +96,8 @@ public class SaveUser {
         System.out.println("Retrieved PDF saved to: " + outputPath);
     
         */
+       //commenting out document tests
+       /* 
        DocumentsDAO documentsDAO = new DocumentsDAO();
         long userID = 10;
 
@@ -109,6 +113,95 @@ public class SaveUser {
             : "No matching document found for this user.");
 
         System.out.println("Remaining document IDs: " + documentsDAO.getDocumentIDsByUserID(userID));
+        */
+
+        //commenting out saving quiz test
+
+        /*
+        QuizDAO quizDAO = new QuizDAO();
+
+         
+        List<AnswerOption> multipleChoiceOptions = Arrays.asList(
+            new AnswerOption(0L, 0L, "3", 1, false),
+            new AnswerOption(0L, 0L, "4", 2, true),
+            new AnswerOption(0L, 0L, "5", 3, false)
+        );
+
+        Question multipleChoiceQuestion = new Question(
+            0L, 0L,
+            "What is 2 + 2?",
+            "MULTIPLE_CHOICE",
+            1,
+            multipleChoiceOptions
+        );
+
+
+        List<AnswerOption> trueFalseOptions = Arrays.asList(
+            new AnswerOption(0L, 0L, "True", 1, false),
+            new AnswerOption(0L, 0L, "False", 2, true)
+        );
+
+        Question trueFalseQuestion = new Question(
+            0L, 0L,
+            "2 + 2 = 5.",
+            "TRUE_FALSE",
+            2,
+            trueFalseOptions
+        );
+
+
+        List<Question> quizQuestions = Arrays.asList(
+            multipleChoiceQuestion,
+            trueFalseQuestion
+        );
+
+        quizDAO.saveQuiz(10L, "Math practice quiz", quizQuestions);
+
+        System.out.println("Quiz saved successfully.");
+        System.out.println("Quiz IDs for user 10: " + quizDAO.getQuizIDsByUserID(10)
+        );
+        */
+
+        QuizDAO quizDAO = new QuizDAO();
+
+long quizIDToLoad = 1;
+long quizOwnerID = 10;
+
+//commenting out quiz retrieval test
+/* 
+
+Quiz loadedQuiz = quizDAO.getSavedQuiz(quizIDToLoad,quizOwnerID);
+
+if (loadedQuiz == null) {
+    System.out.println("No matching quiz found for this user.");
+} else {
+    System.out.println("Quiz ID: " + loadedQuiz.quizID);
+    System.out.println("Title: " + loadedQuiz.title);
+
+    for (Question loadedQuestion : loadedQuiz.questions) {
+        System.out.println(
+            "\nQuestion " + loadedQuestion.questionOrder
+            + ": " + loadedQuestion.questionText
+        );
+        System.out.println("Type: " + loadedQuestion.questionType);
+
+        for (AnswerOption loadedOption : loadedQuestion.options) {
+            System.out.println(
+                loadedOption.optionOrder + ". "
+                + loadedOption.optionText
+                + (loadedOption.isCorrect ? " (correct)" : "")
+            );
+        }
+    }
+}
+
+
+        */
+
+        boolean quizDeleted = quizDAO.deleteQuiz(quizIDToLoad,quizOwnerID);
+        System.out.println(quizDeleted ? "Quiz deleted successfully.": "No matching quiz found for this user.");
+        System.out.println("Remaining quiz IDs: " + quizDAO.getQuizIDsByUserID(quizOwnerID));
+        
 
         }
         

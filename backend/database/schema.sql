@@ -73,3 +73,14 @@ CREATE TABLE IF NOT EXISTS question_options (
         FOREIGN KEY (questionID) REFERENCES quiz_questions(questionID)
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS flashcards (
+    cardID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userID BIGINT NOT NULL,
+    frontText TEXT NOT NULL,
+    backText TEXT NOT NULL,
+
+    CONSTRAINT fk_flashcards_user
+        FOREIGN KEY (userID) REFERENCES users(userID)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

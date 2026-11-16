@@ -99,7 +99,19 @@ public class SaveUser {
 
         System.out.println("Document IDs for user " + userID + ": " + documentsDAO.getDocumentIDsByUserID(userID));
 
+        long docIDToDelete = 1;
+
+        boolean documentDeleted =
+            documentsDAO.deleteDocumentByID(docIDToDelete, userID);
+
+        System.out.println(documentDeleted
+            ? "Document deleted successfully."
+            : "No matching document found for this user.");
+
+        System.out.println("Remaining document IDs: " + documentsDAO.getDocumentIDsByUserID(userID));
+
         }
+        
       
     
 }

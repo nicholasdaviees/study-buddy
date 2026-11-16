@@ -66,7 +66,10 @@ public class SaveUser {
         System.out.println("Their document IDs: "+ documentsDAO.getDocumentIDsByUserID(userID));
         */
 
-         long docID = 1; 
+        //comenting out retrieval tests for now
+        /* 
+
+        long docID = 1; 
         long userID = 10;
 
         DocumentsDAO documentsDAO = new DocumentsDAO();
@@ -89,11 +92,17 @@ public class SaveUser {
 
         Files.write(outputPath, document.pdfData);
         System.out.println("Retrieved PDF saved to: " + outputPath);
-    }
+    
+        */
+       DocumentsDAO documentsDAO = new DocumentsDAO();
+        long userID = 10;
+
+        System.out.println("Document IDs for user " + userID + ": " + documentsDAO.getDocumentIDsByUserID(userID));
 
         }
-
-
+      
+    
+}
     
 
 

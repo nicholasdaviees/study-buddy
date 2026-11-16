@@ -50,7 +50,10 @@ public class DocumentsDAO {
                 throw new SQLException("Failed to save the document.");
             }
         }
-        public Documents getDocumentByID(long docID, long userID)
+    }
+    
+    //untested
+    public Documents getDocumentByID(long docID, long userID)
             throws SQLException {
 
         String sql =
@@ -78,4 +81,44 @@ public class DocumentsDAO {
             }
         }
     }
+
+    public List<Long> getDocumentIDsByUserID(long userID)
+            throws SQLException {
+
+        String sql =
+            "SELECT docID FROM documents WHERE userID = ? ORDER BY docID";
+
+        List<Long> documentIDs = new ArrayList<Long>();
+
+        try (Connection connection = Database.open();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, userID);
+
+            try (ResultSet results = statement.executeQuery()) {
+                while (results.next()) {
+                    documentIDs.add(results.getLong("docID"));
+                }
+            }
+        }
+
+        return documentIDs;
     }
+
+    public boolean deleteDocumentByID(long docID, long userID)
+            throws SQLException {
+
+        String sql =
+            "DELETE FROM documents WHERE docID = ? AND userID = ?";
+
+        try (Connection connection = Database.open();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, docID);
+            statement.setLong(2, userID);
+
+            return statement.executeUpdate() == 1;
+        }
+    }
+}
+

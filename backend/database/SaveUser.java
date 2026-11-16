@@ -198,10 +198,60 @@ if (loadedQuiz == null) {
 
         */
 
+        //commenting out delete quiz tests
+        /* 
         boolean quizDeleted = quizDAO.deleteQuiz(quizIDToLoad,quizOwnerID);
         System.out.println(quizDeleted ? "Quiz deleted successfully.": "No matching quiz found for this user.");
         System.out.println("Remaining quiz IDs: " + quizDAO.getQuizIDsByUserID(quizOwnerID));
-        
+
+        */
+        //commenting out save flashcard test
+        /* 
+        FlashcardsDAO flashcardsDAO = new FlashcardsDAO();
+        long flashcardTestUserID = 10L;
+
+        flashcardsDAO.saveFlashcard(
+            flashcardTestUserID,
+            "What is 2 + 2?",
+            "4"
+        );
+
+        System.out.println("Flashcard saved successfully.");
+
+        System.out.println(
+            "Their flashcard IDs: "
+            + flashcardsDAO.getFlashcardIDsByUserID(flashcardTestUserID)
+        );
+        */
+        //commenting out flashcard retrieval test
+         
+        FlashcardsDAO flashcardsDAO = new FlashcardsDAO();
+
+        long cardIDToLoad = 1;
+        long flashcardOwnerID = 10;
+        /*
+        Flashcards flashcard = flashcardsDAO.getFlashcardByID(
+            cardIDToLoad,
+            flashcardOwnerID
+        );
+
+        if (flashcard == null) {
+            System.out.println("No matching flashcard found for this user.");
+        } else {
+            System.out.println("Card ID: " + flashcard.cardID);
+            System.out.println("User ID: " + flashcard.userID);
+            System.out.println("Front: " + flashcard.frontText);
+            System.out.println("Back: " + flashcard.backText);
+        }
+        */
+
+        boolean flashcardDeleted = flashcardsDAO.deleteFlashcardByID(cardIDToLoad,flashcardOwnerID);
+
+        System.out.println(flashcardDeleted
+            ? "Flashcard deleted successfully."
+            : "No matching flashcard found for this user.");
+
+        System.out.println("Remaining flashcard IDs: " + flashcardsDAO.getFlashcardIDsByUserID(flashcardOwnerID));
 
         }
         

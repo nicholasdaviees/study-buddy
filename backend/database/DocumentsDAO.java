@@ -50,4 +50,32 @@ public class DocumentsDAO {
                 throw new SQLException("Failed to save the document.");
             }
         }
+        public Documents getDocumentByID(long docID, long userID)
+            throws SQLException {
+
+        String sql =
+            "SELECT docID, userID, fileName, pdfData, fileSizeBytes "
+            + "FROM documents WHERE docID = ? AND userID = ?";
+
+        try (Connection connection = Database.open();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, docID);
+            statement.setLong(2, userID);
+
+            try (ResultSet results = statement.executeQuery()) {
+                if (!results.next()) {
+                    return null;
+                }
+
+                return new Documents(
+                    results.getLong("docID"),
+                    results.getLong("userID"),
+                    results.getString("fileName"),
+                    results.getBytes("pdfData"),
+                    results.getLong("fileSizeBytes")
+                );
+            }
+        }
+    }
     }

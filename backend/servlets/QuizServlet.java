@@ -12,13 +12,13 @@ public class QuizServlet { // this class handles the save, delete, and get opera
         return quizService.startQuizGeneration(materialId, questionType);
     }
 
-    // Returns saved quiz questions through QuizService.
-    public String doGet(String materialId) {
-        return quizService.getSavedQuizzes(materialId);
+    
+    public Quiz doGet(long quizID) { // gets a quiz by its database id
+        return quizService.getSavedQuiz(quizID); // asks quizservice to retrieve quiz
     }
 
-    // Deletes one saved quiz question through QuizService.
-    public void doDelete(String quizId) { // this stays as void because it is performing an action, rather than sending something back to the user
-        quizService.deleteQuiz(quizId);
+    // Deletes one saved quiz question through its databaseid
+    public void doDelete(long quizId) { // this stays as void because it is performing an action, rather than sending something back to the user
+        quizService.deleteQuiz(quizId); // quizService deletes the quiz
     }
 }

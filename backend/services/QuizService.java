@@ -1,3 +1,6 @@
+import java.sql.SQLException;
+import java.util.List;
+
 public class QuizService {
 
     private TaskManager taskManager; // our quiz generation is running in the background
@@ -5,12 +8,16 @@ public class QuizService {
     private static final String MULTIPLE_CHOICE_TYPE = "multiple-choice"; // this is the other quiz type that is supported
     private MaterialService materialService; // provides access to uploaded study material
     private LlmService llmService; // sends uploaded material to local llm for quiz generation
+    private QuizDAO quizDAO; // we can save, retrive, and delete quizzes from MySQL
+    private long userID; // this stores the idea of the user
     
     // this connects the quizservice to the other backednd services
-    public QuizService(MaterialService materialService, LlmService llmService, TaskManager taskManager) {
+    public QuizService(MaterialService materialService, LlmService llmService, TaskManager taskManager, QuizDAO quizDAO, long userID) {
         this.materialService = materialService; // saves the material service for getting uploaded text 
         this.llmService = llmService; // saves the llmservice for generating quizzes
         this.taskManager = taskManager; // saves task manager for background processing
+        this.QuizDAO = quizDAO; // saves object access in database
+        this.userID = userID; // saves current user id
     }
     // Places a quiz-generation task in the background task manager.
     public String startQuizGeneration(String materialId, String questionType) {
@@ -51,16 +58,50 @@ public class QuizService {
         
     }
 
-    // Validates generated JSON and saves valid quiz questions.
-    public void validateAndSaveQuiz(String materialId, String quizJson, String questionType) {
+    
+    public void saveQuiz(String title, List<Question> questions,) { // saves a quiz and its questions through QuizDAO
+
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("The title of the quiz is required."); // this makes sure the quiz has a title
+
+        }
+
+        if (questions == null || questions.isEmpty()) {
+            throw new IllegalArgumentException("This quiz has to contain a question."); // this makes sure the quiz has at least 1 question
+        }
+        
+        try {
+
+            quizDAO.saveQuiz(userID, title, questions); // saves quiz by user's id, QuizDAO also saves questions and answer options
+
+        } catch (SQLException error) {
+
+            throw new IllegalStateException("The quiz couldn't be saved.", error); // throws error if quiz couldnt be saved
+        }
+
     }
 
-    // Returns saved quiz questions for the selected material.
-    public String getSavedQuizzes(String materialId) {
-        return null;
+    public Quiz getSavedQuiz(long quizID) { // Returns saved quiz questions frm database
+        
+        try {
+
+            return quizDAO.getSavedQuiz(quizID, userID); // only get quiz if it belongs to user
+        } catch (SQLException error) {
+            throw new IllegalStateException("The quiz couldn't be retrieved.", error); // throws error if quiz couldn't be accessed from database 
+        }
     }
 
-    // Deletes one saved quiz question.
-    public void deleteQuiz(String quizId) {
+    
+    public void deleteQuiz(long quizId) { // Deletes one saved quiz question form database
+
+        try { 
+            boolean deleted = quizDAO.deleteQuiz(quizID, userID);  // deletes quiz only if it belongs to the user
+
+            if (!deleted) {
+                throw new IllegalArgumentException("Quiz not found."); // sends message to user that the quiz no longer exists
+            }
+        } catch (SQLException error) {
+            throw new IllegalStateException("Quiz couldn't be deleted.", error); // sends message that the quiz couldnt be deleted from the database
+        }
     }
 }

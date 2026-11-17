@@ -91,6 +91,18 @@ nav a:hover {
     background-color: #005fcc;
 }
 
+/* Disabled study tools*/
+.tool-grid button: disabled{
+    background-color: #cbd5el;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+#file-status{
+    font-size: 14px;
+    margin-top: 15px;
+}
+
 /* Smaller screens */
 
 @media (max-width: 600px) {

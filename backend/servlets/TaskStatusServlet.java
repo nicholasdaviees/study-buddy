@@ -1,3 +1,5 @@
+package servlets;
+
 // Endpoint: GET /studybuddy/api/tasks/{taskId}
 public class TaskStatusServlet {
 

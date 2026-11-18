@@ -1,3 +1,5 @@
+package validation;
+
 public class UploadValidator {
 
     // Checks that the file exists, is a PDF, and is within the size limit.

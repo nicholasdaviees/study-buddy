@@ -1,3 +1,5 @@
+package tests;
+
 // Tests database safety for user-controlled content.
 public class SecurityTest {
 
@@ -13,4 +15,3 @@ public class SecurityTest {
     public void preventsUnsafeGeneratedHtml() {
     }
 }
-

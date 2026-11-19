@@ -75,7 +75,7 @@ public class QuestionServlet extends HttpServlet {
 
                 sendJson(response, 202, Map.of(
                     "taskId", taskId,
-                    "Status",
+                    "status",
                     "PROCESSING"
                     ));
 

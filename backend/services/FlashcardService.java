@@ -1,3 +1,5 @@
+package services;
+
 public class FlashcardService {
 
     private MaterialService materialService; // provides access to uploaded study material

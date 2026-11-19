@@ -1,5 +1,8 @@
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ArrayList; 
+//import org.json.JSONArray;
+//import org.json.JSONObject;
 
 public class QuizService {
 
@@ -16,7 +19,7 @@ public class QuizService {
         this.materialService = materialService; // saves the material service for getting uploaded text 
         this.llmService = llmService; // saves the llmservice for generating quizzes
         this.taskManager = taskManager; // saves task manager for background processing
-        this.QuizDAO = quizDAO; // saves object access in database
+        this.quizDAO = quizDAO; // saves object access in database
         this.userID = userID; // saves current user id
     }
     // Places a quiz-generation task in the background task manager.
@@ -59,7 +62,7 @@ public class QuizService {
     }
 
     
-    public void saveQuiz(String title, List<Question> questions,) { // saves a quiz and its questions through QuizDAO
+    public void saveQuiz(String title, List<Question> questions) { // saves a quiz and its questions through QuizDAO
 
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("The title of the quiz is required."); // this makes sure the quiz has a title
@@ -80,7 +83,67 @@ public class QuizService {
         }
 
     }
+  /*  
+    public void saveGeneratedQuiz(String title, String quizJson, String questionType) { // convers the llm created JSON into objects in our database and saves them
+        if (quizJson == null || quizJson.trim().isEmpty()) {
+            throw new IllegalArgumentException("Quiz JSON cannot be empty."); // makes sure llm returned the JSON
+        }
 
+        if (!isSupportedQuestionType(questionType)) {
+            throw new IllegalArgumentException("Unsupported quiz type."); // makes sure the quiz type is supported
+        }
+
+        JSONObject quizObject = new JSONObject(quizJson); // converts text into JSON object
+
+        JSONArray jsonQuestions = quizObject.getJSONArray("questions"); // gets array of generated questions
+
+        List<Question> questions = new ArrayList<>(); // makes list of database question objects
+
+        for (int i = 0; i < jsonQuestions.length(); i++) { // loops through every generated question
+            JSONObject jsonQuestion = jsonQuestions.getJSONObject(i); // gets one question form the JSON array
+
+            String questionText = jsonQuestion.getString("question"); // gets the question text
+
+            int questionOrder = i + 1; // question number starts at 1
+
+            List<AnswerOption> options = new ArrayList<>(); // creates answer-optipn list
+
+            if (TRUE_FALSE_TYPE.equals(questionType)) { // handles true/false questions
+                boolean correctAnswer = jsonQuestion.getBoolean("answer"); // gets correct answer as a boolean
+
+                options.add(new AnswerOption(0L, 0L, "True", 1, correctAnswer)); // adds the true option
+
+                options.add(new AnswerOption(0L, 0L, "False", 2, !correctAnswer)); // adds the false option
+
+                questions.add(new Question(0L, 0L, questionText, "TRUE_FALSE", questionOrder, options)); // makes the database question
+
+            }
+
+            else { // now we handle the multiple-choice questions
+                
+                JSONArray jsonChoices = jsonQuestion.getJSONArray("choices"); // gets choices array
+
+                String correctAnswer = jsonQuestion.getString("answer"); // gets the correct answer test
+
+                for (int j = 0; j < jsonChoices.length(); j++) { // loops through every choice
+                    String choiceText = jsonChoices.getString(j); // gets one choice
+
+                    boolean isCorrect = choiceText.equals(correctAnswer); // checks whether that choice was correct
+
+                    options.add(new AnswerOption(0L, 0L, choiceText, j + 1, isCorrect)); // adds the choice to the database list
+
+
+                }
+
+                questions.add(new Question(0L, 0L, questionText, "MULTIPLE_CHOICE", questionOrder, options)); // creates the database question
+
+            }
+
+        }
+        
+        saveQuiz(title, questions); // we call the our existing database saving method
+*/
+    }
     public Quiz getSavedQuiz(long quizID) { // Returns saved quiz questions frm database
         
         try {
@@ -92,7 +155,7 @@ public class QuizService {
     }
 
     
-    public void deleteQuiz(long quizId) { // Deletes one saved quiz question form database
+    public void deleteQuiz(long quizID) { // Deletes one saved quiz question form database
 
         try { 
             boolean deleted = quizDAO.deleteQuiz(quizID, userID);  // deletes quiz only if it belongs to the user

@@ -34,7 +34,37 @@ public class TaskManager {
 
     // Submits work to a background worker and returns its task ID.
     public String submitTask(String taskType, Callable<String> task) {
-        return null;
+        if (task == null){
+            throw new IllegalArgumentException("No tasks submitted for processing");
+            
+        }
+        String taskID = UUID.randomUUID().randomUUID().toString();
+        
+        TaskRecord record = new TaskRecord(taskID, taskType);
+        tasks.put(taskID, record);
+        executor.submit(() -> runTask(record, task));
+        return taskID;
+    }
+    private void runTask(TaskRecord record, Callable<String> task){
+        record.status= Status.PROCESSING;
+
+        try{
+            String result = task.call();
+
+            if (result == null || result.isBlank()) {
+                throw new IllegalStateException("Task returned no result");
+            }
+            
+            record.resultId = result;
+            record.status = Status.COMPLETE;
+        } catch (InterruptedException exception){
+            Thread.currentThread().interrupt();
+            record.error = "Task failed";
+            record.status = Status.FAILED;
+        } catch(Exception exception) {
+            record.error = "Task failed";
+            record.status = Status.FAILED;
+        }
     }
 
     // Returns task status, result, and error information.

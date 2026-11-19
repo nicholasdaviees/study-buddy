@@ -10,6 +10,9 @@ public final class Database {
     }
 
     public static Connection open() throws SQLException {
+        try {Class.forName("com.mysql.cj.jdbc.Driver");} 
+        catch (ClassNotFoundException exception) {throw new SQLException("JDBC driver not available", exception);}
+
         return DriverManager.getConnection(
             requiredEnv("DB_URL"),
             requiredEnv("DB_USER"),

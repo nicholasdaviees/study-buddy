@@ -1,8 +1,8 @@
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList; 
-//import org.json.JSONArray;
-//import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class QuizService {
 
@@ -83,7 +83,7 @@ public class QuizService {
         }
 
     }
-  /*  
+    
     public void saveGeneratedQuiz(String title, String quizJson, String questionType) { // convers the llm created JSON into objects in our database and saves them
         if (quizJson == null || quizJson.trim().isEmpty()) {
             throw new IllegalArgumentException("Quiz JSON cannot be empty."); // makes sure llm returned the JSON
@@ -142,7 +142,7 @@ public class QuizService {
         }
         
         saveQuiz(title, questions); // we call the our existing database saving method
-*/
+
     }
     public Quiz getSavedQuiz(long quizID) { // Returns saved quiz questions frm database
         

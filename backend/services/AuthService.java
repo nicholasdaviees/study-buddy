@@ -139,7 +139,7 @@ public class AuthService {
             return null;
         }
 
-        return userDao.findById(userId);
+        return userDao.getUserByID(userId);
     }
 
     // Way to organize emails and stored

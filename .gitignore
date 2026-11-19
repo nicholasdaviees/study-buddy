@@ -3,6 +3,7 @@
 
 # Project specific files
 /target
+/.vscode
 
 ### macOS ###
 # General

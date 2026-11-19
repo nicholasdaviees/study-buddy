@@ -1,3 +1,5 @@
+package database;
+
 public final class Flashcards {
     public final long cardID;
     public final long userID;

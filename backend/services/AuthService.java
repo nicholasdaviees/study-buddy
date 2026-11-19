@@ -4,7 +4,7 @@ package services;
 // User is the student account.
 import database.User;
 // UserDao handles reading and writing user data
-import database.UserDao;
+import database.UserDAO;
 
 import java.sql.SQLException;
 import java.util.Locale;
@@ -12,7 +12,7 @@ import java.util.Locale;
 public class AuthService {
 
     // This class will handle MySQL operations.
-    private final UserDao userDao = new UserDao();
+    private final UserDAO userDao = new UserDAO();
 
 
    
@@ -139,7 +139,7 @@ public class AuthService {
             return null;
         }
 
-        return userDao.findById(userId);
+        return userDao.getUserByID(userId);
     }
 
     // Way to organize emails and stored

@@ -1,6 +1,8 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import services.TaskManager;
+import services.MaterialService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;

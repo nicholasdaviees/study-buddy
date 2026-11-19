@@ -1,5 +1,46 @@
 // Sends a selected PDF to the upload servlet
-function uploadPdf(file) {
+// Sends a selected PDF to the upload servlet and returns its task ID.
+async function uploadPdf(file) {
+    const maxFileSizeBytes = 10 * 1024 * 1024;
+
+    if (!file || file.size === 0) {
+        throw new Error("Please select a nonempty PDF file.");
+    }
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+        throw new Error("Only PDF files are allowed.");
+    }
+
+    if (file.size > maxFileSizeBytes) {
+        throw new Error("The PDF must be 10 MB or smaller.");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    let response;
+    try {
+        response = await fetch("/studybuddy/api/material", {
+            method: "POST",
+            body: formData
+        });
+    } catch {
+        throw new Error("Could not reach the server. Please try again.");
+    }
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        throw new Error(result?.error || `Upload failed (HTTP ${response.status}).`);
+    }
+
+    if (response.status !== 202
+            || typeof result?.taskId !== "string"
+            || !result.taskId.trim()) {
+        throw new Error("The server did not return a task ID.");
+    }
+
+    return result.taskId;
 }
 
 // Calls the quiz servlet for multiple-choice or true/false questions.

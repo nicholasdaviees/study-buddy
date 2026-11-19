@@ -71,9 +71,8 @@ public class AccountServlet extends HttpServlet {
             );
 
             // Display the account page.
-            request.getRequestDispatcher(
-                    "/WEB-INF/index.html"
-            ).forward(request, response);
+            request.getRequestDispatcher("/index.html")
+                    .forward(request, response);
 
         } catch (SQLException exception) {
             log("Failed to load student account", exception);

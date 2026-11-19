@@ -1,3 +1,5 @@
+package database;
+
 public final class Documents {
     public final long docID;
     public final long userID;

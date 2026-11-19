@@ -1,3 +1,5 @@
+package servlets;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,6 +15,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import services.MaterialService;
+import validation.UploadValidator;
 
 @WebServlet("/api/material")
 @MultipartConfig(

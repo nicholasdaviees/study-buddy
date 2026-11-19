@@ -69,7 +69,36 @@ public class TaskManager {
 
     // Returns task status, result, and error information.
     public String getTask(String taskId) {
-        return null;
+        if(taskId == null || taskId.isBlank()){
+            throw new IllegalArgumentException("Task ID is null");
+        }
+
+        TaskRecord record = tasks.get(taskId);
+
+        java.util.Map<String, Object> response = new java.util.LinkedHashMap<>();
+
+        if (record == null){
+            response.put("status", "FAILED");
+            response.put("error", "No tasks found");
+        } else {
+            response.put("taskId", record.taskID);
+            response.put("taskType", record.taskType);
+
+            Status status = record.status;
+            response.put("taskType", status.name());
+
+            if (status == Status.COMPLETE){
+                response.put("status", record.resultId);
+            } else if(status == status.FAILED){
+                response.put("error", record.error);
+            }
+        }
+
+        try {
+            return objectMapper.writeValueAsString(response);
+        } catch (JsonProcessingException exception){
+            throw new IllegalStateException("could not serialize task response", exception)'
+        }
         
     }
 

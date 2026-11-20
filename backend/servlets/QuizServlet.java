@@ -1,5 +1,8 @@
 package servlets;
 
+import database.Quiz;
+import services.QuizService;
+
 // Endpoint: POST /studybuddy/api/quizzes
 public class QuizServlet { // this class handles the save, delete, and get operations for quizzes
 

@@ -1,5 +1,7 @@
 package services;
 
+import ollama.LlmService;
+
 public class FlashcardService {
 
     private MaterialService materialService; // provides access to uploaded study material

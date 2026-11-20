@@ -1,5 +1,7 @@
 package servlets;
 
+import services.FlashcardService;
+
 // Endpoints: POST, GET, and DELETE /studybuddy/api/flashcards
 
 public class FlashcardServlet {

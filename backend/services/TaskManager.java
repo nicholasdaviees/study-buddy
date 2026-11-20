@@ -45,6 +45,7 @@ public class TaskManager {
         executor.submit(() -> runTask(record, task));
         return taskID;
     }
+    //Executes a task and records its status
     private void runTask(TaskRecord record, Callable<String> task){
         record.status= Status.PROCESSING;
 
@@ -86,7 +87,7 @@ public class TaskManager {
 
             Status status = record.status;
             response.put("taskType", status.name());
-
+            
             if (status == Status.COMPLETE){
                 response.put("status", record.resultId);
             } else if(status == status.FAILED){
@@ -104,5 +105,6 @@ public class TaskManager {
 
     // Stops the worker pool when the application shuts down.
     public void shutdown() {
+        executor.shutdown();
     }
 }

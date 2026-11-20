@@ -16,7 +16,7 @@ private FlashcardService flashcardService;
 
     // the posts here send a request from the front end to the back end, so in our front page if a user clicks on "generate flashcards"
     // it will come here and use this method
-    // generates flashcard and returns JSON result
+    // generates flashcard and returns a task ID
     public String doPost(String materialId) {
 
         //returns result
@@ -28,7 +28,7 @@ private FlashcardService flashcardService;
         return flashcardService.getSavedFlashcards(materialId);
     }
     // Deletes one saved flashcard because of flashcardid and not materialid through FlashcardService.
-    public void doDelete(String flashcardId) {
-        flashcardService.deleteFlashcard(flashcardId);
+    public void doDelete(long cardID) {
+        flashcardService.deleteFlashcard(cardID);
     }
 }

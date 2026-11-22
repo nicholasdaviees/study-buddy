@@ -52,8 +52,51 @@ function generateFlashcards(materialId) {
 }
 
 // Calls the question servlet.
-function askQuestion(materialId, question) {
+async function askQuestion(materialId, question) {
+
+    if (!materialId || !String(materialId).trim()) {
+        throw new Error("Select study material.");
+    }
+
+    if (!question || !question.trim()) {
+        throw new Error("Enter a question.");
+    }
+
+    if (question.length > 2000) {
+        throw new Error("Question must be 2000 characters or fewer.");
+    }
+
+    displayTaskStatus("Starting your question...");
+
+    // Communicates with QuestionServlet to read.
+    const response = await fetch("api/questions/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        credentials: "same-origin",
+        body: JSON.stringify({
+            materialId: String(materialId).trim(),
+            question: question.trim()
+        })
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (response.status === 401) {
+        throw new Error("Session expired, Please log in again.");
+    }
+
+    if(!response.ok) {
+        throw new Error(result?.error || "Unable to start question answering.");
+    }
+
+    if (typeof result?.taskId !== "string" || !result.taskId.trim()) {
+        throw new Error("Did not return task ID.");
+    }
+
+    // Wait for QuestionService to finish.
+    return await pollTaskStatus(result.taskId, 1000);
 }
+
 
 // Polls the task-status servlet until work completes or fails.
 function pollTaskStatus(taskId, intervalMilliseconds) {

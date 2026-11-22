@@ -50,7 +50,7 @@ public class QuestionService implements AutoCloseable {
         }
 
     // Places a question-answering task in the background task manager.
-    public String startQuestionAnswering( String materialId, String question) {
+    public String startQuestionAnswering(long userId, String materialId, String question) {
 
     // Reject invalid question or material.
     validateQuestion(question);
@@ -77,7 +77,7 @@ public class QuestionService implements AutoCloseable {
 }
 
 // Answers a question using only the selected material.
-public String answerQuestion( String materialId, String question) {
+public String answerQuestion(long userId, String materialId, String question) {
     validateQuestion(question);
     validateMaterialId(materialId);
 
@@ -131,7 +131,7 @@ public void validateQuestion(String question) {
         }
 
         // Checks backgound task status.
-        public TaskResult getTaskResult(String taskId) {
+        public TaskResult getTaskResult(long userId, String taskId) {
 
         CompletableFuture<String> future = tasks.get(taskId);
 

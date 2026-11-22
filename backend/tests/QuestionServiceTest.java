@@ -14,7 +14,7 @@ public class QuestionServiceTest {
 
     // Example of student and material.
     private static final long USER_ID = 1L;
-    private Static final String MATERIAL_ID = "101;
+    private static final String MATERIAL_ID = "101";
 
     // Preparing the tests.
     @BeforeEach

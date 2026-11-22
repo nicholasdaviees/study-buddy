@@ -55,7 +55,6 @@ public class QuestionService implements AutoCloseable {
     // Reject invalid question or material.
     validateQuestion(question);
     validateMaterialId(materialId);
-
     // Generates a unique ID for the task.
     String taskId = UUID.randomUUID().toString();
 
@@ -80,6 +79,7 @@ public class QuestionService implements AutoCloseable {
 public String answerQuestion(long userId, String materialId, String question) {
     validateQuestion(question);
     validateMaterialId(materialId);
+    validateUserId(userId);
 
     try {
 
@@ -122,6 +122,14 @@ public void validateQuestion(String question) {
 
     if(materialId == null || materialId.isBlank()) {
         throw new IllegalArgumentException("Please select study material.");
+        }
+    }
+
+    // Rejects invalid user ID.
+    private void validateUserId(long userId) {
+        
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid student account is required.");
         }
     }
 

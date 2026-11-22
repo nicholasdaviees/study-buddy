@@ -40,7 +40,7 @@ public class QuestionService implements AutoCloseable {
     // Only collects the material.
     @FunctionalInterface
     public interface MaterialLoader{
-        String loadMaterial(String materialId) throws Exception;
+        String loadMaterial(long userId, String materialId) throws Exception;
         }
 
     // How Ollama will receive the material and question. 

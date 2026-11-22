@@ -116,4 +116,30 @@ public class QuestionServiceTest {
         assertEquals("NOT_FOUND", result.status());
         assertNull(result.answer());
     }
+
+    // Waits for background task.
+    private QuestionService.TaskResult waitForTask(QuestionService service, long userId, String taskId)
+    throws InterruptedException {
+
+        // Gives three seconds for the task.
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(3);
+
+        // Checks while time remains.
+        while (System.nanoTime() < deadline) {
+
+            QuestionService.TaskResult result = service.getTaskResult(userId, taskId);
+
+            if (!"PROCESSING".equals(result.status())) {
+            return result;
+            }
+
+            // Pause before checking again.
+            Thread.sleep(10);
+        }
+
+    // If test takes too long it fails.
+    org.junit.jupiter.api.Assertions.fail("Background task did not finish in time.");
+
+    return null;
+    }
 }   

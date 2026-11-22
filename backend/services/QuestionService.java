@@ -84,7 +84,7 @@ public String answerQuestion(long userId, String materialId, String question) {
     try {
 
         // Retrieves the content of the material.
-        String materialText = materialLoader.loadMaterial(materialId);
+        String materialText = materialLoader.loadMaterial(userId, materialId);
         
         if(materialText == null || materialText.isBlank()) {
         

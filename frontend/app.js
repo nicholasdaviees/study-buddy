@@ -99,7 +99,52 @@ async function askQuestion(materialId, question) {
 
 
 // Polls the task-status servlet until work completes or fails.
-function pollTaskStatus(taskId, intervalMilliseconds) {
+async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
+    
+    // Checks up to 60 times.
+    const maxAttempts = 60;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        
+        const response = await fetch("api/question/status?taskId=" + encodeURIComponent(taskId),
+    {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+    });
+    
+    const result = await response.json().catch(() => null);
+
+    if (response.status === 401) {
+        throw new Error("Your session expired. Please log in again.");
+    }
+    
+    if (!response.ok) {
+        throw new Error(result?.error || "Unable to check question status.");
+    }
+
+    // When finished, it will display and return the answer.
+    if (result?.status === "COMPLETED") {
+            displayAnswer(result);
+            return result.answer;
+    }
+
+    if (result?.status === "FAILED") {
+        throw new Error("Study Buddy could not answer this question.");
+    }
+
+    if(result?.status === "PROCESSING") {
+        throw new Error("Unexpected question task status.");
+    }
+
+    showError("Study Buddy is answering your question...");
+
+    // Pause.
+    await new Promise(resolve => setTimeout(resolve, intervalMilliseconds));
+    }
+
+    throw new Error("The answer is taking longer than expected. Please try again later.");
+
 }
 
 // Calls the quiz servlet for saved quiz questions.

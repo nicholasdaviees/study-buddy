@@ -83,9 +83,9 @@ public class FlashcardServiceTest {
             // creates faketaskamanager so it doesnt depend on real taskmanager yet
             TaskManager fakeTaskManager = new TaskManager() {
                 @Override 
-                public String submitTask(String, taskType, java.util.concurrent.Callable<String> task) {
+                public String submitTask(String taskType, java.util.concurrent.Callable<String> task) {
 
-                
+                return "task-1";
                 }
             }
         }

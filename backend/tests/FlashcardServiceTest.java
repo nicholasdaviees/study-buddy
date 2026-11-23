@@ -87,7 +87,7 @@ public class FlashcardServiceTest {
 
                 return "task-1";
                 }
-            }
+            };
         }
 }
     

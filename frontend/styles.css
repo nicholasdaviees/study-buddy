@@ -65,6 +65,49 @@ nav a:hover {
     max-width: 100%;
 }
 
+
+/* Processing PDF Section */
+#processing-section {
+    margin: 10px;
+}
+#processing-section p{
+    margin: 6px;
+}
+.processing-subtitle1{
+    font-size: 16px;
+    color: black;
+}
+.processing-subtitle2{
+    font-size: 14px;
+    color: rgb(121, 121, 121);
+}
+.processing-steps{
+    list-style-type: none;
+    background-color: #f1f5f9;
+    padding: 14px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin: 20px auto;
+}
+.processing-steps li {
+    margin-bottom: 10px;
+    padding: 8px;
+}
+#cancel-btn{
+    padding: 12px 36px;
+    font-weight: bold;
+    font-size: 14px;
+    border: #93c5fd solid 2px;
+    border-radius: 6px;
+    background-color: #eff6ff;
+    color: #087cff;
+    cursor: pointer;
+}
+#cancel-btn:hover{
+    border: #85b1e5 solid 2px;
+    background-color: #c3cedc;
+    color: #0a68d2;
+}
 /* Study tool buttons */
 
 .study-tools {

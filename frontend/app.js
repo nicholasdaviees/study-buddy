@@ -106,7 +106,7 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         
-        const response = await fetch("api/question/status?taskId=" + encodeURIComponent(taskId),
+        const response = await fetch("api/questions/status?taskId=" + encodeURIComponent(taskId),
     {
         method: "GET",
         credentials: "same-origin",

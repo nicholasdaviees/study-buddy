@@ -101,6 +101,112 @@ nav a:hover {
 #file-status{
     font-size: 14px;
     margin-top: 15px;
+
+/*Flashcard Interface and Buttons*/
+}
+.flashcard-card{
+    background-color: white;
+    border: 1px solid #d6dbe3;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    padding: 24px;
+    margin: 30px auto;
+    max-width: 600px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+#flashcard-count{
+    font-size: 16px;
+    color: #64748b;
+    margin: 8px 0 20px;
+}
+#flashcard-question{
+    font-size: 20px;
+    margin: 30px 20px;
+    text-align: center;
+}
+#reveal-answer-btn {
+    padding: 12px 40px;
+    border: none;
+    border-radius: 10px;
+    background-color: #087cff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+#reveal-answer-btn:hover{
+    background-color: #0767d4;
+    color: rgb(203, 203, 203);
+}
+.flashcard-navigation{
+    display: flex;
+    gap: 12px;
+    max-width: 600px;
+    margin: 15px auto 0;
+    width: 100%;
+}
+.flashcard-navigation button{
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+#previous-card-btn{
+    background-color: #e2e8f0;
+    color: rgb(112, 112, 112);
+    border: 1px solid lightgray;
+}
+#previous-card-btn:hover{
+    background-color: #bbc0c7;
+}
+#next-card-btn{
+    background-color: #087cff;
+    color: white;
+    border: none;
+}
+#next-card-btn:hover{
+    background-color: #086bdd;
+    color: rgb(206, 204, 204);
+}
+.flashcard-actions{
+    display: flex;
+    gap: 12px;
+    max-width: 600px;
+    margin: 15px auto 0;
+    width: 100%;
+}
+.flashcard-actions button{
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+#save-flashcard-btn{
+    background-color: white;
+    color:#087cff;
+    border: #087cff solid 1px;
+    font-weight: bold;
+}
+#save-flashcard-btn:hover{
+    background-color: #087cff;
+    color: white;
+    border: #076ee3 solid 1px;
+}
+#delete-flashcard-btn{
+    background-color: white;
+    color: #ef4444;
+    border: #ef4444 solid 1px;
+    font-weight: bold;
+}
+#delete-flashcard-btn:hover{
+    background-color: #ef4444;
+    color: white;
+    border: #ce3d3d solid 1px;
 }
 
 /* Smaller screens */

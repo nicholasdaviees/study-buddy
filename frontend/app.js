@@ -43,6 +43,49 @@ async function uploadPdf(file) {
     return result.taskId;
 }
 
+// Wait for uploaded file to finish processing and returns material ID.
+async function waitForUploadedMaterial(taskId) {
+    const maxAttempts = 60;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const response = await fetch("/studybuddy/api/tasks/" + encodeURIComponent(taskId),
+    {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+    });
+    
+    const result = await response.json().catch(() => null);
+
+    if (response.status === 401) {
+        throw new Error("Please log in again.");
+    }
+
+    if(!response.ok) {
+        throw new Error(result?.error || "Unable to check PDF processing.");
+    }
+
+    if (result?.status === "COMPLETE") {
+        if (!result.resultId) {
+            throw new Error("No material ID was returned.");
+        }
+
+        return result.resultId;
+    }
+
+    if ( result?.status === "FAILED") {
+        throw new Error("Study buddy could not process this PDF.");
+    }
+
+    if(result?.status !== "QUEUED" && result?.status !== "PROCESSING") {
+        throw new Error("Unexpected PDF processing status.");
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    throw new Error("PDF processing is taking longer than expected.");
+}
+
 // Calls the quiz servlet for multiple-choice or true/false questions.
 function generateQuiz(materialId, questionType) {
 }

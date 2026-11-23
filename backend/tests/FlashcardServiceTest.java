@@ -3,6 +3,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import services.MaterialService;
+import services.FlashcardService;
+import services.TaskManager;
+import ollama.LlmService;
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 // tests flashcard generation and verifies uploaded material

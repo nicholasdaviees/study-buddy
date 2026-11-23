@@ -182,3 +182,31 @@ function showError(errorMessage) {
 // Updates the interface for queued, processing, complete, or failed work.
 function displayTaskStatus(taskStatus) {
 }
+
+ // Finds the PDF file.
+    const pdfUploadInput = document.getElementById("pdf-upload");
+
+    if (pdfUploadInput) {
+        pdfUploadInput.addEventListener("change", async () => {
+            const file = pdfUploadInput.files[0];
+            const fileStatus = document.getElementById("file-status");
+
+            if (!file) {
+                return;
+            }
+        try {
+            if (fileStatus) {
+                fileStatus.textContent = "Uploading" + file.name + "...";
+            }
+            const taskId = await uploadPdf(file);
+
+            if (fileStatus) {
+                fileStatus.textContent = "PDF upload accepted. Processing task: " + taskId;
+            }
+        } catch (error) {
+            if (fileStatus) {
+                fileStatus.textContent = error.message;
+            }
+        }
+        });
+    }

@@ -108,6 +108,7 @@ nav a:hover {
     background-color: #c3cedc;
     color: #0a68d2;
 }
+
 /* Study tool buttons */
 
 .study-tools {
@@ -170,6 +171,9 @@ nav a:hover {
     font-size: 20px;
     margin: 30px 20px;
     text-align: center;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    padding: 0 15px;
 }
 #reveal-answer-btn {
     padding: 12px 40px;
@@ -251,6 +255,90 @@ nav a:hover {
     color: white;
     border: #ce3d3d solid 1px;
 }
+
+/* Quiz Interface and Buttons */
+
+.quiz-card{
+    background-color: white;
+    border: 1px solid #d6dbe3;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    padding: 24px;
+    margin: 30px auto;
+    max-width: 600px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+#quiz-count{
+    font-size: 16px;
+    color: #64748b;
+    margin: 8px 0 20px;
+}
+#quiz-question{
+    font-size: 20px;
+    margin: 30px 20px;
+    text-align: center;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    padding: 0 15px;
+}
+#quiz-choices{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin: 15px auto 0;
+
+}
+#submit-quiz-btn {
+    padding: 12px 40px;
+    border: none;
+    border-radius: 10px;
+    background-color: #087cff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 15px auto 0;
+}
+#submit-quiz-btn:hover{
+    color: rgb(218, 218, 218);
+    background-color: #086ad8;
+}
+.quiz-navigation{
+    display: flex;
+    gap: 12px;
+    max-width: 600px;
+    margin: 15px auto 0;
+    width: 100%;
+}
+.quiz-navigation button{
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+#next-question-btn{
+    background-color: #087cff;
+    color: white;
+    border: none;
+}
+#next-question-btn:hover{
+    background-color: #086bdd;
+    color: rgb(206, 204, 204);
+}
+#previous-question-btn{
+    background-color: #e2e8f0;
+    color: rgb(112, 112, 112);
+    border: 1px solid lightgray;
+}
+#previous-question-btn:hover{
+    background-color: #bbc0c7;
+}
+
 
 /* Smaller screens */
 

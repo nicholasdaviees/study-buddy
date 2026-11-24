@@ -58,7 +58,6 @@
             </div>
               <ul class="processing-steps">
                 <li>
-                    <span></span>
                     Uploading file...
                 </li>
                 <li>
@@ -125,7 +124,45 @@
                     Delete Flashcard
                 </button>
             </div>
+
         </section>
+
+        <section id="quiz-section">
+        <h2>Practice Quiz</h2>
+        <p>Test your knowledge with questions from the material.</p>
+        <div class="quiz-card">
+            <p id="quiz-count">Question 1 of 5</p>
+            <h3 id="quiz-question">Quiz question</h3>
+            <div id="quiz-choices">
+            <button class="quiz-choice" type="button">
+                Choice 1
+            </button>
+            <button class="quiz-choice" type="button">
+                Choice 2
+            </button>
+             <button class="quiz-choice" type="button">
+                Choice 3
+            </button>
+            <button class="quiz-choice" type="button">
+                Choice 4
+            </button>
+            </div>
+            <button id="submit-quiz-btn" type="button">
+                Submit Answer
+            </button>
+            <p hidden role ="status" id="quiz-feedback">Feedback</p>
+        </div>
+        <div class="quiz-navigation">
+          <button id="previous-question-btn" type="button">
+                Previous Question
+            </button>
+             <button id="next-question-btn" type="button">
+                Next Question
+            </button>
+            </div>
+    </section>
+
+
     </main>
 </body>
 </html>

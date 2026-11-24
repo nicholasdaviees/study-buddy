@@ -746,6 +746,17 @@ function displaySavedMaterials() {
         openButton.type = "button";
         openButton.className = "open-material-btn";
         openButton.textContent = "Open Material";
+         openButton.addEventListener("click", () => {
+            const materialInput = document.getElementById("question-material-id");
+            const selectedMaterialName = document.getElementById("selected-material-name");
+            if (materialInput) {
+        materialInput.value = material.id;
+    }
+            if (selectedMaterialName) {
+        selectedMaterialName.textContent = "Selected study material: " + material.name;
+    }
+            alert(material.name + " is now selected for studying.");
+        });
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.className = "delete-material-btn";

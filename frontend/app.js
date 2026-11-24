@@ -510,4 +510,34 @@ function displayQuizQuestion() {
     });
 }
 
+// Submit quiz answers.
+const submitQuizButton = document.getElementById("submit-quiz-btn");
+
+if (submitQuizButton) {
+    submitQuizButton.addEventListener("click", () => {
+
+        if (quizQuestions.length === 0) {
+            alert("Please generate a practice quiz first.");
+            return;
+        }
+
+         if (selectedQuizAnswer === null) {
+            alert("Please select an answer first.");
+            return;
+        }
+
+        const question = quizQuestions[currentQuestionIndex];
+        const feedback = document.getElementById("quiz-feedback");
+
+         if (selectedQuizAnswer === question.correctAnswer) {
+            feedback.textContent = "Correct!";
+        } else {
+            feedback.textContent = "Incorrect. Try again!";
+        }
+         feedback.hidden = false;
+    });
+}
+
+
+
 

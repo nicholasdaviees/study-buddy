@@ -366,7 +366,12 @@ if (flashcardButton) {
             throw new Error("No flashcard task ID was returned.");
         }
 
-        alert("Flashcard generation started!");
+        flashcards = await waitForGeneratedFlashcards(result.taskId);
+currentFlashcardIndex = 0;
+displayFlashcard();
+document.getElementById("flashcard-section").scrollIntoView({
+    behavior: "smooth"
+});
         } catch (error) {
             alert(error.message);
         } finally {
@@ -375,3 +380,39 @@ if (flashcardButton) {
         }
     });
 }
+
+// Waits for the generated flashcards.
+async function waitForGeneratedFlashcards(taskId) {
+    const maxAttempts = 60;
+
+     for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const response = await fetch("/studybuddy/api/tasks/" + encodeURIComponent(taskId), {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store"
+            }
+        );
+        const result = await response.json();
+
+         if (!response.ok) {
+            throw new Error(result.error || "Could not check flashcard generation.");
+        }
+
+        if (result.status === "COMPLETE") {
+            if (!result.resultId) {
+                throw new Error("No generated flashcards were returned.");
+            }
+            const generated = JSON.parse(result.resultId);
+
+            if (!Array.isArray(generated.flashcards)) {
+                throw new Error("Invalid flashcard response.");
+            }
+            return generated.flashcards;
+        }
+
+     if (result.status === "FAILED") {
+            throw new Error("Flashcard generation failed.");
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+     }
+}   

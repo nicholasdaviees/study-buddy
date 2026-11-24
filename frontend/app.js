@@ -776,6 +776,7 @@ function displaySavedMaterials() {
         return;
     }
     uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
+    saveMaterialsToBrowser();
     const materialInput = document.getElementById("question-material-id");
     const selectedMaterialName = document.getElementById("selected-material-name");
     if (materialInput && materialInput.value === material.id) {

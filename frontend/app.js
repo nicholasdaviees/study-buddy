@@ -424,6 +424,20 @@ async function waitForGeneratedFlashcards(taskId) {
         await new Promise(resolve => setTimeout(resolve, 1000));
      }
 }   
+// Save flashcard button.
+const saveFlashcardButton = document.getElementById("save-flashcard-btn");
+if (saveFlashcardButton) {
+    saveFlashcardButton.addEventListener("click", () => {
+        if (flashcards.length === 0) {
+            alert("Please generate flashcards first.");
+            return;
+        }
+
+         const currentCard = flashcards[currentFlashcardIndex];
+
+         alert("Save requested for: " + currentCard.question);
+    });
+}
 // Delete Flashcard button.
 const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
 

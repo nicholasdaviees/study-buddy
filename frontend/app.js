@@ -416,3 +416,36 @@ async function waitForGeneratedFlashcards(taskId) {
         await new Promise(resolve => setTimeout(resolve, 1000));
      }
 }   
+// Delete Flashcard button.
+const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
+
+if (deleteFlashcardButton) {
+    deleteFlashcardButton.addEventListener("click", () => {
+        if (flashcards.length === 0) {
+            alert("There are no flashcards to delete.");
+            return;
+        }
+        const confirmed = confirm("Are you sure you want to delete this flashcard?");
+
+          if (!confirmed) {
+            return;
+        }
+
+        flashcards.splice(currentFlashcardIndex, 1);
+
+        if (flashcards.length === 0) {
+            document.getElementById("flashcard-count").textContent = "No flashcards remaining.";
+            document.getElementById("flashcard-question").textContent = "Generate flashcards to study.";
+            document.getElementById("flashcard-answer").textContent = "";
+            document.getElementById("flashcard-answer").hidden = true;
+            return;
+        }
+
+         if (currentFlashcardIndex >= flashcards.length) {
+            currentFlashcardIndex = flashcards.length - 1;
+        }
+
+         displayFlashcard();
+
+    });
+}

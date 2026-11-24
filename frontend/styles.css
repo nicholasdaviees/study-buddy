@@ -339,6 +339,43 @@ nav a:hover {
     background-color: #bbc0c7;
 }
 
+/* Ask Study Buddy Interface */
+
+#question-input {
+    background-color: white;
+    border: 1px solid #d6dbe3;
+    border-radius: 10px;
+    padding: 24px;
+    margin: 30px auto;
+    width: 400px;
+    min-height: 50px;
+}
+#send-question-btn{
+    background-color: #087cff;
+    color: white;
+    border: 1px solid #d6dbe3;
+    border-radius: 10px;
+    padding: 24px;
+    width: 68px;
+    min-height: 10px;
+    margin-left: 8px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+#send-question-btn:hover{
+    background-color: #086bdd;
+    color: rgb(206, 204, 204);
+
+}
+.question-controls{
+    align-items: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
 
 /* Smaller screens */
 

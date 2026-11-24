@@ -713,5 +713,43 @@ async function waitForGeneratedQuiz(taskId) {
     throw new Error("Quiz generation is taking longer than expected.");
 }
 
+// Display uploaded study material.
+let uploadedMaterials = [];
+function displaySavedMaterials() {
+    const materialsList = document.getElementById("saved-materials-list");
+
+    if (!materialsList) {
+        return;
+    }
+     materialsList.innerHTML = "";
+     if (uploadedMaterials.length === 0) {
+        materialsList.textContent = "No study materials uploaded yet.";
+        return;
+    }
+
+    uploadedMaterials.forEach(material => {
+
+        const materialDiv = document.createElement("div");
+        materialDiv.className = "saved-material";
+        const fileName = document.createElement("h3");
+        fileName.textContent = material.name;
+        const fileSize = document.createElement("p");
+        fileSize.textContent = "File Size: " + (material.size / (1024 * 1024)).toFixed(2) + " MB";
+        const openButton = document.createElement("button");
+        openButton.type = "button";
+        openButton.className = "open-material-btn";
+        openButton.textContent = "Open Material";
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-material-btn";
+        deleteButton.textContent = "Delete Material";
+        materialDiv.appendChild(fileName);
+        materialDiv.appendChild(fileSize);
+        materialDiv.appendChild(openButton);
+        materialDiv.appendChild(deleteButton);
+        materialsList.appendChild(materialDiv);
+           });
+}
+        
 
 

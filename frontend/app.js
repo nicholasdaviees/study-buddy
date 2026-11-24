@@ -567,6 +567,38 @@ if (submitQuizButton) {
     });
 }
 
+// Quiz navigation.
+const previousQuestionButton = document.getElementById("previous-question-btn");
+const nextQuestionButton = document.getElementById("next-question-btn");
+
+if (previousQuestionButton) {
+    previousQuestionButton.addEventListener("click", () => {
+
+        if (quizQuestions.length === 0) {
+            return;
+        }
+
+         if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            displayQuizQuestion();
+        }
+    });
+}
+
+if (nextQuestionButton) {
+    nextQuestionButton.addEventListener("click", () => {
+
+        if (quizQuestions.length === 0) {
+            return;
+        }
+        
+         if (currentQuestionIndex < quizQuestions.length - 1) {
+            currentQuestionIndex++;
+            displayQuizQuestion();
+        }
+    });
+}
+
 
 
 

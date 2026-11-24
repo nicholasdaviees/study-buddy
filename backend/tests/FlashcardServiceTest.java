@@ -3,6 +3,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import services.MaterialService;
+import services.FlashcardService;
+import services.TaskManager;
+import ollama.LlmService;
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 // tests flashcard generation and verifies uploaded material
@@ -13,7 +17,7 @@ public class FlashcardServiceTest {
         public void generatesFlashcardsFromUploadedMaterial() {
 
             // creates fake materialservice for testing
-            MaterialService materialService = new MaterialService() {
+            MaterialService materialService = new MaterialService(new TaskManager()) {
                 @Override 
                 public String getMaterialText(String materialId) {
 
@@ -39,7 +43,7 @@ public class FlashcardServiceTest {
                 };
 
                 // creates flashcard service using fake dependencies like the material service and llmservice
-                FlashcardService service = new FlashcardService(materialService, llmService);
+                FlashcardService service = new FlashcardService(materialService, llmService, new TaskManager(), null, 1L);
 
                 // generates flashcard using sample id
                 String result = service.generateFlashcards("material-1");
@@ -53,7 +57,7 @@ public class FlashcardServiceTest {
         public void rejectsBlankMaterialId() {
 
             // dependencies null because method should reject invalid material id before using either dependency
-            FlashcardService service = new FlashcardService(null, null);
+            FlashcardService service = new FlashcardService(null, null, null, null, 1L);
 
             // confirms illegal argument exception thrown when material id empty
             assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
@@ -64,7 +68,7 @@ public class FlashcardServiceTest {
         public void rejectsMissingUploadedMaterial() {
 
             // fake material service that returns empty material
-            MaterialService materialService = new MaterialService() {
+            MaterialService materialService = new MaterialService(new TaskManager()) {
                 @Override 
                 public String getMaterialText(String materialId) {
                     return "";
@@ -72,7 +76,7 @@ public class FlashcardServiceTest {
         };
 
         // LLM not needed because the request should be rejected BEFORE the llm is called; if invalid id then llm doesnt know which material to use
-        FlashcardService service = new FlashcardService(materialService, null);
+        FlashcardService service = new FlashcardService(materialService, null, new TaskManager(), null, 1L);
 
         // confirms missing material causes an exception error
         assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
@@ -83,11 +87,11 @@ public class FlashcardServiceTest {
             // creates faketaskamanager so it doesnt depend on real taskmanager yet
             TaskManager fakeTaskManager = new TaskManager() {
                 @Override 
-                public String submitTask(String, taskType, java.util.concurrent.Callable<String> task) {
+                public String submitTask(String taskType, java.util.concurrent.Callable<String> task) {
 
-                
+                return "task-1";
                 }
-            }
+            };
         }
 }
     

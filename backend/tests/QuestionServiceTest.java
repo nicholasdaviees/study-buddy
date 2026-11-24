@@ -14,7 +14,7 @@ public class QuestionServiceTest {
 
     // Example of student and material.
     private static final long USER_ID = 1L;
-    private Static final String MATERIAL_ID = "101;
+    private static final String MATERIAL_ID = "101";
 
     // Preparing the tests.
     @BeforeEach
@@ -115,5 +115,31 @@ public class QuestionServiceTest {
         QuestionService.TaskResult result = questionService.getTaskResult(USER_ID, "nonexistent-task");
         assertEquals("NOT_FOUND", result.status());
         assertNull(result.answer());
+    }
+
+    // Waits for background task.
+    private QuestionService.TaskResult waitForTask(QuestionService service, long userId, String taskId)
+    throws InterruptedException {
+
+        // Gives three seconds for the task.
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(3);
+
+        // Checks while time remains.
+        while (System.nanoTime() < deadline) {
+
+            QuestionService.TaskResult result = service.getTaskResult(userId, taskId);
+
+            if (!"PROCESSING".equals(result.status())) {
+            return result;
+            }
+
+            // Pause before checking again.
+            Thread.sleep(10);
+        }
+
+    // If test takes too long it fails.
+    org.junit.jupiter.api.Assertions.fail("Background task did not finish in time.");
+
+    return null;
     }
 }   

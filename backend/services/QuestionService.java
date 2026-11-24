@@ -40,7 +40,7 @@ public class QuestionService implements AutoCloseable {
     // Only collects the material.
     @FunctionalInterface
     public interface MaterialLoader{
-        String loadMaterial(String materialId) throws Exception;
+        String loadMaterial(long userId, String materialId) throws Exception;
         }
 
     // How Ollama will receive the material and question. 
@@ -50,12 +50,11 @@ public class QuestionService implements AutoCloseable {
         }
 
     // Places a question-answering task in the background task manager.
-    public String startQuestionAnswering( String materialId, String question) {
+    public String startQuestionAnswering(long userId, String materialId, String question) {
 
     // Reject invalid question or material.
     validateQuestion(question);
     validateMaterialId(materialId);
-
     // Generates a unique ID for the task.
     String taskId = UUID.randomUUID().toString();
 
@@ -63,7 +62,7 @@ public class QuestionService implements AutoCloseable {
     CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
 
         try {
-            return answerQuestion( materialId, question);
+            return answerQuestion(userId, materialId, question);
 
             } catch (Exception exception) {
             
@@ -77,14 +76,15 @@ public class QuestionService implements AutoCloseable {
 }
 
 // Answers a question using only the selected material.
-public String answerQuestion( String materialId, String question) {
+public String answerQuestion(long userId, String materialId, String question) {
     validateQuestion(question);
     validateMaterialId(materialId);
+    validateUserId(userId);
 
     try {
 
         // Retrieves the content of the material.
-        String materialText = materialLoader.loadMaterial(materialId);
+        String materialText = materialLoader.loadMaterial(userId, materialId);
         
         if(materialText == null || materialText.isBlank()) {
         
@@ -125,13 +125,21 @@ public void validateQuestion(String question) {
         }
     }
 
+    // Rejects invalid user ID.
+    private void validateUserId(long userId) {
+        
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid student account is required.");
+        }
+    }
+
     // Creates the response used when the answer is absent from the material.
     public String createUnsupportedMaterialResponse() {
         return "I couldn't find an answer to that question " + "in the selected study material.";
         }
 
         // Checks backgound task status.
-        public TaskResult getTaskResult(String taskId) {
+        public TaskResult getTaskResult(long userId, String taskId) {
 
         CompletableFuture<String> future = tasks.get(taskId);
 

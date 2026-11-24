@@ -472,3 +472,42 @@ const quizButton = document.getElementById("quiz-btn");
             alert("Practice quiz requested for your uploaded PDF!");
         });
     }
+
+// Quiz Display
+let quizQuestion = [];
+let currentQuestionIndex = 0;
+let selectedQuizAnswer = null;
+
+function displayQuizQuestion() {
+    if (quizQuestions.length === 0) {
+        return;
+    }
+    const question = quizQuestions[currentQuestionIndex];
+    document.getElementById("quiz-count").textContent = "Question " + (currentQuestionIndex + 1) + " of " + quizQuestions.length;
+    document.getElementById("quiz-question").textContent = question.question;
+    const choicesContainer = document.getElementById("quiz-choices");
+    choicesContainer.innerHTML = "";
+    selectedQuizAnswer = null;
+    const feedback = document.getElementById("quiz-feedback");
+    feedback.hidden = true;
+    feedback.textContent = "";
+
+    question.choices.forEach((choice, index) => {
+        const choiceButton = document.createElement("button");
+        choiceButton.type = "button";
+        choiceButton.className = "quiz-choice";
+        choiceButton.textContent = choice;
+
+        choiceButton.addEventListener("click", () => {
+
+            selectedQuizAnswer = index;
+            choicesContainer.querySelectorAll(".quiz-choice").forEach(button => {
+                button.classList.remove("selected");
+                });
+                 choiceButton.classList.add("selected");
+        });
+         choicesContainer.appendChild(choiceButton);
+    });
+}
+
+

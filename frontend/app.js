@@ -226,25 +226,44 @@ function showError(errorMessage) {
 function displayTaskStatus(taskStatus) {
 }
 
- // Finds the PDF file.
+     // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");
 
     if (pdfUploadInput) {
         pdfUploadInput.addEventListener("change", async () => {
             const file = pdfUploadInput.files[0];
             const fileStatus = document.getElementById("file-status");
+            const materialInput = document.getElementById("question-material-id");
+            const selectedMaterialName = document.getElementById("selected-material-name");
 
             if (!file) {
                 return;
             }
+            if (materialInput) {
+            materialInput.value = "";
+        }
+             if (selectedMaterialName) {
+            selectedMaterialName.textContent = "No study material selected.";
+        }
+
         try {
             if (fileStatus) {
-                fileStatus.textContent = "Uploading" + file.name + "...";
+                fileStatus.textContent = "Uploading " + file.name + "...";
             }
             const taskId = await uploadPdf(file);
 
+            const materialId = await waitForUploadedMaterial(taskId);
+
+            if (materialInput) {
+                materialInput.value = materialId;
+            }
+
+            if (selectedMaterialName) {
+                selectedMaterialName.textContent = "Selected study material: " + file.name;
+            }
+
             if (fileStatus) {
-                fileStatus.textContent = "PDF upload accepted. Processing task: " + taskId;
+                fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
             }
         } catch (error) {
             if (fileStatus) {
@@ -253,3 +272,64 @@ function displayTaskStatus(taskStatus) {
         }
         });
     }
+   // Flashcard Display
+    let flashcards = [];
+
+    let currentFlashcardIndex = 0;
+
+    const revealAnswerButton = document.getElementById("reveal-answer-btn");
+    const previousCardButton = document.getElementById("previous-card-btn");
+    const nextCardButton = document.getElementById("next-card-btn");
+
+    function displayFlashcard() {
+        if (flashcards.length === 0) {
+            return;
+        }
+        const card = flashcards[currentFlashcardIndex];
+
+        document.getElementById("flashcard-count").textContent = "Card " + (currentFlashcardIndex + 1) + " of " + flashcards.length;
+
+        document.getElementById("flashcard-question").textContent = card.question;
+        
+        const answerElement = document.getElementById("flashcard-answer");
+
+        answerElement.textContent = card.answer;
+        answerElement.hidden = true;
+
+    revealAnswerButton.textContent = "Reveal Answer";
+}
+
+if (revealAnswerButton) {
+    revealAnswerButton.addEventListener("click", () => {
+
+        if (flashcards.length === 0) {
+            return;
+        }
+
+        const answerElement = document.getElementById("flashcard-answer");
+
+        answerElement.hidden = !answerElement.hidden;
+
+        revealAnswerButton.textContent = answerElement.hidden ? "Reveal Answer" : "Hide Answer";
+    });
+}
+
+if (previousCardButton) {
+    previousCardButton.addEventListener("click", () => {
+
+        if (currentFlashcardIndex > 0) {
+            currentFlashcardIndex--;
+            displayFlashcard();
+        }
+    });
+}
+
+if (nextCardButton) {
+    nextCardButton.addEventListener("click", () => {
+
+        if (currentFlashcardIndex < flashcards.length - 1) {
+            currentFlashcardIndex++;
+            displayFlashcard();
+        }
+    });
+}

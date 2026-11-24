@@ -86,14 +86,6 @@ async function waitForUploadedMaterial(taskId) {
     throw new Error("PDF processing is taking longer than expected.");
 }
 
-// Calls the quiz servlet for multiple-choice or true/false questions.
-function generateQuiz(materialId, questionType) {
-}
-
-// Calls the flashcard servlet.
-function generateFlashcards(materialId) {
-}
-
 // Calls the question servlet.
 async function askQuestion(materialId, question) {
 
@@ -196,26 +188,6 @@ function loadQuizzes(materialId) {
 
 // Calls the flashcard servlet for saved flashcards.
 function loadFlashcards(materialId) {
-}
-
-// Displays saved or newly generated quiz questions.
-function displayQuiz(quizJson) {
-}
-
-// Displays saved or newly generated flashcards.
-function displayFlashcards(flashcardJson) {
-}
-
-// Displays the answer returned for a student question.
-function displayAnswer(answerJson) {
-}
-
-// Calls the quiz servlet to delete one quiz question.
-function deleteQuiz(quizId) {
-}
-
-// Calls the flashcard servlet to delete one flashcard.
-function deleteFlashcard(flashcardId) {
 }
 
 // Displays a user-friendly error message.
@@ -508,7 +480,7 @@ const quizButton = document.getElementById("quiz-btn");
             
     quizQuestions = await waitForGeneratedQuiz(result.taskId);
     currentQuestionIndex = 0;
-
+    quizAnswers = new Array(quizQuestions.length).fill(null);
     displayQuizQuestion();
     document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
@@ -526,6 +498,9 @@ const quizButton = document.getElementById("quiz-btn");
 let quizQuestion = [];
 let currentQuestionIndex = 0;
 let selectedQuizAnswer = null;
+
+// Quiz score
+let quizAnswers = [];
 
 function displayQuizQuestion() {
     if (quizQuestions.length === 0) {
@@ -655,6 +630,7 @@ if (trueFalseButton) {
             }
 
             quizQuestions = await waitForGeneratedQuiz(result.taskId);
+            quizAnswers = new Array(quizQuestions.length).fill(null);
             currentQuestionIndex = 0;
             displayQuizQuestion();
             document.getElementById("quiz-section").scrollIntoView({

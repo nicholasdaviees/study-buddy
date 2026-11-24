@@ -573,7 +573,11 @@ const answeredCount = quizAnswers.filter(
     answer => answer !== null
 ).length;
 
-feedback.textContent += " Score: " + correctCount + " out of " + quizQuestions.length + " (" + answeredCount + " answered).";
+const scoreElement = document.getElementById("quiz-score");
+
+if (scoreElement) {
+    scoreElement.textContent = "Score: " + correctCount + " out of " + quizQuestions.length + " (" + answeredCount + " answered).";
+}
          feedback.hidden = false;
     });
 }

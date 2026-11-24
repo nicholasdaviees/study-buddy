@@ -38,6 +38,11 @@ public class TaskStatusServlet extends HttpServlet {
             writeJson(response, 400, Map.of("error", "Task ID is required."));
             return;
         }
+
+        try {
+            JsonNode task = json.readTree(taskManager.getTask(path.substring(1)));
+            writeJson(response, "NOT_FOUND".equals(task.path("status").asText()) ? 404 : 200, task);
+        } catch (IllegalArgumentException error) {writeJson(response, 400, Map.of("error", error.getMessage()));}
     }
 
     private void writeJson(HttpServletResponse response, int status, Object body)

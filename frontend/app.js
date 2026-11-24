@@ -660,6 +660,45 @@ if (trueFalseButton) {
     });
 }
 
+// Wait for generated quiz.
+async function waitForGeneratedQuiz(taskId) {
+    const maxAttempts = 60;
+
+     for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const response = await fetch("/studybuddy/api/tasks/" + encodeURIComponent(taskId), {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store"
+            }
+        );
+
+        const result = await response.json().catch(() => null);
+    
+        if (!response.ok) {
+            throw new Error(result?.error || "Could not check quiz generation.");
+        }
+        if (result?.status === "COMPLETE") {
+            if (!result.resultId) {
+                throw new Error("No generated quiz was returned.");
+            }
+
+            const generated = JSON.parse(result.resultId);
+
+            if (!Array.isArray(generated.questions)) {
+                throw new Error("Invalid quiz response.");
+            }
+
+            return generated.questions;
+        }
+
+        if (result?.status === "FAILED") {
+            throw new Error("Quiz generation failed.");
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    throw new Error("Quiz generation is taking longer than expected.");
+}
 
 
 

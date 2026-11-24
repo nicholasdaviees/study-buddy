@@ -1,9 +1,31 @@
 package servlets;
 
-// Endpoint: GET /studybuddy/api/tasks/{taskId}
-public class TaskStatusServlet {
+import java.io.IOException;
+import java.util.Map;
 
-    // Returns task status, result, or error by calling TaskManager.
-    public void doGet(String taskId) {
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import services.TaskManager;
+
+// Endpoint: GET /studybuddy/api/tasks/{taskId}
+@WebServlet("/api/tasks/*")
+public class TaskStatusServlet extends HttpServlet {
+
+    private final ObjectMapper json = new ObjectMapper();
+    private TaskManager taskManager;
+
+    @Override
+    public void init() throws ServletException {
+        Object manager = getServletContext().getAttribute("taskManager");
+        if (!(manager instanceof TaskManager)) {
+            throw new ServletException("TaskManager was not registered.");
+        }
+        taskManager = (TaskManager) manager;
     }
 }

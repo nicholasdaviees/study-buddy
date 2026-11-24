@@ -599,6 +599,53 @@ if (nextQuestionButton) {
     });
 }
 
+// Generate true/false quiz.
+const trueFalseButton = document.getElementById("truefalse-btn");
+
+if (trueFalseButton) {
+    trueFalseButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+            alert("Please upload a PDF first.");
+            return;
+        }
+        trueFalseButton.disabled = true;
+        trueFalseButton.textContent = "Generating...";
+
+        try {
+            const response = await fetch("/studybuddy/api/quizzes", {
+                method: "POST",
+                credentials: "same-origin",
+                body: new URLSearchParams({
+                    materialId: materialId,
+                    questionType: "true-false"
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Could not generate True/False quiz.");
+            }
+            
+            if (!result.taskId) {
+                throw new Error("No quiz task ID was returned.");
+            }
+
+            alert("True/False quiz generation started!");
+
+            } catch (error) {
+            alert(error.message);
+
+        } finally {
+            trueFalseButton.disabled = false;
+            trueFalseButton.textContent = "Generate True/False Quiz";
+        }
+    });
+}
+
 
 
 

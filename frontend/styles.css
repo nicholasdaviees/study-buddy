@@ -9,6 +9,104 @@ body {
     color: #14213d;
 }
 
+/* Login and sign-in page */
+
+.auth-page{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    
+}
+.auth-shell{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    padding: 0 20px;
+    gap: 50px;
+    
+}
+.auth-card{
+    border: 1px solid #d6dbe3;
+    background-color: white;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 100%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+.field{
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    text-align: left;
+    width: 100%;
+    gap: 6px;
+}
+.hidden{
+    display: none;
+}
+.field input {
+    border: 1px solid #d6dbe3;
+    background-color: white;
+    border-radius: 10px;
+    width: 100%;
+    padding: 12px;
+}
+.password-row{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#password{
+    border: 1px solid #d6dbe3;
+    background-color: white;
+    border-radius: 10px;
+    flex: 1;
+    padding: 12px;
+}
+.show-password{
+    border: 1px solid #d6dbe3;
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+}
+.show-password:hover{
+    border: 1px solid #bcc1c8;
+    background-color: #e2e8f0;
+}
+.primary-button{
+    padding: 12px 40px;
+    border: none;
+    border-radius: 10px;
+    background-color: #087cff;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    cursor: pointer;
+}
+.primary-button:hover{
+    background-color: #076ce0;
+    color: rgb(222, 222, 222);
+}
+.text-link{
+    border: none;
+    background-color: white;
+    color: #087cff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0px;
+}
+.text-link:hover{
+    text-decoration: underline;
+}
+
 /* Header and navigation */
 
 .site-header {

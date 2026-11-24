@@ -461,17 +461,46 @@ if (deleteFlashcardButton) {
 const quizButton = document.getElementById("quiz-btn");
 
  if (quizButton) {
-        quizButton.addEventListener("click", () => {
-            const materialInput =
-                document.getElementById("question-material-id");
+        quizButton.addEventListener("click", async () => {
+            const materialInput = document.getElementById("question-material-id");
             const materialId = materialInput ? materialInput.value : "";
         if (!materialId) {
                 alert("Please upload a PDF first.");
                 return;
             }
-            alert("Practice quiz requested for your uploaded PDF!");
-        });
-    }
+
+            quizButton.disabled = true;
+            quizButton.textContent = "Generating...";
+
+             try {
+            const response = await fetch("/studybuddy/api/quizzes", {
+                method: "POST",
+                credentials: "same-origin",
+                body: new URLSearchParams({
+                    materialId: materialId,
+                    questionType: "multiple-choice"
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Could not generate practice quiz.");
+            }
+
+             if (!result.taskId) {
+                throw new Error("No quiz task ID was returned.");
+            }
+            
+                   alert("Practice quiz generation started!");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            quizButton.disabled = false;
+            quizButton.textContent = "Generate Practice Quiz";
+        }
+    });
+}
 
 // Quiz Display
 let quizQuestion = [];

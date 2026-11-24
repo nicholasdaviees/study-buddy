@@ -721,7 +721,15 @@ async function waitForGeneratedQuiz(taskId) {
 }
 
 // Display uploaded study material.
-let uploadedMaterials = [];
+// Rememver saved material
+let uploadedMaterials = JSON.parse(
+    localStorage.getItem("studyBuddyMaterials") || "[]"
+);
+function saveMaterialsToBrowser() {
+    localStorage.setItem("studyBuddyMaterials", JSON.stringify(uploadedMaterials));
+}
+
+displaySavedMaterials();
 function displaySavedMaterials() {
     const materialsList = document.getElementById("saved-materials-list");
 

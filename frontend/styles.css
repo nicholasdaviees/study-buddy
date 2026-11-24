@@ -341,16 +341,15 @@ nav a:hover {
 
 /* Ask Study Buddy Interface */
 
-#question-input {
+#student-question {
     background-color: white;
     border: 1px solid #d6dbe3;
     border-radius: 10px;
-    padding: 24px;
-    margin: 30px auto;
-    width: 400px;
+    padding: 10px;
+    width: 350px;
     min-height: 50px;
 }
-#send-question-btn{
+#ask-btn{
     background-color: #087cff;
     color: white;
     border: 1px solid #d6dbe3;
@@ -365,7 +364,7 @@ nav a:hover {
     justify-content: center;
     cursor: pointer;
 }
-#send-question-btn:hover{
+#ask-btn:hover{
     background-color: #086bdd;
     color: rgb(206, 204, 204);
 

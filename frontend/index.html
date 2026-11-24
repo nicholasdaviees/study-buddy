@@ -45,12 +45,6 @@
                 accept=".pdf,application/pdf"
             >
 
-            <input 
-                type="hidden"
-                id="question-material-id"
-                hidden
-                >
-                
             <p id="file-status" role="status">
                 No file selected.
             </p>
@@ -168,27 +162,39 @@
             </button>
             </div>
     </section>
+
+
 <section id="ask-section" class="question-section">
         <h2>Ask Study Buddy</h2>
         <p>Ask a question about your uploaded study material.</p>
-        <input type="text" id="question-material-id" hidden />
+
+        <input 
+            type="hidden"
+            id="question-material-id"  
+            />
+
         <p id="selected-material-name" role="status">
           No study material selected.
         </p>
-        <label for="student-question"> Your question: </label>
+        <div class="question-controls">
+        <label for="student-question"> </label>
         <textarea
           id="student-question"
           maxlength="2000"
-          rows="4"
+          rows="3"
           placeholder="What would you like to know?"
         ></textarea>
-        <button id="ask-btn" type="button">Send Question</button>
+        <button id="ask-btn" type="button">
+            Send
+        </button>
+        </div>
         <p id="question-status" role="status"></p>
         <div class="answer-box">
           <h3>Answer</h3>
           <p id="question-answer">Your answer will appear here.</p>
         </div>
       </section>
+
       <section id="saved">
         <h2>Saved Study Materials</h2>
         <p>View your saved study materials here.</p>

@@ -576,7 +576,12 @@ const answeredCount = quizAnswers.filter(
 const scoreElement = document.getElementById("quiz-score");
 
 if (scoreElement) {
-    scoreElement.textContent = "Score: " + correctCount + " out of " + quizQuestions.length + " (" + answeredCount + " answered).";
+     if (answeredCount === quizQuestions.length) {
+        const percentage = Math.round((correctCount / quizQuestions.length) * 100);
+ scoreElement.textContent = "Quiz Complete! Final Score: " + correctCount + " out of " + quizQuestions.length + " (" + percentage + "%)";
+    } else {
+         scoreElement.textContent = "Score: " + correctCount + " out of " + quizQuestions.length + " (" + answeredCount + " answered).";
+    }
 }
          feedback.hidden = false;
     });

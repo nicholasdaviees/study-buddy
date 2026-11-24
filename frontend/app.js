@@ -761,6 +761,22 @@ function displaySavedMaterials() {
         deleteButton.type = "button";
         deleteButton.className = "delete-material-btn";
         deleteButton.textContent = "Delete Material";
+        deleteButton.addEventListener("click", () => {
+        const confirmed = confirm("Are you sure you want to remove " + material.name + "?");
+            if (!confirmed) {
+        return;
+    }
+    uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
+    const materialInput = document.getElementById("question-material-id");
+    const selectedMaterialName = document.getElementById("selected-material-name");
+    if (materialInput && materialInput.value === material.id) {
+        materialInput.value = "";
+        if (selectedMaterialName) {
+            selectedMaterialName.textContent = "No study material selected.";
+        }
+    }
+    displaySavedMaterials();
+});
         materialDiv.appendChild(fileName);
         materialDiv.appendChild(fileSize);
         materialDiv.appendChild(openButton);

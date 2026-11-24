@@ -161,7 +161,42 @@
             </button>
             </div>
     </section>
+<section id="ask-section">
+    <h2>Ask Study Buddy</h2>
+    <p>Ask a question you have about the material.</p>
+    <label>
+        Your question:
+        <input required placeholder="What would you like to know?"
+        type="text" 
+        id="question-input"
+        >
+    </label>
+    <button id="send-question-btn" type="button">
+        Send
+    </button>
+    <div hidden id="answer-response" role="status">
+        Your answer will appear here.
+    </div>
+</section>
 
+<section id="saved">
+    <h2>Saved Study Materials</h2>
+    <p>View your saved study materials here.</p>
+    <div id="saved-materials-list">
+        <div class="saved-material">
+            <h3>CS4800 Notes.pdf</h3>
+            <p>File Size: 1.8 MB</p>
+            <button class="open-material-btn" type="button">
+                Open Material
+            </button>
+            <button class="delete-material-btn" type="button">
+                Delete Material
+            </button>
+
+        </div>
+    
+    </div>
+</section>
 
     </main>
 </body>

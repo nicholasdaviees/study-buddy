@@ -242,6 +242,13 @@ function displayTaskStatus(taskStatus) {
                 selectedMaterialName.textContent = "Selected study material: " + file.name;
             }
 
+              uploadedMaterials.push({
+    id: materialId,
+    name: file.name,
+    size: file.size
+});
+displaySavedMaterials();
+
             if (fileStatus) {
                 fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
             }

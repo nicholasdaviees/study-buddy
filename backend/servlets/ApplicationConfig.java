@@ -1,17 +1,21 @@
 package servlets;
 
-import services.QuestionService;
-import services.MaterialService;
-import services.TaskManager;
+import database.FlashcardsDAO;
+import database.QuizDAO;
 import ollama.LlmService;
+import services.FlashcardService;
+import services.MaterialService;
+import services.QuestionService;
+import services.QuizService;
+import services.TaskManager;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-// Initialize the question and answering part.
+// Initializes shared application services.
 @WebListener
-public class QuestionServiceConfig implements ServletContextListener {
+public class ApplicationConfig implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent event) {
 
@@ -25,11 +29,17 @@ public class QuestionServiceConfig implements ServletContextListener {
 
     // Retrives only material
     QuestionService.MaterialLoader materialLoader = (userId, materialId) ->
-                    materialService.getMaterialText(userId, materialId);
+                    materialService.getMaterialText(materialId);
 
-    // Connects to Ollama server
-    LlmService llmService = new LlmService();
-    QuestionService.AnswerGenerator answerGenerator = (materialText, question) ->
+     LlmService llmService = new LlmService();
+     event.getServletContext().setAttribute("flashcardService",
+             new FlashcardService(materialService, llmService, taskManager,
+                     new FlashcardsDAO(), 0L));
+     event.getServletContext().setAttribute("quizService",
+             new QuizService(materialService, llmService, taskManager,
+                     new QuizDAO(), 0L));
+
+     QuestionService.AnswerGenerator answerGenerator = (materialText, question) ->
                     llmService.answerQuestion(materialText, question);
      QuestionService questionService = new QuestionService(materialLoader, answerGenerator);
     event.getServletContext().setAttribute("questionService", questionService);

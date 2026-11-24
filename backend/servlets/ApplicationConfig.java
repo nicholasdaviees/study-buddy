@@ -34,10 +34,10 @@ public class ApplicationConfig implements ServletContextListener {
      LlmService llmService = new LlmService();
      event.getServletContext().setAttribute("flashcardService",
              new FlashcardService(materialService, llmService, taskManager,
-                     new FlashcardsDAO(), 0L));
+                     new FlashcardsDAO()));
      event.getServletContext().setAttribute("quizService",
              new QuizService(materialService, llmService, taskManager,
-                     new QuizDAO(), 0L));
+                     new QuizDAO()));
 
      QuestionService.AnswerGenerator answerGenerator = (materialText, question) ->
                     llmService.answerQuestion(materialText, question);

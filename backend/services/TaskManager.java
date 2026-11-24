@@ -79,18 +79,18 @@ public class TaskManager {
         java.util.Map<String, Object> response = new java.util.LinkedHashMap<>();
 
         if (record == null){
-            response.put("status", "FAILED");
+            response.put("status", "NOT_FOUND");
             response.put("error", "No tasks found");
         } else {
             response.put("taskId", record.taskID);
             response.put("taskType", record.taskType);
 
             Status status = record.status;
-            response.put("taskType", status.name());
+            response.put("status", status.name());
             
             if (status == Status.COMPLETE){
-                response.put("status", record.resultId);
-            } else if(status == status.FAILED){
+                response.put("resultId", record.resultId);
+            } else if(status == Status.FAILED){
                 response.put("error", record.error);
             }
         }
@@ -98,7 +98,7 @@ public class TaskManager {
         try {
             return objectMapper.writeValueAsString(response);
         } catch (JsonProcessingException exception){
-            throw new IllegalStateException("could not serialize task response", exception)'
+            throw new IllegalStateException("could not serialize task response", exception);
         }
         
     }

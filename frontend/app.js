@@ -340,7 +340,7 @@ if (flashcardButton) {
         try {
             const response = await fetch("/studybuddy/api/flashcards", {
                 method: "POST",
-                credential: "same-origin",
+                credentials: "same-origin",
                 body: new URLSearchParams({
                     materialId: materialId
                 })

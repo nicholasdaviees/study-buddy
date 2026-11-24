@@ -162,43 +162,41 @@
             </button>
             </div>
     </section>
-<section id="ask-section">
-    <h2>Ask Study Buddy</h2>
-    <p>Ask a question you have about the material.</p>
-    <div class="question-controls">
-    <label>
-        <input required placeholder="What would you like to know?"
-        type="text" 
-        id="question-input"
-        >
-    </label>
-    <button id="send-question-btn" type="button">
-        Send
-    </button>
-    </div>
-    <div hidden id="answer-response" role="status">
-        Your answer will appear here.
-    </div>
-</section>
-
-<section id="saved">
-    <h2>Saved Study Materials</h2>
-    <p>View your saved study materials here.</p>
-    <div id="saved-materials-list">
-        <div class="saved-material">
-            <h3>CS4800 Notes.pdf</h3>
+<section id="ask-section" class="question-section">
+        <h2>Ask Study Buddy</h2>
+        <p>Ask a question about your uploaded study material.</p>
+        <input type="text" id="question-material-id" hidden />
+        <p id="selected-material-name" role="status">
+          No study material selected.
+        </p>
+        <label for="student-question"> Your question: </label>
+        <textarea
+          id="student-question"
+          maxlength="2000"
+          rows="4"
+          placeholder="What would you like to know?"
+        ></textarea>
+        <button id="ask-btn" type="button">Send Question</button>
+        <p id="question-status" role="status"></p>
+        <div class="answer-box">
+          <h3>Answer</h3>
+          <p id="question-answer">Your answer will appear here.</p>
+        </div>
+      </section>
+      <section id="saved">
+        <h2>Saved Study Materials</h2>
+        <p>View your saved study materials here.</p>
+        <div id="saved-materials-list">
+          <p>No study material uploaded yet.</p>
             <button class="open-material-btn" type="button">
-                Open Material
+              Open Material
             </button>
             <button class="delete-material-btn" type="button">
-                Delete Material
+              Delete Material
             </button>
-
+          </div>
         </div>
-    
-    </div>
-</section>
-
+      </section>
     </main>
 </body>
 </html>

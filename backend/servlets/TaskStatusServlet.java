@@ -10,7 +10,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import services.TaskManager;
 
 // Endpoint: GET /studybuddy/api/tasks/{taskId}
@@ -27,6 +26,18 @@ public class TaskStatusServlet extends HttpServlet {
             throw new ServletException("TaskManager was not registered.");
         }
         taskManager = (TaskManager) manager;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        response.setHeader("Cache-Control", "no-store");
+
+        String path = request.getPathInfo();
+        if (path == null || path.length() <= 1 || path.indexOf('/', 1) >= 0) {
+            writeJson(response, 400, Map.of("error", "Task ID is required."));
+            return;
+        }
     }
 
     private void writeJson(HttpServletResponse response, int status, Object body)

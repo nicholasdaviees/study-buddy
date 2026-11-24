@@ -553,11 +553,27 @@ if (submitQuizButton) {
         const question = quizQuestions[currentQuestionIndex];
         const feedback = document.getElementById("quiz-feedback");
 
-         if (selectedQuizAnswer === question.correctAnswer) {
-            feedback.textContent = "Correct!";
-        } else {
-            feedback.textContent = "Incorrect. Try again!";
-        }
+                quizAnswers[currentQuestionIndex] = selectedQuizAnswer;
+
+        if (selectedQuizAnswer === question.correctAnswer) {
+    feedback.textContent = "Correct!";
+} else {
+    feedback.textContent = "Incorrect. Try again!";
+}
+
+let correctCount = 0;
+
+for (let i = 0; i < quizQuestions.length; i++) {
+    if (quizAnswers[i] !== null &&
+        quizAnswers[i] === quizQuestions[i].correctAnswer) {
+        correctCount++;
+    }
+}
+const answeredCount = quizAnswers.filter(
+    answer => answer !== null
+).length;
+
+feedback.textContent += " Score: " + correctCount + " out of " + quizQuestions.length + " (" + answeredCount + " answered).";
          feedback.hidden = false;
     });
 }

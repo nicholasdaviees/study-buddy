@@ -506,7 +506,13 @@ const quizButton = document.getElementById("quiz-btn");
                 throw new Error("No quiz task ID was returned.");
             }
             
-                   alert("Practice quiz generation started!");
+    quizQuestions = await waitForGeneratedQuiz(result.taskId);
+    currentQuestionIndex = 0;
+
+    displayQuizQuestion();
+    document.getElementById("quiz-section").scrollIntoView({
+    behavior: "smooth"
+});
         } catch (error) {
             alert(error.message);
         } finally {
@@ -648,7 +654,13 @@ if (trueFalseButton) {
                 throw new Error("No quiz task ID was returned.");
             }
 
-            alert("True/False quiz generation started!");
+            quizQuestions = await waitForGeneratedQuiz(result.taskId);
+            currentQuestionIndex = 0;
+            displayQuizQuestion();
+            document.getElementById("quiz-section").scrollIntoView({
+    behavior: "smooth"
+});
+
 
             } catch (error) {
             alert(error.message);

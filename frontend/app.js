@@ -457,3 +457,18 @@ if (deleteFlashcardButton) {
 
     });
 }
+// Quiz button.
+const quizButton = document.getElementById("quiz-btn");
+
+ if (quizButton) {
+        quizButton.addEventListener("click", () => {
+            const materialInput =
+                document.getElementById("question-material-id");
+            const materialId = materialInput ? materialInput.value : "";
+        if (!materialId) {
+                alert("Please upload a PDF first.");
+                return;
+            }
+            alert("Practice quiz requested for your uploaded PDF!");
+        });
+    }

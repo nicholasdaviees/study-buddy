@@ -28,4 +28,12 @@ public class TaskStatusServlet extends HttpServlet {
         }
         taskManager = (TaskManager) manager;
     }
+
+    private void writeJson(HttpServletResponse response, int status, Object body)
+            throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        json.writeValue(response.getWriter(), body);
+    }
 }

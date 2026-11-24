@@ -333,3 +333,45 @@ if (nextCardButton) {
         }
     });
 }
+// Generate flashcards.
+const flashcardButton = document.getElementById("flashcard-btn");
+
+if (flashcardButton) {
+    flashcardButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+            alert("Please upload a PDF first.");
+            return;
+        }
+
+        flashcardButton.disabled = true;
+        flashcardButton.textContent = "Generating...";
+
+        try {
+            const response = await fetch("/studybuddy/api/flashcards", {
+                method: "POST",
+                credential: "same-origin",
+                body: new URLSearchParams({
+                    materialId: materialId
+                })
+            });
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not generate flashcards.");
+        }
+        if (!result.taskId) {
+            throw new Error("No flashcard task ID was returned.");
+        }
+
+        alert("Flashcard generation started!");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            flashcardButton.disabled = false;
+            flashcardButton.textContent = "Generate Flashcards";
+        }
+    });
+}

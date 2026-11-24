@@ -220,10 +220,18 @@ function deleteFlashcard(flashcardId) {
 
 // Displays a user-friendly error message.
 function showError(errorMessage) {
+    const statusElement = document.getElementById("question-status");
+    if (statusElement) {
+        statusElement.textContent = errorMessage;
+ }
 }
 
 // Updates the interface for queued, processing, complete, or failed work.
 function displayTaskStatus(taskStatus) {
+     const statusElement = document.getElementById("question-status");
+     if (statusElement) {
+        statusElement.textContent = errorMessage;
+ }
 }
 
      // Finds the pdf file.

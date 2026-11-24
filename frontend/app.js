@@ -247,6 +247,7 @@ function displayTaskStatus(taskStatus) {
     name: file.name,
     size: file.size
 });
+saveMaterialsToBrowser();
 displaySavedMaterials();
 
             if (fileStatus) {

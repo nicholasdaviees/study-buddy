@@ -239,22 +239,66 @@ nav a:hover {
 
 .tool-grid button {
     padding: 20px;
-    border: none;
     border-radius: 10px;
-    background-color: #087cff;
-    color: white;
     font-size: 16px;
     cursor: pointer;
 }
 
-.tool-grid button:hover {
-    background-color: #005fcc;
+.saved-tools {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+.saved-tools button {
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #dfedff;
+    border: 1px solid #087cff;
+    color: #087cff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 18px;
+}
+.saved-tools button:hover {
+    background-color: #b2c5df;
+    color: #066ce1;
+}
+#flashcard-btn{
+    background-color: #ede9fe;
+    border: 1px solid #b4afce;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+}
+#flashcard-btn:hover{
+    background-color: rgb(200, 194, 225);
+    color: rgb(61, 61, 61);
+}
+#quiz-btn{
+    background-color: #dcfce7;
+    border: 1px solid #a4d6b6;
+    color: black;
+    font-weight: bold;
+}
+#quiz-btn:hover{
+    background-color: #add4bb;
+    color: rgb(61, 61, 61);
 }
 #truefalse-btn{
     grid-column: 1 / -1;
     justify-self: center;
     width: 50%;
+    background-color: #fef9c3;
+    border: 1px solid #e2dd9f;
+    color: black;
+    font-weight: bold;
 }
+#truefalse-btn:hover{
+    background-color: #e1db9c;
+    color: rgb(61, 61, 61);
+}
+
 
 /* Disabled study tools*/
 .tool-grid button:disabled{

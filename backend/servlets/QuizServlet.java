@@ -119,32 +119,29 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
+    private String getQuizId(HttpServletRequest request) { // gets the quiz ID from the URL or query parameters
+        
+        String path = request.getPathInfo();
 
+        if (path != null && path.length() > 1) {
+            return path.substring(1);
+        }
 
+        String quizId = request.getParameter("quizID");
 
+        if (quizId == null || quizId.isBlank()) {
+            quizId = request.getParameter("quizId");
+        }
 
-
-// Endpoint: POST /studybuddy/api/quizzes
-public class QuizServlet { // this class handles the save, delete, and get operations for quizzes
-
-    private QuizService quizService; // performs quiz generation, retrieving, and deleting quizzes
-
-    public QuizServlet(QuizService quizService) { // connects this servelt to quizservice
-        this.quizService = quizService;
+        return quizId;
     }
-    // Starts true/false or multiple-choice generation through QuizService.
-    public String doPost(String materialId, String questionType) {
+ 
+    private void writeJson(HttpServletResponse response, int status, Object body) // sends a JSON response
+    throws IOException {
 
-        return quizService.startQuizGeneration(materialId, questionType);
-    }
-
-    
-    public Quiz doGet(long quizID) { // gets a quiz by its database id
-        return quizService.getSavedQuiz(quizID); // asks quizservice to retrieve quiz
-    }
-
-    // Deletes one saved quiz question through its databaseid
-    public void doDelete(long quizId) { // this stays as void because it is performing an action, rather than sending something back to the user
-        quizService.deleteQuiz(quizId); // quizService deletes the quiz
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        json.writeValue(response.getWriter(), body);
     }
 }

@@ -141,6 +141,15 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertEquals(0, fakeDAO.cards.size());
     }
 
+    @Test // tests if flashcard isnt missing when being deleted
+    public void rejectsDeletingMissingFlashcard() {
+        RecordingFlashcardsDAO fakeDAO = new RecordingFlashcardsDAO();
+
+        FlashcardService service = new FlashcardService(null, null, null, fakeDAO, 10L);
+
+        assertThrows(IllegalArgumentException.class, () -> service.deleteFlashcard(99L));
+    }
+
 
 
 

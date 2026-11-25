@@ -156,7 +156,19 @@ nav a:hover {
     padding: 40px 20px;
     margin-top: 30px;
 }
-
+#pdf-upload::file-selector-button {
+    background-color: #087cff;
+    color: white;
+    border: 1px solid #005fcc;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+#pdf-upload::file-selector-button:hover {
+    background-color: #005fcc;
+    color: rgb(224, 224, 224);
+}
 #pdf-upload {
     display: block;
     margin: 20px auto;
@@ -442,8 +454,42 @@ nav a:hover {
     background-color: #bbc0c7;
 }
 
+/* Quiz choices section */
+.quiz-choice{
+    background-color: white;
+    border: 1px solid #087cff;
+    border-radius: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+    cursor: pointer;
+    
+}
+.quiz-choice:hover{
+    background-color: #eff6ff;
+}
+.quiz-choice.selected{
+    background-color: #087cff;
+    color: white;
+}
+#quiz-feedback{
+/* add correct and incorrect class on joses branch for .js */
+}
+#quiz-choices{
+    width: 100%;
+    max-width: 500px;
+}
+
 /* Ask Study Buddy Interface */
 
+#ask-section{
+    padding: 20px;
+}
+#selected-material-name{
+    color: #64748b;
+    font-size: 14px;
+    margin: 10px 0;
+}
 #student-question {
     background-color: white;
     border: 1px solid #d6dbe3;
@@ -457,10 +503,9 @@ nav a:hover {
     color: white;
     border: 1px solid #d6dbe3;
     border-radius: 10px;
-    padding: 24px;
+    padding: 12px;
     width: 68px;
     min-height: 10px;
-    margin-left: 8px;
     align-items: center;
     text-align: center;
     display: flex;
@@ -470,13 +515,70 @@ nav a:hover {
 #ask-btn:hover{
     background-color: #086bdd;
     color: rgb(206, 204, 204);
-
 }
 .question-controls{
     align-items: center;
     text-align: center;
     display: flex;
     justify-content: center;
+    gap: 8px;
+}
+.answer-box{
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 0 auto;
+}
+#question-answer{
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    text-align: left;
+}
+
+/* Saved Material Section */
+
+#saved-materials-list{
+    display: grid;
+    grid-template-columns: auto;
+    gap: 15px;
+}
+.saved-material {
+    background-color: white;
+    border: 1px solid #d6dbe3; 
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    text-align: left;
+}
+.saved-material button + button { /* adds a gap betwn the two buttons */
+    margin-left: 8px;
+}
+.open-material-btn{
+    background-color: #087cff;
+    color: white;
+    border: 1px solid #087cff;
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+}
+.open-material-btn:hover{
+    background-color: #086bdd;
+    color: rgb(206, 204, 204);
+}
+.delete-material-btn{
+    background-color: #ffffff;
+    color: rgb(255, 0, 0);
+    border: 1px solid rgb(255, 0, 0);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+}
+.delete-material-btn:hover{
+    background-color: #dddddd;
+    color: rgb(221, 1, 1);
 }
 
 /* Smaller screens */

@@ -86,6 +86,31 @@ async function waitForUploadedMaterial(taskId) {
     throw new Error("PDF processing is taking longer than expected.");
 }
 
+// Displays the answer returned for a student question.
+function displayAnswer(answerJson) {
+
+    const answerElement = document.getElementById("question-answer");
+
+    if(!answerElement) {
+        return;
+    }
+
+    try {
+
+        // Convert Ollama's JSON string.
+        const result = typeof answerJson.answer === "string" ? JSON.parse(answerJson.answer): answerJson.answer;
+        
+        // Display answer text.
+        if(result.found && result.answer) {
+            answerElement.textContent = result.answer;
+        } else {
+            answerElement.textContent = "I could not find an answer";
+        }
+    } catch (error) {
+        answerElement.textContent = answerJson.answer || "No answer available.";
+    }
+}
+
 // Calls the question servlet.
 async function askQuestion(materialId, question) {
 

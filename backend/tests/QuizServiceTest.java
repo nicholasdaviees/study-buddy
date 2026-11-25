@@ -1,6 +1,25 @@
 // Tests quiz and true/false generation, validation, persistence, and deletion.
 package tests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import org.junit.jupiter.api.Test;
+
+import database.Question;
+import database.Quiz;
+import database.QuizDAO;
+import ollama.LlmService;
+import services.MaterialService;
+import services.QuizService;
+import services.TaskManager;
+
 public class QuizServiceTest {
 
     @Test // tests starting multiple choice quizzes
@@ -156,15 +175,46 @@ public class QuizServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.deleteQuiz(99L));
     }
 
+    private static class RecordingQuizDAO extends QuizDAO { // fake DAO that stores values in memory instead of using MySQL, like in flashcardservice test
 
+        private long savedUserID;
+        private String savedTitle;
+        private List<Question> savedQuestions;
 
+        private long requestedQuizID;
+        private long requestedUserID;
+        private Quiz quizToReturn;
 
+        private long deletedQuizID;
+        private long deletedUserID;
+        private boolean deleteResult;
 
+        @Override
+        public void saveQuiz(
+                long userID,
+                String title,
+                List<Question> questions)
+                throws SQLException {
+            
+                    savedUserID = userID;
+                    savedTitle = title;
+                    savedQuestions = questions;
+        }
 
+        @Override
+        public Quiz getSavedQuiz(long quizID, long userID) throws SQLException {
 
+            requestedQuizID = quizID;
+            requestedUserID = userID;
+            return quizToReturn;
+        }
 
+        @Override
+        public boolean deleteQuiz(long quizID, long userID) throws SQLException {
 
-
-
-
+            deletedQuizID = quizID;
+            deletedUserID = userID;
+            return deleteResult;
+        }
+    }
 }

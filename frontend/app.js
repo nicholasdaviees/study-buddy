@@ -690,6 +690,11 @@ const quizButton = document.getElementById("quiz-btn");
     quizQuestions = await waitForGeneratedQuiz(result.taskId);
     currentQuestionIndex = 0;
     quizAnswers = new Array(quizQuestions.length).fill(null);
+    const scoreElement = document.getElementById("quiz-score");
+        if (scoreElement) {
+            scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered).";
+        }
+                 
     displayQuizQuestion();
     document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"

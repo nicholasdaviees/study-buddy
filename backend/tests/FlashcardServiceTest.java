@@ -90,7 +90,18 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertNotNull(submittedTask.get());
     }
 
+    @Test // test for verifying flashcards
+    public void validatesAndSavesFlashcards() {
+        RecordingFlashcardsDAO fakeDAO = new RecordingFlashcardsDAO();
+        FlashcardService service = new FlashcardService(null, null, null, fakeDAO, 25L);
+        String flashcardJson = "{\"flashcards\":[{\"question\":\"What is Java?\",\"answer\":\"A programming language\"},{\"question\":\"What is HTML?\",\"answer\":\"A markup language\"}]}";
+        service.validateAndSaveFlashcards("material-1", flashcardJson);
 
+        assertEquals(2, fakeDAO.savedCards.size());
+        assertEquals(25L, fakeDAO.savedCards.get(0).userID);
+        assertEquals("What is Java?", fakeDAO.savedCards.get(0).frontText);
+        assertEquals("A programming language", fakeDAO.savedCards.get(0).backText);
+    }
 
 
 

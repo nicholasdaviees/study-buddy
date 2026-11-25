@@ -55,4 +55,45 @@ public class QuizServiceTest {
         assertThrows(IllegalStateException.class, () -> service.generateQuiz("material-1", "multiple-choice"));
     }
 
+    @Test // tests to make sure quiz is using the chosen uploaded material
+    public void verifiesQuizUsesUploadedMaterial() {
+        MaterialService materialService = new MaterialService(new TaskManager()) {
+            
+            @Override
+            public String getMaterialText(String materialId) {
+                    
+                return "Sample class notes";
+            }
+        };
+
+        LlmService llmService = new LlmService() {
+            @Override
+            public String generateStudyMaterial(String materialText, String questionType) {
+
+                assertEquals("Sample class notes", materialText);
+
+                assertEquals("multiple-choice", questionType);
+
+                return "{\"questions\":[{\"question\":\"What is Java?\",\"choices\":[\"Language\",\"Animal\"],\"answer\":\"Language\"}]}";
+            }
+        };
+
+        QuizService service = new QuizService(materialService, llmService, null, null, 1L);
+
+        String result = service.generateQuiz("material-1", "multiple-choice");
+
+        assertEquals(true, result.contains("What is Java?"));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

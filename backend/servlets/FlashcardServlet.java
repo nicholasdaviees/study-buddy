@@ -1,27 +1,33 @@
 package servlets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 import services.FlashcardService;
 
-// Endpoints: POST, GET, and DELETE /studybuddy/api/flashcards
 
-public class FlashcardServlet {
+@WebServlet("/api/flashcards/*")
+public class FlashcardServlet extends HttpServlet {
 
-// handles flashcard generation, retrieval, and deletion
-private FlashcardService flashcardService;
+    private final ObjectMapper json = new ObjectMapper(); // Converts Java objects into JSON responses
+    private FlashcardService flashcardService; // Provides flashcard generation, retrieval, and deletion
 
-    // connects this servlet to flashcardservice
-    public FlashcardServlet (FlashcardService flashcardService) {
-        this.flashcardService = flashcardService;
+    // Gets the FlashcardService that was registered by the application
+    @Override
+    public void init() throws ServletException {
+        Object service =
+                getServletContext().getAttribute("flashcardService");
+
+        if (!(service instanceof FlashcardService)) {
+            throw new ServletException(
+                    "FlashcardService was not registered."
+            );
+        }
+
+        flashcardService = (FlashcardService) service;
     }
 
-    // the posts here send a request from the front end to the back end, so in our front page if a user clicks on "generate flashcards"
-    // it will come here and use this method
-    // generates flashcard and returns a task ID
-    public String doPost(String materialId) {
-
-        //returns result
-        return flashcardService.startFlashcardGeneration(materialId);
-    }
 
     // Returns saved flashcards through FlashcardService.
     public String doGet(String materialId) {

@@ -74,8 +74,38 @@ public class FlashcardServlet extends HttpServlet {
         }
     }
 
+    @Override // deletes one saved flashcard
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+
+        String cardIdText = getCardId(request);
+
+        if (cardIdText == null || cardIdText.isBlank()) {
+            writeJson(response, 400, Map.of("error", "A flashcard ID is required."));
+        
+            return;
+    
+        }
+
+    try {
+        long cardId = Long.parseLong(cardIdText);
+        flashcardService.deleteFlashcard(cardId); // deletes the card only if it belongs to the current user
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 means the card was deleted successfully
+
+   
+        } catch (NumberFormatException error) {
+            writeJson(response, 400, Map.of("error", "The flashcard ID must be a number."));
+
+    } catch (IllegalArgumentException error) {
+        writeJson(response, 404, Map.of("error", error.getMessage()));
+
+    } catch (IllegalStateException error) {
+        writeJson(response, 500, Map.of("error", error.getMessage()));
+    }
+}
+
     private String getCardId(HttpServletRequest request) { // gets the flashcard ID from the URL or a query parameter
-        String path = request.getPathInfo();
+    String path = request.getPathInfo();
 
         if (path != null && path.length() > 1) {
             return path.substring(1);

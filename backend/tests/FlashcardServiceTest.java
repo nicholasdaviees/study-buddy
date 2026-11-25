@@ -9,6 +9,43 @@ import services.TaskManager;
 import ollama.LlmService;
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+public class FlashcardServiceTest { // tests flashcard generation, validation, saving, retrieving, and deleting
+
+    @Test
+    public void generatesFlashcardsFromUploadedMaterial() {
+    MaterialService materialService = new MaterialService(new TaskManager()) {
+                    @Override
+                    public String getMaterialText(String materialId) {
+                        return "This is sample study material";
+                    }
+                };
+
+        LlmService llmService = new LlmService() {
+            @Override
+            public String generateStudyMaterial(String materialText, String studyMaterialType) {
+                
+                assertEquals("This is sample study material", materialText);
+                assertEquals("flashcards", studyMaterialType);
+                return "{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}";
+            }
+        };
+
+        FlashcardService service = new FlashcardService(materialService, llmService, new TaskManager(), null, 1L);
+
+        String result = service.generateFlashcards("material-1");
+
+        JSONObject response = new JSONObject(result);
+        JSONArray cards = response.getJSONArray("flashcards");
+
+        assertEquals(1, cards.length());
+        assertEquals("Test question", cards.getJSONObject(0).getString("question"));
+        assertEquals("Test answer", cards.getJSONObject(0).getString("answer"));
+    }
+
+}
+
+
+
 // tests flashcard generation and verifies uploaded material
 public class FlashcardServiceTest {
 
@@ -95,46 +132,3 @@ public class FlashcardServiceTest {
         }
 }
     
-/* 
-    @Test
-    public void startsFlashcardGeneration() {
-        FlashcardService service = new FlashcardService();
-
-        String taskId =
-                service.startFlashcardGeneration("material-1");
-
-        assertNotNull(taskId);
-    }
-}
-
-public class FlashcardServiceTest {
-
-    // Verifies flashcard generation returns a task ID.
-    public void startsFlashcardGeneration() {
-    }
-
-    // Verifies generation is blocked before material is ready.
-    public void preventsGenerationBeforeMaterialIsReady() {
-    }
-
-    // Verifies valid flashcard JSON is saved.
-    public void validatesAndSavesValidFlashcards() {
-    }
-
-    // Verifies invalid JSON is retried once and then fails safely.
-    public void retriesInvalidFlashcardJsonOnce() {
-    }
-
-    // Verifies generated flashcards are based on uploaded material.
-    public void verifiesFlashcardsUseUploadedMaterial() {
-    }
-
-    // Verifies saved flashcards can be retrieved after a page refresh.
-    public void retrievesSavedFlashcards() {
-    }
-
-    // Verifies one flashcard can be deleted without deleting unrelated cards.
-    public void deletesRequestedFlashcard() {
-    }
-}
-*/

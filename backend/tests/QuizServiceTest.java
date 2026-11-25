@@ -85,6 +85,36 @@ public class QuizServiceTest {
         assertEquals(true, result.contains("What is Java?"));
     }
 
+    @Test // tests if quiz was saved and verified
+    public void validatesAndSavesValidQuiz() {
+        RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
+
+        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+
+        String quizJson = "{\"questions\":[{\"question\":\"What is Java?\",\"choices\":[\"Language\",\"Animal\"],\"answer\":\"Language\"}]}";
+
+        service.saveGeneratedQuiz("Java Quiz", quizJson, "multiple-choice");
+
+        assertEquals(25L, fakeDAO.savedUserID);
+        assertEquals("Java Quiz", fakeDAO.savedTitle);
+        assertEquals(1, fakeDAO.savedQuestions.size());
+
+        Question savedQuestion = fakeDAO.savedQuestions.get(0);
+
+        assertEquals("What is Java?", savedQuestion.questionText);
+
+        assertEquals("MULTIPLE_CHOICE", savedQuestion.questionType);
+
+        assertEquals(2, savedQuestion.options.size());
+    }
+
+    @Test // tests if quiz has valid JSON
+    public void rejectsInvalidQuizJson() {
+    
+        QuizService service = new QuizService(null, null, null, new RecordingQuizDAO(), 1L);
+
+        assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz("Broken Quiz", "not valid JSON", "multiple-choice"));
+    }
 
 
 

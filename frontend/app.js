@@ -536,18 +536,32 @@ async function waitForGeneratedFlashcards(taskId) {
 }   
 // Save flashcard button.
 const saveFlashcardButton = document.getElementById("save-flashcard-btn");
+
 if (saveFlashcardButton) {
-    saveFlashcardButton.addEventListener("click", () => {
+    saveFlashcardButton.addEventListener("click", async () => {
+        
         if (flashcards.length === 0) {
             alert("Please generate flashcards first.");
             return;
         }
 
          const currentCard = flashcards[currentFlashcardIndex];
+        
+        saveFlashcardButton.disabled = true;
+        saveFlashcardButton.textContent = "Saving...";
 
-         alert("Save requested for: " + currentCard.question);
+        try {
+            await saveFlashcard(currentCard);
+            alert("Flashcard saved successfully!");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            saveFlashcardButton.disabled = false;
+            saveFlashcardButton.textContent = "Save Flashcard";
+        }
     });
 }
+
 
 // Save the flashcard
 async function saveFlashcard(card) {

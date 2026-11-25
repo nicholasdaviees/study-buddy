@@ -871,6 +871,12 @@ if (trueFalseButton) {
             quizQuestions = await waitForGeneratedQuiz(result.taskId);
             quizAnswers = new Array(quizQuestions.length).fill(null);
             currentQuestionIndex = 0;
+            const scoreElement = document.getElementById("quiz-score");
+
+            if (scoreElement) {
+                scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered.";
+            }
+            
             displayQuizQuestion();
             document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"

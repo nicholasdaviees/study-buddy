@@ -168,7 +168,9 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
         throw new Error("Study Buddy could not answer this question.");
     }
 
-    if(result?.status === "PROCESSING") {
+       if (result?.status === "PROCESSING") {
+        displayTaskStatus("Study Buddy is answering your question...");
+    } else {
         throw new Error("Unexpected question task status.");
     }
 
@@ -202,9 +204,32 @@ function showError(errorMessage) {
 function displayTaskStatus(taskStatus) {
      const statusElement = document.getElementById("question-status");
      if (statusElement) {
-        statusElement.textContent = errorMessage;
+        statusElement.textContent = taskStatus;
  }
 }
+
+const askButton = document.getElementById("ask-btn");
+    if (askButton) {
+        askButton.addEventListener("click", async () => {
+            const materialInput = document.getElementById("question-material-id");
+            const questionInput = document.getElementById("student-question");
+
+            const materialId = materialInput.value;
+            const question = questionInput.value;
+
+            askButton.disabled = true;
+            
+            document.getElementById("question-answer").textContent = "";
+
+            try {
+                await askQuestion(materialId, question);
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                askButton.disabled = false;
+            }
+        });
+    }
 
      // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");
@@ -340,7 +365,7 @@ if (flashcardButton) {
         try {
             const response = await fetch("/studybuddy/api/flashcards", {
                 method: "POST",
-                credential: "same-origin",
+                credentials: "same-origin",
                 body: new URLSearchParams({
                     materialId: materialId
                 })
@@ -418,6 +443,28 @@ if (saveFlashcardButton) {
          alert("Save requested for: " + currentCard.question);
     });
 }
+
+// Save the flashcard
+async function saveFlashcard(card) {
+    const response = await fetch("/studybuddy/api/flashcards/save", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            question: card.question,
+            answer: card.answer
+        })
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        throw new Error(result?.error || "Could not save flashcard.");
+    }
+    return result;
+}
 // Delete Flashcard button.
 const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
 
@@ -450,6 +497,25 @@ if (deleteFlashcardButton) {
          displayFlashcard();
 
     });
+}
+
+// Delete save flashcard.
+async function deleteSavedFlashcard(cardId) {
+    if (cardId == null) {
+        throw new Error("This flashcard has not been saved yet.");
+    }
+    const response = await fetch(
+        "/studybuddy/api/flashcards/" + encodeURIComponent(cardId),
+        {
+            method: "DELETE",
+            credentials: "same-origin"
+        }
+    );
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+
+        throw new Error(result?.error || "Could not delete flashcard.");
+    }
 }
 // Quiz button.
 const quizButton = document.getElementById("quiz-btn");
@@ -503,7 +569,7 @@ const quizButton = document.getElementById("quiz-btn");
 }
 
 // Quiz Display
-let quizQuestion = [];
+let quizQuestions = [];
 let currentQuestionIndex = 0;
 let selectedQuizAnswer = null;
 

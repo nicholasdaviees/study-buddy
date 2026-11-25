@@ -1,8 +1,5 @@
 package servlets;
 
-import java.io.IOException;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -11,7 +8,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.FlashcardService;
-
+import java.io.IOException;
+import java.util.Map;
 
 @WebServlet("/api/flashcards/*")
 public class FlashcardServlet extends HttpServlet {
@@ -75,6 +73,33 @@ public class FlashcardServlet extends HttpServlet {
             );
         }
     }
+
+    private String getCardId(HttpServletRequest request) { // gets the flashcard ID from the URL or a query parameter
+        String path = request.getPathInfo();
+
+        if (path != null && path.length() > 1) {
+            return path.substring(1);
+        }
+
+        String cardId = request.getParameter("cardID");
+
+        if (cardId == null || cardId.isBlank()) {
+            cardId = request.getParameter("flashcardId");
+        }
+
+        return cardId;
+    }
+
+    private void writeJson(HttpServletResponse response, int status, Object body) // sends a java object as a JSON response
+            throws IOException {
+
+            response.setStatus(status);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            json.writeValue(response.getWriter(), body);
+    }
+}
+
 
 
 

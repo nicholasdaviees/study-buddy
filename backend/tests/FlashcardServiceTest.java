@@ -129,7 +129,17 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertEquals("Answer two", cards.getJSONObject(1).getString("answer"));
     }
 
+    @Test // tests if flashcards were deleted
+    public void deletesRequestedFlashcard() {
+        RecordingFlashcardsDAO fakeDAO = new RecordingFlashcardsDAO();
+        fakeDAO.addCard(new Flashcards(7L, 10L, "Question", "Answer"));
+        FlashcardService service = new FlashcardService(null, null, null, fakeDAO, 10L);
 
+        service.deleteFlashcard(7L);
+
+        assertEquals(7L, fakeDAO.deletedCardID);
+        assertEquals(0, fakeDAO.cards.size());
+    }
 
 
 

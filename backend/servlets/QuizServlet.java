@@ -90,6 +90,35 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
+    @Override // deletes a saved quiz
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+
+        String quizIdText = getQuizId(request);
+
+        if (quizIdText == null || quizIdText.isBlank()) {
+            writeJson(response, 400, Map.of("error", "A quiz ID is required."));
+            return;
+        }
+
+        try {
+            long quizId = Long.parseLong(quizIdText);
+
+            quizService.deleteQuiz(quizId);
+
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);  // 204 mean the quiz was deleted successfully
+
+        } catch (NumberFormatException error) {
+            writeJson(response,400, Map.of("error", "The quiz ID must be a number."));
+
+        } catch (IllegalArgumentException error) {
+            writeJson(response, 404, Map.of("error", error.getMessage()));
+
+        } catch (IllegalStateException error) {
+            writeJson(response, 500, Map.of("error", error.getMessage()));
+        }
+    }
+
 
 
 

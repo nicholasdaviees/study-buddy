@@ -22,23 +22,18 @@ public class FlashcardServlet extends HttpServlet {
     // gets the FlashcardService that was registered by the application
     @Override
     public void init() throws ServletException {
-        Object service =
-                getServletContext().getAttribute("flashcardService");
+    Object service = getServletContext().getAttribute("flashcardService");
 
         if (!(service instanceof FlashcardService)) {
-            throw new ServletException(
-                    "FlashcardService was not registered."
-            );
+            throw new ServletException("FlashcardService was not registered.");
         }
 
         flashcardService = (FlashcardService) service;
     }
 
     @Override  // starts flashcard generation for a material ID
-            protected void doPost(
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
 
         String materialId = request.getParameter("materialId");
 
@@ -51,29 +46,51 @@ public class FlashcardServlet extends HttpServlet {
         }
 
         try {
-            String taskId =
-                    flashcardService.startFlashcardGeneration(materialId);
-
-            // 202 means the task was accepted for background processing.
-            writeJson(response, 202, Map.of("taskId", taskId));
+            String taskId = flashcardService.startFlashcardGeneration(materialId);
+            writeJson(response, 202, Map.of("taskId", taskId));  // 202 means the task was accepted for background processing
 
         } catch (IllegalArgumentException error) {
-            writeJson(
-                    response,
-                    400,
-                    Map.of("error", error.getMessage())
-            );
+            writeJson(response, 400, Map.of("error", error.getMessage()));
 
         } catch (IllegalStateException error) {
-            writeJson(
-                    response,
-                    503,
-                    Map.of("error", error.getMessage())
+            writeJson(response, 503, Map.of("error", error.getMessage()));
+        }
+    }
+
+    @Override // returns the saved flashcards for the current user
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+            String materialId = request.getParameter("materialId");
+
+        try {
+            String savedFlashcards = flashcardService.getSavedFlashcards(materialId);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(savedFlashcards);
+
+        } catch (IllegalStateException error) {
+            writeJson(response, 500, Map.of("error", error.getMessage())
             );
         }
     }
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Returns saved flashcards through FlashcardService.
     public String doGet(String materialId) {

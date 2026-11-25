@@ -185,9 +185,30 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
 }
 
 // Calls the quiz servlet for saved quiz questions.
-function loadQuizzes(materialId) {
-}
+async function loadQuizzes(materialId) {
+     if (!materialId) {
+        throw new Error("Please select a PDF first.");
+    }
+    const response = await fetch(
+        "/studybuddy/api/quizzes?materialId=" + encodeURIComponent(materialId),
+        {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        }
+    );
+    const result = await response.json().catch(() => null);
 
+     if (!response.ok) {
+        throw new Error(result?.error || "Could not load saved quizzes.");
+    }
+
+    if (!result || !Array.isArray(result.questions)) {
+        throw new Error("Invalid saved quiz response.");
+    }
+    
+    return result.questions;
+}
 // Calls the flashcard servlet for saved flashcards.
 async function loadFlashcards(materialId) {
  if (!materialId) {

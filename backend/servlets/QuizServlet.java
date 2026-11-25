@@ -1,7 +1,35 @@
 package servlets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import database.Quiz;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 import services.QuizService;
+
+@WebServlet("/api/quizzes/*") // handles quiz generation, retrieval, and deletion.
+public class QuizServlet extends HttpServlet {
+
+    private final ObjectMapper json = new ObjectMapper(); // converts java objects to JSON
+    private QuizService quizService;
+
+    @Override // gets quizservice from the app. context
+    public void init() throws ServletException {
+        Object service = getServletContext().getAttribute("quizService");
+
+        if (!(service instanceof QuizService)) {
+            throw new ServletException("QuizService was not registered.");
+        }
+
+        quizService = (QuizService) service;
+    }
+
+
+
+
+
+
 
 // Endpoint: POST /studybuddy/api/quizzes
 public class QuizServlet { // this class handles the save, delete, and get operations for quizzes

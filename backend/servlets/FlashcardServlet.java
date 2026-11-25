@@ -115,14 +115,3 @@ public class FlashcardServlet extends HttpServlet {
 
 
 
-
-
-    // Returns saved flashcards through FlashcardService.
-    public String doGet(String materialId) {
-        return flashcardService.getSavedFlashcards(materialId);
-    }
-    // Deletes one saved flashcard because of flashcardid and not materialid through FlashcardService.
-    public void doDelete(long cardID) {
-        flashcardService.deleteFlashcard(cardID);
-    }
-}

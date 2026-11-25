@@ -232,6 +232,11 @@ nav a:hover {
 .tool-grid button:hover {
     background-color: #005fcc;
 }
+#truefalse-btn{
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 50%;
+}
 
 /* Disabled study tools*/
 .tool-grid button:disabled{

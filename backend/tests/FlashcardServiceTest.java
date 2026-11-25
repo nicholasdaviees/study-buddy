@@ -19,7 +19,7 @@ public class FlashcardServiceTest {
             // creates fake materialservice for testing
             MaterialService materialService = new MaterialService(new TaskManager()) {
                 @Override 
-                public String getMaterialText(String materialId) {
+                public String getMaterialText(long userId, String materialId) {
 
                     // returns sample material, havent accessed database yet
                     return "This is sample study material";
@@ -43,10 +43,10 @@ public class FlashcardServiceTest {
                 };
 
                 // creates flashcard service using fake dependencies like the material service and llmservice
-                FlashcardService service = new FlashcardService(materialService, llmService, new TaskManager(), null, 1L);
+                FlashcardService service = new FlashcardService(materialService, llmService, new TaskManager(), null);
 
                 // generates flashcard using sample id
-                String result = service.generateFlashcards("material-1");
+                String result = service.generateFlashcards(1L, "material-1");
 
                 // confirms that the expected JSOn was returned
                 assertEquals("{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}", result);
@@ -57,10 +57,10 @@ public class FlashcardServiceTest {
         public void rejectsBlankMaterialId() {
 
             // dependencies null because method should reject invalid material id before using either dependency
-            FlashcardService service = new FlashcardService(null, null, null, null, 1L);
+            FlashcardService service = new FlashcardService(null, null, null, null);
 
             // confirms illegal argument exception thrown when material id empty
-            assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
+            assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(1L, ""));
         }
 
         // verifies that the generation was rejected when uploaded material is missing 
@@ -70,16 +70,16 @@ public class FlashcardServiceTest {
             // fake material service that returns empty material
             MaterialService materialService = new MaterialService(new TaskManager()) {
                 @Override 
-                public String getMaterialText(String materialId) {
+                public String getMaterialText(long userId, String materialId) {
                     return "";
             }
         };
 
         // LLM not needed because the request should be rejected BEFORE the llm is called; if invalid id then llm doesnt know which material to use
-        FlashcardService service = new FlashcardService(materialService, null, new TaskManager(), null, 1L);
+        FlashcardService service = new FlashcardService(materialService, null, new TaskManager(), null);
 
         // confirms missing material causes an exception error
-        assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
+        assertThrows(IllegalStateException.class, () -> service.generateFlashcards(1L, "material-1"));
 
 }
         @Test 

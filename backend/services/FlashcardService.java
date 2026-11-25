@@ -25,14 +25,12 @@ public class FlashcardService {
         this.flashcardsDAO = flashcardsDAO;
     }
 
-    public FlashcardService(MaterialService materialService, LlmService llmService,
-            TaskManager taskManager, FlashcardsDAO flashcardsDAO, long ignoredUserId) {
-        this(materialService, llmService, taskManager, flashcardsDAO);
-    }
-
-    
     // Places a flashcard-generation task in the background task manager.
-    public String startFlashcardGeneration(String materialId) {
+    public String startFlashcardGeneration(long userId, String materialId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
+        
         if (materialId == null || materialId.trim().isEmpty()) {
 
             // throws an exception that the material ID is invalid
@@ -45,19 +43,19 @@ public class FlashcardService {
 
         // sends flashcard-generation task to taskmanager
         // lambda waits to call generateflashcards() until worker thread runs the task
-        return taskManager.submitTask("FLASHCARD_GENERATION", () -> generateFlashcards(materialId));
+        return taskManager.submitTask("FLASHCARD_GENERATION", () -> generateFlashcards(userId, materialId));
     }
 
-    // retrieves uploaded material and requests flashcard JSON from the llm service
-    public String generateFlashcards(String materialId) {
+    // Retrieves user-owned material and requests flashcard JSON.
+    public String generateFlashcards(long userId, String materialId) {
 
-        // prevents generating flashcards when no material id present
-        if (materialId == null || materialId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Need Material ID.");
+        // prevents generating flashcards when no material/user id present
+        if (userId <= 0 || materialId == null || materialId.trim().isEmpty()) {
+            throw new IllegalArgumentException("A valid user ID and material ID are required.");
         }
 
         // retrives extracted text for the selected material
-        String uploadedMaterial = materialService.getMaterialText(materialId);
+        String uploadedMaterial = materialService.getMaterialText(userId, materialId);
 
         // prevents LLm from receiving empty material
         if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) {

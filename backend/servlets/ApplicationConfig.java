@@ -29,7 +29,7 @@ public class ApplicationConfig implements ServletContextListener {
 
     // Retrives only material
     QuestionService.MaterialLoader materialLoader = (userId, materialId) ->
-                    materialService.getMaterialText(materialId);
+                    materialService.getMaterialText(userId, materialId);
 
      LlmService llmService = new LlmService();
      event.getServletContext().setAttribute("flashcardService",

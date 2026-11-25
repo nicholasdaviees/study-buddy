@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import services.MaterialService;
 import validation.UploadValidator;
@@ -59,6 +60,10 @@ public class UploadServlet extends HttpServlet {
         Path temporaryFile = null;
         boolean submitted = false;
         String taskId;
+        Long userId = userId(request, response);
+        if (userId == null) {
+            return;
+        }
 
         try {
             temporaryFile = Files.createTempFile("studybuddy-upload-", ".pdf");
@@ -66,7 +71,7 @@ public class UploadServlet extends HttpServlet {
                 Files.copy(input, temporaryFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            taskId = materialService.startPdfProcessing(
+            taskId = materialService.startPdfProcessing(userId,
                     temporaryFile.toString(),
                     file.getSubmittedFileName(),
                     file.getContentType(),
@@ -94,6 +99,17 @@ public class UploadServlet extends HttpServlet {
         }
 
         writeJson(response, 202, "taskId", taskId);
+    }
+
+    private Long userId(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        Object userId = session == null ? null : session.getAttribute("userId");
+        if (!(userId instanceof Long id)) {
+            writeJson(response, 401, "error", "Please log in first.");
+            return null;
+        }
+        return id;
     }
 
     private void writeJson(

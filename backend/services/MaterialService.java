@@ -1,5 +1,7 @@
 package services;
 
+import database.Documents;
+import database.DocumentsDAO;
 import services.TaskManager;
 import validation.UploadValidator;
 import java.io.IOException;
@@ -20,25 +22,31 @@ public class MaterialService {
             Logger.getLogger(MaterialService.class.getName());
 
     private final TaskManager taskManager;
+    private final DocumentsDAO documentsDAO;
     private final UploadValidator uploadValidator = new UploadValidator();
 
     public MaterialService(TaskManager taskManager) {
         this.taskManager = Objects.requireNonNull(taskManager, "taskManager");
+        this.documentsDAO = new DocumentsDAO();
     }
 
     // Queues a temporary upload for processing and returns the task ID.
     public String startPdfProcessing(
+            long userId,
             String filePath,
             String fileName,
             String contentType,
             long fileSizeBytes) {
 
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
         uploadValidator.validateFile(filePath, fileName, contentType, fileSizeBytes);
         Path temporaryFile = Path.of(filePath);
 
         return taskManager.submitTask("PDF_PROCESSING", () -> {
             try {
-                return processPdf(filePath, fileName, contentType, fileSizeBytes);
+                return processPdf(userId, filePath, fileName, contentType, fileSizeBytes);
             } finally {
                 try {
                     Files.deleteIfExists(temporaryFile);
@@ -51,15 +59,24 @@ public class MaterialService {
 
     // Extracts the text, saves the material, and returns the material ID.
     public String processPdf(
+            long userId,
             String filePath,
             String fileName,
             String contentType,
             long fileSizeBytes) {
 
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
         uploadValidator.validateFile(filePath, fileName, contentType, fileSizeBytes);
 
         String extractedText = extractTextFromPdf(filePath);
-        return saveMaterial(fileName, extractedText, "READY");
+        try {
+            return String.valueOf(documentsDAO.saveDocument(userId, fileName,
+                    Files.readAllBytes(Path.of(filePath)), extractedText));
+        } catch (IOException | java.sql.SQLException error) {
+            throw new IllegalStateException("The uploaded material could not be saved.", error);
+        }
     }
 
     private String extractTextFromPdf(String filePath) {
@@ -89,12 +106,23 @@ public class MaterialService {
         }
     }
 
-    public String saveMaterial(String fileName, String extractedText, String status) {
-        throw new UnsupportedOperationException("Saving materials is pending database integration.");
-    }
-
-    public String getMaterialText(String materialId) {
-        throw new UnsupportedOperationException("Material text lookup is pending database integration.");
+    public String getMaterialText(long userId, String materialId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
+        try {
+            Documents document = documentsDAO.getDocumentByID(
+                    Long.parseLong(materialId), userId);
+            if (document == null || document.extractedText == null
+                    || document.extractedText.isBlank()) {
+                throw new IllegalArgumentException("Material was not found.");
+            }
+            return document.extractedText;
+        } catch (NumberFormatException error) {
+            throw new IllegalArgumentException("Material ID is invalid.", error);
+        } catch (java.sql.SQLException error) {
+            throw new IllegalStateException("Material could not be loaded.", error);
+        }
     }
 
     public void updateMaterialStatus(String materialId, String status) {

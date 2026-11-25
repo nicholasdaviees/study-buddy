@@ -11,12 +11,12 @@ public class DocumentsDAO {
 
     public static final int MAX_PDF_BYTES = 20 * 1024 * 1024;
 
-    public void saveDocument(long userID, String fileName, byte[] pdfData)
+    public long saveDocument(long userID, String fileName, byte[] pdfData)
             throws SQLException {
-        saveDocument(userID, fileName, pdfData, null);
+        return saveDocument(userID, fileName, pdfData, null);
     }
 
-    public void saveDocument(long userID, String fileName, byte[] pdfData,
+    public long saveDocument(long userID, String fileName, byte[] pdfData,
             String extractedText) throws SQLException {
 
         if (fileName == null || fileName.trim().isEmpty()
@@ -46,7 +46,8 @@ public class DocumentsDAO {
             + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = Database.open();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(
+                     sql, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setLong(1, userID);
             statement.setString(2, fileName);
@@ -56,6 +57,12 @@ public class DocumentsDAO {
 
             if (statement.executeUpdate() != 1) {
                 throw new SQLException("Failed to save the document.");
+            }
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (!keys.next()) {
+                    throw new SQLException("Document ID was not generated.");
+                }
+                return keys.getLong(1);
             }
         }
     }

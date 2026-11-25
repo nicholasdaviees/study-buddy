@@ -29,13 +29,11 @@ public class QuizService {
         this.quizDAO = quizDAO; // saves object access in database
     }
 
-    public QuizService(MaterialService materialService, LlmService llmService,
-            TaskManager taskManager, QuizDAO quizDAO, long ignoredUserId) {
-        this(materialService, llmService, taskManager, quizDAO);
-    }
     // Places a quiz-generation task in the background task manager.
-    public String startQuizGeneration(String materialId, String questionType) {
-
+    public String startQuizGeneration(long userId, String materialId, String questionType) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
         if (materialId == null || materialId.trim().isEmpty()) { // checks if material id was given
             throw new IllegalArgumentException("Need Material ID.");
         }
@@ -46,20 +44,18 @@ public class QuizService {
         if (taskManager == null) {
             throw new IllegalStateException("Taskmanager is currently not available."); // checks if taskmanager is available
         }
-        return taskManager.submitTask("QUIZ_GENERATION", () -> generateQuiz(materialId, questionType)); // this all sends the quiz task to taskmanager
+        return taskManager.submitTask("QUIZ_GENERATION", () -> generateQuiz(userId, materialId, questionType)); // this all sends the quiz task to taskmanager
     }
 
     // Generates multiple-choice or true/false questions from uploaded material.
-    public String generateQuiz(String materialId, String questionType) {
-       
-       
-        if (materialId == null || materialId.trim().isEmpty()) { // this makes sure that the material ID was provided
-            throw new IllegalArgumentException("Need Material ID");
+    public String generateQuiz(long userId, String materialId, String questionType) {
+        if (userId <= 0 || materialId == null || materialId.trim().isEmpty()) { // this makes sure that the material/user ID was provided
+            throw new IllegalArgumentException("A valid user ID and material ID are required.");
         }
         if (!isSupportedQuestionType(questionType)) { // this makes sure that only true/false or multiple-choice quizzies are made
             throw new IllegalArgumentException("Question type must be true/false or multiple-choice."); // so this tells the user that it must be multiple-choice, or true/false
         }
-        String uploadedMaterial = materialService.getMaterialText(materialId); // gets the text that was uploaded from the pdf
+        String uploadedMaterial = materialService.getMaterialText(userId, materialId); // gets the text that was uploaded from the pdf
 
         if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) { // prevents the llm from making questions without any provided pdf
             throw new IllegalStateException("Uploaded material is unavailable");

@@ -1,11 +1,17 @@
 package servlets;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import database.Quiz;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import services.QuizService;
 
 @WebServlet("/api/quizzes/*") // handles quiz generation, retrieval, and deletion.
@@ -25,6 +31,36 @@ public class QuizServlet extends HttpServlet {
         quizService = (QuizService) service;
     }
 
+    @Override // starts quiz generation
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+    
+        String materialId = request.getParameter("materialId");
+        String questionType = request.getParameter("questionType");
+
+        if (materialId == null || questionType == null) { // also supports JSON request bodies
+            JsonNode body = json.readTree(request.getInputStream());
+
+            if (body != null && body.has("materialId")) {
+                materialId = body.get("materialId").asText();
+            }
+
+            if (body != null && body.has("questionType")) {
+                questionType = body.get("questionType").asText();
+            }
+        }
+
+        try {
+            String taskId = quizService.startQuizGeneration(materialId, questionType);
+            writeJson(response, 202, Map.of("taskId", taskId));
+
+        } catch (IllegalArgumentException error) {
+            writeJson(response, 400, Map.of("error", error.getMessage()));
+
+        } catch (IllegalStateException error) {
+            writeJson(response, 503, Map.of("error", error.getMessage()));
+        }
+    }
 
 
 

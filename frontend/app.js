@@ -989,22 +989,37 @@ function displaySavedMaterials() {
         deleteButton.type = "button";
         deleteButton.className = "delete-material-btn";
         deleteButton.textContent = "Delete Material";
-        deleteButton.addEventListener("click", () => {
+        deleteButton.addEventListener("click", async () => {
         const confirmed = confirm("Are you sure you want to remove " + material.name + "?");
             if (!confirmed) {
         return;
     }
-    uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
-    saveMaterialsToBrowser();
-    const materialInput = document.getElementById("question-material-id");
-    const selectedMaterialName = document.getElementById("selected-material-name");
-    if (materialInput && materialInput.value === material.id) {
-        materialInput.value = "";
-        if (selectedMaterialName) {
-            selectedMaterialName.textContent = "No study material selected.";
+        deleteButton.disabled = true;
+        deleteButton.textContent = "Deleting...";
+
+        try {
+            await deleteSavedMaterial(material.id);
+            uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
+            saveMaterialsToBrowser();
+            const materialInput = document.getElementById("question-material-id");
+            const selectedMaterialName = document.getElementById("selected-material-name");
+
+            if (materialInput && materialInput.value === material.id) {
+            materialInput.value = "";
+
+            if (selectedMaterialName) {
+                selectedMaterialName.textContent = "No study material selected.";
+            }
         }
+            displaySavedMaterials();
+            alert("Material deleted successfully!");
+
+        }catch (error) {
+            alert(error.message);
+        } finally {
+        deleteButton.disabled = false;
+        deleteButton.textContent = "Delete Material";
     }
-    displaySavedMaterials();
 });
         materialDiv.appendChild(fileName);
         materialDiv.appendChild(fileSize);

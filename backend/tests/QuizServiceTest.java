@@ -21,6 +21,23 @@ public class QuizServiceTest {
         assertEquals("multiple-choice-task", taskId);
     }
 
+    @Test // test for true false choices
+    public void startsTrueFalseGeneration() {
+        TaskManager fakeTaskManager = new TaskManager() {
+
+            @Override
+            public String submitTask(String taskType, Callable<String> task) {
+
+                return "true-false-task";
+            }
+        };
+
+        QuizService service = new QuizService(null, null, fakeTaskManager, null, 1L);
+
+        String taskId = service.startQuizGeneration("material-1", "true-false");
+
+        assertEquals("true-false-task", taskId);
+    }
 
 
 }

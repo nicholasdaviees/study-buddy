@@ -209,6 +209,28 @@ async function loadQuizzes(materialId) {
     
     return result.questions;
 }
+// Show saved quizzes.
+async function showSavedQuizzes(materialId) {
+    const savedQuestions = await loadQuizzes(materialId);
+    if (savedQuestions.length === 0) {
+        alert("No saved quizzes were found.");
+        return;
+    }
+    quizQuestions = savedQuestions;
+    quizAnswers = new Array(quizQuestions.length).fill(null);
+    currentQuestionIndex = 0;
+    const scoreElement = document.getElementById("quiz-score");
+
+    if (scoreElement) {
+        scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered).";
+    }
+
+    displayQuizQuestion();
+
+    document.getElementById("quiz-section").scrollIntoView({
+        behavior: "smooth"
+    });
+}
 // Calls the flashcard servlet for saved flashcards.
 async function loadFlashcards(materialId) {
  if (!materialId) {
@@ -919,7 +941,8 @@ function displaySavedMaterials() {
         materialsList.appendChild(materialDiv);
            });
 }
-
+// Load saved flashcard button
+const loadFlashcardsButton = document.getElementById("load-flashcards-btn");
 if (loadFlashcardsButton) {
     loadFlashcardsButton.addEventListener("click", async () => {
         const materialInput = document.getElementById("question-material-id");

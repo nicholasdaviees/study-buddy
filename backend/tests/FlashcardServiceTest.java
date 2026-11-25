@@ -103,6 +103,13 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertEquals("A programming language", fakeDAO.savedCards.get(0).backText);
     }
 
+    @Test // tests if flashcard has proper json
+    public void rejectsInvalidFlashcardJson() {
+        FlashcardService service = new FlashcardService(null, null, null, new RecordingFlashcardsDAO(), 1L);
+
+        assertThrows(RuntimeException.class, () -> service.validateAndSaveFlashcards( "material-1", "not valid JSON"));
+    }
+
 
 
 

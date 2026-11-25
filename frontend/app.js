@@ -199,8 +199,6 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
         throw new Error("Unexpected question task status.");
     }
 
-    showError("Study Buddy is answering your question...");
-
     // Pause.
     await new Promise(resolve => setTimeout(resolve, intervalMilliseconds));
     }

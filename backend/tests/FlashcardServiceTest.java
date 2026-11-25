@@ -110,6 +110,24 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertThrows(RuntimeException.class, () -> service.validateAndSaveFlashcards( "material-1", "not valid JSON"));
     }
 
+    @Test // tests if flashcards are retrieved
+    public void retrievesSavedFlashcards() {
+        
+        RecordingFlashcardsDAO fakeDAO = new RecordingFlashcardsDAO();
+        fakeDAO.addCard(new Flashcards(1L, 10L, "Question one", "Answer one"));
+        fakeDAO.addCard(new Flashcards(2L, 10L, "Question two", "Answer two"));
+
+        FlashcardService service = new FlashcardService(null, null, null, fakeDAO, 10L);
+
+        String result = service.getSavedFlashcards("material-1");
+
+        JSONObject response = new JSONObject(result);
+        JSONArray cards = response.getJSONArray("flashcards");
+
+        assertEquals(2, cards.length());
+        assertEquals("Question one", cards.getJSONObject(0).getString("question"));
+        assertEquals("Answer two", cards.getJSONObject(1).getString("answer"));
+    }
 
 
 

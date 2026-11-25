@@ -45,6 +45,31 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
 }
 
 
+    @Test // checks if material uploaded is blank
+    public void rejectsBlankMaterialId() {
+        FlashcardService service = new FlashcardService(null, null, null, null, 1L);
+        assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
+    }
+
+    
+    @Test // checks if material is missing
+    public void rejectsMissingUploadedMaterial() {
+    MaterialService materialService = new MaterialService(new TaskManager()) {
+        
+        @Override
+        public String getMaterialText(String materialId) {
+            
+            return "";
+        
+        }
+    };
+
+        FlashcardService service = new FlashcardService(materialService, null, new TaskManager(), null, 1L);
+
+        assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
+    }
+
+
 
 // tests flashcard generation and verifies uploaded material
 public class FlashcardServiceTest {

@@ -151,110 +151,71 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
     }
 
 
+    private static class RecordingFlashcardsDAO extends FlashcardsDAO { // Fake DAO that stores cards in memory instead of using MySQL
 
+        private final List<Flashcards> savedCards = new ArrayList<>();
 
+        private final Map<Long, Flashcards> cards = new HashMap<>();
 
+        private long deletedCardID = -1L;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// tests flashcard generation and verifies uploaded material
-public class FlashcardServiceTest {
-
-        // verifies uploaded material is sent to the LLM and that generated flashcard JSON is returned
-        @Test
-        public void generatesFlashcardsFromUploadedMaterial() {
-
-            // creates fake materialservice for testing
-            MaterialService materialService = new MaterialService(new TaskManager()) {
-                @Override 
-                public String getMaterialText(String materialId) {
-
-                    // returns sample material, havent accessed database yet
-                    return "This is sample study material";
-                }
-            };
-
-            // creates fake llm for testing
-            LlmService llmService = new LlmService() {
-                @Override 
-                public String generateStudyMaterial(String materialText, String studyMaterialType) {
-
-                    // confirms correct material was sent to llm
-                    assertEquals("This is sample study material", materialText);
-
-                    // confirms flashcard generation was requested
-                    assertEquals("flashcards", studyMaterialType);
-
-                    // returns the sample JSON insteading of reaching out to the LLM
-                    return "{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}";
-                }
-                };
-
-                // creates flashcard service using fake dependencies like the material service and llmservice
-                FlashcardService service = new FlashcardService(materialService, llmService, new TaskManager(), null, 1L);
-
-                // generates flashcard using sample id
-                String result = service.generateFlashcards("material-1");
-
-                // confirms that the expected JSOn was returned
-                assertEquals("{\"flashcards\":[{\"question\":\"Test question\",\"answer\":\"Test answer\"}]}", result);
-             }
-
-        // verifies generation rejected when uploading empty material id
-        @Test
-        public void rejectsBlankMaterialId() {
-
-            // dependencies null because method should reject invalid material id before using either dependency
-            FlashcardService service = new FlashcardService(null, null, null, null, 1L);
-
-            // confirms illegal argument exception thrown when material id empty
-            assertThrows(IllegalArgumentException.class, () -> service.generateFlashcards(""));
+        void addCard(Flashcards card) {
+            cards.put(card.cardID, card);
         }
 
-        // verifies that the generation was rejected when uploaded material is missing 
-        @Test 
-        public void rejectsMissingUploadedMaterial() {
+        @Override
+        public void saveFlashcard(long userID, String frontText, String backText) 
+        
+        throws SQLException {
 
-            // fake material service that returns empty material
-            MaterialService materialService = new MaterialService(new TaskManager()) {
-                @Override 
-                public String getMaterialText(String materialId) {
-                    return "";
+            long newID = savedCards.size() + 1;
+
+            Flashcards card = new Flashcards(newID, userID, frontText, backText);
+
+            savedCards.add(card);
+            cards.put(newID, card);
+        }
+
+        @Override
+        public List<Long> getFlashcardIDsByUserID(long userID) throws SQLException {
+
+            List<Long> IDs = new ArrayList<>();
+
+            for (Flashcards card : cards.values()) {
+                if (card.userID == userID) {
+                    IDs.add(card.cardID);
+                }
             }
-        };
 
-        // LLM not needed because the request should be rejected BEFORE the llm is called; if invalid id then llm doesnt know which material to use
-        FlashcardService service = new FlashcardService(materialService, null, new TaskManager(), null, 1L);
-
-        // confirms missing material causes an exception error
-        assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
-
-}
-        @Test 
-        public void startsFlashcardGeneration() {
-            // creates faketaskamanager so it doesnt depend on real taskmanager yet
-            TaskManager fakeTaskManager = new TaskManager() {
-                @Override 
-                public String submitTask(String taskType, java.util.concurrent.Callable<String> task) {
-
-                return "task-1";
-                }
-            };
+            return IDs;
         }
-}
-    
+
+        @Override
+        public Flashcards getFlashcardByID(long cardID, long userID) throws SQLException {
+
+            Flashcards card = cards.get(cardID);
+
+            if (card == null || card.userID != userID) {
+                return null;
+            }
+
+            return card;
+        }
+
+        @Override
+        public boolean deleteFlashcardByID(
+                long cardID,
+                long userID)
+                throws SQLException {
+
+            Flashcards card = cards.get(cardID);
+
+            if (card == null || card.userID != userID) {
+                return false;
+            }
+
+            deletedCardID = cardID;
+            cards.remove(cardID);
+            return true;
+        }
+    }

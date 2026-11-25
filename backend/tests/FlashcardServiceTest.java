@@ -1,13 +1,27 @@
 // Tests flashcard generation, validation, persistence, and deletion.
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import services.MaterialService;
-import services.FlashcardService;
-import services.TaskManager;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
+
+import database.Flashcards;
+import database.FlashcardsDAO;
 import ollama.LlmService;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
+import services.FlashcardService;
+import services.MaterialService;
+import services.TaskManager;
 
 public class FlashcardServiceTest { // tests flashcard generation, validation, saving, retrieving, and deleting
 
@@ -42,7 +56,7 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertEquals("Test answer", cards.getJSONObject(0).getString("answer"));
     }
 
-}
+
 
 
     @Test // checks if material uploaded is blank
@@ -219,3 +233,4 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
             return true;
         }
     }
+}

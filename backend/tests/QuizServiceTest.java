@@ -3,35 +3,24 @@ package tests;
 
 public class QuizServiceTest {
 
-    // Verifies multiple-choice generation returns a task ID.
+    @Test // tests starting multiple choice quizzes
     public void startsMultipleChoiceGeneration() {
+        TaskManager fakeTaskManager = new TaskManager() {
+            @Override
+            public String submitTask(String taskType, Callable<String> task) {
+
+                assertEquals("QUIZ_GENERATION", taskType);
+                return "multiple-choice-task";
+            }
+        };
+
+        QuizService service = new QuizService(null,null,fakeTaskManager,null,1L);
+
+        String taskId = service.startQuizGeneration("material-1", "multiple-choice");
+
+        assertEquals("multiple-choice-task", taskId);
     }
 
-    // Verifies true/false generation uses the TRUE_FALSE question type.
-    public void startsTrueFalseGeneration() {
-    }
 
-    // Verifies generation is blocked before material is ready.
-    public void preventsGenerationBeforeMaterialIsReady() {
-    }
 
-    // Verifies valid quiz JSON is saved.
-    public void validatesAndSavesValidQuiz() {
-    }
-
-    // Verifies invalid JSON is retried once and then fails safely.
-    public void retriesInvalidQuizJsonOnce() {
-    }
-
-    // Verifies generated quiz content is based on uploaded material.
-    public void verifiesQuizUsesUploadedMaterial() {
-    }
-
-    // Verifies saved quiz questions can be retrieved.
-    public void retrievesSavedQuizzes() {
-    }
-
-    // Verifies one quiz question can be deleted without deleting unrelated data.
-    public void deletesRequestedQuiz() {
-    }
 }

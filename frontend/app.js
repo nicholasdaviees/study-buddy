@@ -222,6 +222,23 @@ async function loadFlashcards(materialId) {
         }
     );
 
+// Show saved flashcard.
+async function showSavedFlashcards(materialId) {
+    const savedCards = await loadFlashcards(materialId);
+
+    if (savedCards.length === 0) {
+        alert("No saved flashcards were found.");
+        return;
+    }
+
+    flashcards = savedCards;
+    currentFlashcardIndex = 0;
+    displayFlashcard();
+    document.getElementById("flashcard-section").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
      const result = await response.json().catch(() => null);
 
      if (!response.ok) {

@@ -133,7 +133,28 @@ public class QuizServiceTest {
         assertEquals(25L, fakeDAO.requestedUserID);
     }
 
-    
+    @Test // tests if quiz was deleted
+    public void deletesRequestedQuiz() throws SQLException {
+        RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
+        fakeDAO.deleteResult = true;
+
+        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+
+        service.deleteQuiz(10L);
+
+        assertEquals(10L, fakeDAO.deletedQuizID);
+        assertEquals(25L, fakeDAO.deletedUserID);
+    }
+
+    @Test // tests if quiz isnt missing
+    public void rejectsMissingQuiz() throws SQLException {
+        RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
+        fakeDAO.deleteResult = false;
+
+        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+
+        assertThrows(IllegalArgumentException.class, () -> service.deleteQuiz(99L));
+    }
 
 
 

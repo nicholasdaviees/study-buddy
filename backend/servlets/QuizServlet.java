@@ -62,6 +62,34 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
+    @Override // gets one saved quiz
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws IOException {
+
+        String quizIdText = getQuizId(request);
+        if (quizIdText == null || quizIdText.isBlank()) {
+            writeJson(response, 400, Map.of("error", "A quiz ID is required."));
+            return;
+        }
+
+        try {
+            long quizId = Long.parseLong(quizIdText);
+            Quiz quiz = quizService.getSavedQuiz(quizId);
+            if (quiz == null) {
+                writeJson(response, 404, Map.of("error", "Quiz not found."));
+                return;
+            }
+
+            writeJson(response, 200, quiz);
+
+        } catch (NumberFormatException error) {
+            writeJson(response,400, Map.of("error", "The quiz ID must be a number."));
+
+        } catch (IllegalStateException error) {
+            writeJson(response, 500, Map.of("error", error.getMessage()));
+        }
+    }
+
 
 
 

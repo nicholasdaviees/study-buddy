@@ -69,6 +69,52 @@ public class FlashcardServiceTest { // tests flashcard generation, validation, s
         assertThrows(IllegalStateException.class, () -> service.generateFlashcards("material-1"));
     }
 
+    @Test // tests flashcard generation
+    public void startsFlashcardGeneration() {
+    AtomicReference<Callable<String>> submittedTask = new AtomicReference<>(); // uses an atomic reference to be able to inspect task after it ran
+    TaskManager fakeTaskManager = new TaskManager() {
+    
+        @Override
+        public String submitTask(String taskType, Callable<String> task) {
+
+            assertEquals("FLASHCARD_GENERATION", taskType);
+            submittedTask.set(task);
+            return "task-1";
+                    }
+                };
+
+        FlashcardService service =  new FlashcardService(null, null, fakeTaskManager, null, 1L);
+
+        String taskId = service.startFlashcardGeneration("material-1");
+        assertEquals("task-1", taskId);
+        assertNotNull(submittedTask.get());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // tests flashcard generation and verifies uploaded material

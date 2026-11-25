@@ -116,6 +116,26 @@ public class QuizServiceTest {
         assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz("Broken Quiz", "not valid JSON", "multiple-choice"));
     }
 
+    @Test // tests if saved quiz could be retrieved
+    public void retrievesSavedQuiz() throws SQLException {
+        RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
+
+        Quiz savedQuiz = new Quiz(10L, 25L, "Saved Quiz", new ArrayList<>());
+
+        fakeDAO.quizToReturn = savedQuiz;
+
+        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+
+        Quiz result = service.getSavedQuiz(10L);
+
+        assertSame(savedQuiz, result);
+        assertEquals(10L, fakeDAO.requestedQuizID);
+        assertEquals(25L, fakeDAO.requestedUserID);
+    }
+
+    
+
+
 
 
 

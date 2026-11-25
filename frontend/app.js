@@ -930,6 +930,25 @@ function saveMaterialsToBrowser() {
     localStorage.setItem("studyBuddyMaterials", JSON.stringify(uploadedMaterials));
 }
 
+// Delete saved material from backend.
+async function deleteSavedMaterial(materialId) {
+     if (!materialId) {
+        throw new Error("No material was selected for deletion.");
+    }
+
+    const response = await fetch("/studybuddy/api/material/" + encodeURIComponent(materialId),
+        {
+            method: "DELETE",
+            credentials: "same-origin"
+        }
+    );
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+
+        throw new Error(result?.error || "Could not delete the material from the server.");
+    }
+}
+
 displaySavedMaterials();
 function displaySavedMaterials() {
     const materialsList = document.getElementById("saved-materials-list");

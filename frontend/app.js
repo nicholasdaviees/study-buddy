@@ -533,6 +533,7 @@ async function waitForGeneratedFlashcards(taskId) {
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
      }
+    throw new Error("Flashcard generation is taking longer than expected.");
 }   
 // Save flashcard button.
 const saveFlashcardButton = document.getElementById("save-flashcard-btn");

@@ -39,5 +39,20 @@ public class QuizServiceTest {
         assertEquals("true-false-task", taskId);
     }
 
+    @Test // tests if material has been uploaded and processed
+    public void preventsGenerationBeforeMaterialIsReady() {
+        MaterialService materialService = new MaterialService(new TaskManager()) {
+        
+            @Override
+            public String getMaterialText(String materialId) {
+                    
+                return "";
+            }
+        };
+
+        QuizService service = new QuizService(materialService, null, null, null, 1L);
+
+        assertThrows(IllegalStateException.class, () -> service.generateQuiz("material-1", "multiple-choice"));
+    }
 
 }

@@ -919,6 +919,30 @@ function displaySavedMaterials() {
         materialsList.appendChild(materialDiv);
            });
 }
+
+if (loadFlashcardsButton) {
+    loadFlashcardsButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+            alert("Please select a PDF first.");
+            return;
+        }
+
+        loadFlashcardsButton.disabled = true;
+        loadFlashcardsButton.textContent = "Loading...";
+
+        try {
+            await showSavedFlashcards(materialId);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+             loadFlashcardsButton.disabled = false;
+            loadFlashcardsButton.textContent = "Load Saved Flashcards";
+        }
+    });
+}
         
 
 

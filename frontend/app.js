@@ -189,7 +189,28 @@ function loadQuizzes(materialId) {
 }
 
 // Calls the flashcard servlet for saved flashcards.
-function loadFlashcards(materialId) {
+async function loadFlashcards(materialId) {
+ if (!materialId) {
+        throw new Error("Please select a PDF first.");
+    }
+     const response = await fetch("/studybuddy/api/flashcards?materialId=" + encodeURIComponent(materialId),
+        {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        }
+    );
+
+     const result = await response.json().catch(() => null);
+
+     if (!response.ok) {
+        throw new Error(result?.error || "Could not load saved flashcards.");
+    }
+
+     if (!result || !Array.isArray(result.flashcards)) {
+        throw new Error("Invalid saved flashcard response.");
+    }
+     return result.flashcards;
 }
 
 // Displays a user-friendly error message.

@@ -966,6 +966,32 @@ if (loadFlashcardsButton) {
         }
     });
 }
-        
+
+// Load the saved quiz button.
+ const loadQuizzesButton = document.getElementById("load-quizzes-btn");
+
+ if (loadQuizzesButton) {
+    loadQuizzesButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+             alert("Please select a PDF first.");
+             return;
+         }
+
+        loadQuizzesButton.disabled = true;
+        loadQuizzesButton.textContent = "Loading...";
+
+        try {
+            await showSavedQuizzes(materialId);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            loadQuizzesButton.disabled = false;
+            loadQuizzesButton.textContent = "Load Saved Quizzes";
+        }
+    });
+}
 
 

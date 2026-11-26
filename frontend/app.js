@@ -86,6 +86,31 @@ async function waitForUploadedMaterial(taskId) {
     throw new Error("PDF processing is taking longer than expected.");
 }
 
+// Displays the answer returned for a student question.
+function displayAnswer(answerJson) {
+
+    const answerElement = document.getElementById("question-answer");
+
+    if(!answerElement) {
+        return;
+    }
+
+    try {
+
+        // Convert Ollama's JSON string.
+        const result = typeof answerJson.answer === "string" ? JSON.parse(answerJson.answer): answerJson.answer;
+        
+        // Display answer text.
+        if(result.found && result.answer) {
+            answerElement.textContent = result.answer;
+        } else {
+            answerElement.textContent = "I could not find an answer";
+        }
+    } catch (error) {
+        answerElement.textContent = answerJson.answer || "No answer available.";
+    }
+}
+
 // Calls the question servlet.
 async function askQuestion(materialId, question) {
 
@@ -132,6 +157,34 @@ async function askQuestion(materialId, question) {
     return await pollTaskStatus(result.taskId, 1000);
 }
 
+    const askButton = document.getElementById("ask-btn");
+
+    if (askButton) {
+        askButton.addEventListener("click", async () => {
+            const materialInput = document.getElementById("question-material-id");
+
+            const questionInput = document.getElementById("student-question");
+
+            const questionStatus = document.getElementById("question-status");
+
+            const materialId = materialInput ? materialInput.value.trim() : "";
+
+            const question = questionInput ? questionInput.value.trim() : "";
+
+        try {
+            questionStatus.textContent = "Study Buddy is thinking...";
+
+            questionStatus.classList.remove("error-message");
+
+            await askQuestion(materialId, question);
+
+        } catch (error) {
+            questionStatus.textContent = error.message;
+            questionStatus.classList.add("error-message");
+        }
+    });
+}
+
 
 // Polls the task-status servlet until work completes or fails.
 async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
@@ -159,7 +212,7 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
     }
 
     // When finished, it will display and return the answer.
-    if (result?.status === "COMPLETED") {
+    if (result?.status === "COMPLETE") {
             displayAnswer(result);
             return result.answer;
     }
@@ -168,11 +221,11 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
         throw new Error("Study Buddy could not answer this question.");
     }
 
-    if(result?.status === "PROCESSING") {
+       if (result?.status === "PROCESSING") {
+        displayTaskStatus("Study Buddy is answering your question...");
+    } else {
         throw new Error("Unexpected question task status.");
     }
-
-    showError("Study Buddy is answering your question...");
 
     // Pause.
     await new Promise(resolve => setTimeout(resolve, intervalMilliseconds));
@@ -183,31 +236,146 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
 }
 
 // Calls the quiz servlet for saved quiz questions.
-function loadQuizzes(materialId) {
+async function loadQuizzes(materialId) {
+     if (!materialId) {
+        throw new Error("Please select a PDF first.");
+    }
+    const response = await fetch(
+        "/studybuddy/api/quizzes?materialId=" + encodeURIComponent(materialId),
+        {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        }
+    );
+    const result = await response.json().catch(() => null);
+
+     if (!response.ok) {
+        throw new Error(result?.error || "Could not load saved quizzes.");
+    }
+
+    if (!result || !Array.isArray(result.questions)) {
+        throw new Error("Invalid saved quiz response.");
+    }
+    
+    return result.questions;
+}
+// Show saved quizzes.
+async function showSavedQuizzes(materialId) {
+    const savedQuestions = await loadQuizzes(materialId);
+    if (savedQuestions.length === 0) {
+        alert("No saved quizzes were found.");
+        return;
+    }
+    quizQuestions = savedQuestions;
+    quizAnswers = new Array(quizQuestions.length).fill(null);
+    currentQuestionIndex = 0;
+    const scoreElement = document.getElementById("quiz-score");
+
+    if (scoreElement) {
+        scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered).";
+    }
+
+    displayQuizQuestion();
+
+    document.getElementById("quiz-section").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+// Calls the flashcard servlet for saved flashcards.
+async function loadFlashcards(materialId) {
+ if (!materialId) {
+        throw new Error("Please select a PDF first.");
+    }
+     const response = await fetch("/studybuddy/api/flashcards?materialId=" + encodeURIComponent(materialId),
+        {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+        }
+    );
+     const result = await response.json().catch(() => null);
+
+     if (!response.ok) {
+        throw new Error(result?.error || "Could not load saved flashcards.");
+    }
+
+     if (!result || !Array.isArray(result.flashcards)) {
+        throw new Error("Invalid saved flashcard response.");
+    }
+     return result.flashcards;
 }
 
-// Calls the flashcard servlet for saved flashcards.
-function loadFlashcards(materialId) {
+// Show saved flashcard.
+async function showSavedFlashcards(materialId) {
+    const savedCards = await loadFlashcards(materialId);
+
+    if (savedCards.length === 0) {
+        alert("No saved flashcards were found.");
+        return;
+    }
+
+    flashcards = savedCards;
+    currentFlashcardIndex = 0;
+    displayFlashcard();
+    document.getElementById("flashcard-section").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 // Displays a user-friendly error message.
 function showError(errorMessage) {
     const statusElement = document.getElementById("question-status");
+
     if (statusElement) {
         statusElement.textContent = errorMessage;
- }
+        statusElement.classList.add("error-message");
+    }
 }
 
-// Updates the interface for queued, processing, complete, or failed work.
-function displayTaskStatus(taskStatus) {
-     const statusElement = document.getElementById("question-status");
-     if (statusElement) {
-        statusElement.textContent = errorMessage;
- }
+
+// updates the interface for queued, processing, complete, or failed work
+function displayTaskStatus(statusMessage) {
+    const statusElement = document.getElementById("question-status");
+
+    if (statusElement) {
+        statusElement.textContent = statusMessage;
+        statusElement.classList.remove("error-message");
+    }
 }
+
 
      // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");
+
+    const processingSection =
+    document.getElementById("processing-section");
+
+    const processingSteps = document.querySelectorAll(".processing-steps li");
+
+    function showProcessing() {
+        if (processingSection) {
+            processingSection.hidden = false;
+        }
+    }
+
+    function hideProcessing() {
+        if (processingSection) {
+            processingSection.hidden = true;
+        }
+    }
+
+    function updateProcessingStep(currentStep) {
+        processingSteps.forEach((step, index) => {
+            step.classList.remove("active", "complete");
+
+        if (index < currentStep) {
+            step.classList.add("complete");
+        } else if (index === currentStep) {
+            step.classList.add("active");
+        }
+    });
+}
 
     if (pdfUploadInput) {
         pdfUploadInput.addEventListener("change", async () => {
@@ -227,12 +395,17 @@ function displayTaskStatus(taskStatus) {
         }
 
         try {
+            showProcessing();
+            updateProcessingStep(0);
             if (fileStatus) {
+                fileStatus.classList.remove("error-message");
                 fileStatus.textContent = "Uploading " + file.name + "...";
             }
             const taskId = await uploadPdf(file);
+            updateProcessingStep(1);
 
             const materialId = await waitForUploadedMaterial(taskId);
+            updateProcessingStep(3);
 
             if (materialInput) {
                 materialInput.value = materialId;
@@ -252,13 +425,22 @@ displaySavedMaterials();
 
             if (fileStatus) {
                 fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
+                
+                fileStatus.classList.remove("error-message");
             }
+
+            hideProcessing();
+            
         } catch (error) {
+            hideProcessing();
             if (fileStatus) {
                 fileStatus.textContent = error.message;
+                fileStatus.classList.add("error-message");
+                
             }
         }
         });
+        
     }
    // Flashcard Display
     let flashcards = [];
@@ -403,53 +585,124 @@ async function waitForGeneratedFlashcards(taskId) {
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
      }
+    throw new Error("Flashcard generation is taking longer than expected.");
 }   
 // Save flashcard button.
 const saveFlashcardButton = document.getElementById("save-flashcard-btn");
+
 if (saveFlashcardButton) {
-    saveFlashcardButton.addEventListener("click", () => {
+    saveFlashcardButton.addEventListener("click", async () => {
+        
         if (flashcards.length === 0) {
             alert("Please generate flashcards first.");
             return;
         }
 
          const currentCard = flashcards[currentFlashcardIndex];
+        
+        saveFlashcardButton.disabled = true;
+        saveFlashcardButton.textContent = "Saving...";
 
-         alert("Save requested for: " + currentCard.question);
+        try {
+            await saveFlashcard(currentCard);
+            alert("Flashcard saved successfully!");
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            saveFlashcardButton.disabled = false;
+            saveFlashcardButton.textContent = "Save Flashcard";
+        }
     });
+}
+
+
+// Save the flashcard
+async function saveFlashcard(card) {
+    const response = await fetch("/studybuddy/api/flashcards/save", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            question: card.question,
+            answer: card.answer
+        })
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        throw new Error(result?.error || "Could not save flashcard.");
+    }
+    return result;
 }
 // Delete Flashcard button.
 const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
 
 if (deleteFlashcardButton) {
-    deleteFlashcardButton.addEventListener("click", () => {
+    deleteFlashcardButton.addEventListener("click", async () => {
         if (flashcards.length === 0) {
             alert("There are no flashcards to delete.");
             return;
         }
+        const currentCard = flashcards[currentFlashcardIndex];
         const confirmed = confirm("Are you sure you want to delete this flashcard?");
-
           if (!confirmed) {
             return;
         }
 
-        flashcards.splice(currentFlashcardIndex, 1);
+        deleteFlashcardButton.disabled = true;
+        deleteFlashcardButton.textContent = "Deleting...";
 
-        if (flashcards.length === 0) {
-            document.getElementById("flashcard-count").textContent = "No flashcards remaining.";
-            document.getElementById("flashcard-question").textContent = "Generate flashcards to study.";
-            document.getElementById("flashcard-answer").textContent = "";
-            document.getElementById("flashcard-answer").hidden = true;
-            return;
+        try {
+
+            if (currentCard.id != null) {
+                await deleteSavedFlashcard(currentCard.id);
+            }
+
+            flashcards.splice(currentFlashcardIndex, 1);
+
+            if (flashcards.length === 0) {
+                document.getElementById("flashcard-count").textContent = "No flashcards remaining.";
+                document.getElementById("flashcard-question").textContent = "Generate flashcards to study.";
+                document.getElementById("flashcard-answer").textContent = "";
+                document.getElementById("flashcard-answer").hidden = true;
+
+                return;
+            }
+
+            if (currentFlashcardIndex >= flashcards.length) {
+                currentFlashcardIndex = flashcards.length - 1;
+            }
+
+            displayFlashcard();
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            deleteFlashcardButton.disabled = false;
+            deleteFlashcardButton.textContent = "Delete Flashcard";
         }
-
-         if (currentFlashcardIndex >= flashcards.length) {
-            currentFlashcardIndex = flashcards.length - 1;
-        }
-
-         displayFlashcard();
-
     });
+}
+
+// Delete save flashcard.
+async function deleteSavedFlashcard(cardId) {
+    if (cardId == null) {
+        throw new Error("This flashcard has not been saved yet.");
+    }
+    const response = await fetch(
+        "/studybuddy/api/flashcards/" + encodeURIComponent(cardId),
+        {
+            method: "DELETE",
+            credentials: "same-origin"
+        }
+    );
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+
+        throw new Error(result?.error || "Could not delete flashcard.");
+    }
 }
 // Quiz button.
 const quizButton = document.getElementById("quiz-btn");
@@ -489,6 +742,11 @@ const quizButton = document.getElementById("quiz-btn");
     quizQuestions = await waitForGeneratedQuiz(result.taskId);
     currentQuestionIndex = 0;
     quizAnswers = new Array(quizQuestions.length).fill(null);
+    const scoreElement = document.getElementById("quiz-score");
+        if (scoreElement) {
+            scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered).";
+        }
+                 
     displayQuizQuestion();
     document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
@@ -503,7 +761,7 @@ const quizButton = document.getElementById("quiz-btn");
 }
 
 // Quiz Display
-let quizQuestion = [];
+let quizQuestions = [];
 let currentQuestionIndex = 0;
 let selectedQuizAnswer = null;
 
@@ -523,6 +781,7 @@ function displayQuizQuestion() {
     const feedback = document.getElementById("quiz-feedback");
     feedback.hidden = true;
     feedback.textContent = "";
+    feedback.classList.remove("correct", "incorrect");
 
     question.choices.forEach((choice, index) => {
         const choiceButton = document.createElement("button");
@@ -563,11 +822,15 @@ if (submitQuizButton) {
 
                 quizAnswers[currentQuestionIndex] = selectedQuizAnswer;
 
+                feedback.classList.remove("correct", "incorrect");
+
         if (selectedQuizAnswer === question.correctAnswer) {
-    feedback.textContent = "Correct!";
-} else {
-    feedback.textContent = "Incorrect. Try again!";
-}
+            feedback.textContent = "Correct!";
+            feedback.classList.add("correct");
+        } else {
+            feedback.textContent = "Incorrect. Try again!";
+            feedback.classList.add("incorrect");
+        }
 
 let correctCount = 0;
 
@@ -665,6 +928,12 @@ if (trueFalseButton) {
             quizQuestions = await waitForGeneratedQuiz(result.taskId);
             quizAnswers = new Array(quizQuestions.length).fill(null);
             currentQuestionIndex = 0;
+            const scoreElement = document.getElementById("quiz-score");
+
+            if (scoreElement) {
+                scoreElement.textContent = "Score: 0 out of " + quizQuestions.length + " (0 answered.";
+            }
+            
             displayQuizQuestion();
             document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
@@ -730,6 +999,25 @@ function saveMaterialsToBrowser() {
     localStorage.setItem("studyBuddyMaterials", JSON.stringify(uploadedMaterials));
 }
 
+// Delete saved material from backend.
+async function deleteSavedMaterial(materialId) {
+     if (!materialId) {
+        throw new Error("No material was selected for deletion.");
+    }
+
+    const response = await fetch("/studybuddy/api/material/" + encodeURIComponent(materialId),
+        {
+            method: "DELETE",
+            credentials: "same-origin"
+        }
+    );
+    if (!response.ok) {
+        const result = await response.json().catch(() => null);
+
+        throw new Error(result?.error || "Could not delete the material from the server.");
+    }
+}
+
 displaySavedMaterials();
 function displaySavedMaterials() {
     const materialsList = document.getElementById("saved-materials-list");
@@ -770,22 +1058,37 @@ function displaySavedMaterials() {
         deleteButton.type = "button";
         deleteButton.className = "delete-material-btn";
         deleteButton.textContent = "Delete Material";
-        deleteButton.addEventListener("click", () => {
+        deleteButton.addEventListener("click", async () => {
         const confirmed = confirm("Are you sure you want to remove " + material.name + "?");
             if (!confirmed) {
         return;
     }
-    uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
-    saveMaterialsToBrowser();
-    const materialInput = document.getElementById("question-material-id");
-    const selectedMaterialName = document.getElementById("selected-material-name");
-    if (materialInput && materialInput.value === material.id) {
-        materialInput.value = "";
-        if (selectedMaterialName) {
-            selectedMaterialName.textContent = "No study material selected.";
+        deleteButton.disabled = true;
+        deleteButton.textContent = "Deleting...";
+
+        try {
+            await deleteSavedMaterial(material.id);
+            uploadedMaterials = uploadedMaterials.filter(item => item.id !== material.id);
+            saveMaterialsToBrowser();
+            const materialInput = document.getElementById("question-material-id");
+            const selectedMaterialName = document.getElementById("selected-material-name");
+
+            if (materialInput && materialInput.value === material.id) {
+            materialInput.value = "";
+
+            if (selectedMaterialName) {
+                selectedMaterialName.textContent = "No study material selected.";
+            }
         }
+            displaySavedMaterials();
+            alert("Material deleted successfully!");
+
+        }catch (error) {
+            alert(error.message);
+        } finally {
+        deleteButton.disabled = false;
+        deleteButton.textContent = "Delete Material";
     }
-    displaySavedMaterials();
 });
         materialDiv.appendChild(fileName);
         materialDiv.appendChild(fileSize);
@@ -794,6 +1097,57 @@ function displaySavedMaterials() {
         materialsList.appendChild(materialDiv);
            });
 }
-        
+// Load saved flashcard button
+const loadFlashcardsButton = document.getElementById("load-flashcards-btn");
+if (loadFlashcardsButton) {
+    loadFlashcardsButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+            alert("Please select a PDF first.");
+            return;
+        }
+
+        loadFlashcardsButton.disabled = true;
+        loadFlashcardsButton.textContent = "Loading...";
+
+        try {
+            await showSavedFlashcards(materialId);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+             loadFlashcardsButton.disabled = false;
+            loadFlashcardsButton.textContent = "Load Saved Flashcards";
+        }
+    });
+}
+
+// Load the saved quiz button.
+ const loadQuizzesButton = document.getElementById("load-quizzes-btn");
+
+ if (loadQuizzesButton) {
+    loadQuizzesButton.addEventListener("click", async () => {
+        const materialInput = document.getElementById("question-material-id");
+        const materialId = materialInput ? materialInput.value : "";
+
+        if (!materialId) {
+             alert("Please select a PDF first.");
+             return;
+         }
+
+        loadQuizzesButton.disabled = true;
+        loadQuizzesButton.textContent = "Loading...";
+
+        try {
+            await showSavedQuizzes(materialId);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            loadQuizzesButton.disabled = false;
+            loadQuizzesButton.textContent = "Load Saved Quizzes";
+        }
+    });
+}
 
 

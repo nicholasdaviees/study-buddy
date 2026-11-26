@@ -670,7 +670,7 @@ async function saveFlashcard(card) {
             answer: card.answer
         })
     });
-*/
+
     const result = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -678,6 +678,7 @@ async function saveFlashcard(card) {
     }
     return result;
 }
+*/
 // Delete Flashcard button.
 const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
 

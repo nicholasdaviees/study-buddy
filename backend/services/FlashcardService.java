@@ -68,7 +68,7 @@ public class FlashcardService {
     }
 
     // Validates generated JSON and saves valid flashcards.
-    public void validateAndSaveFlashcards(long userId, String materialId, String flashcardJson) {
+    public void validateAndSaveFlashcards(long userId, long materialID, String flashcardJson) {
         if (flashcardJson == null || flashcardJson.trim().isEmpty()) {
             throw new IllegalArgumentException("Flashcard JSON cannot be empty."); // this makes sure the LLM returned the JSON
 
@@ -85,7 +85,7 @@ public class FlashcardService {
 
                 String backText = flashcard.getString("answer"); // back of card shows answer
 
-                flashcardsDAO.saveFlashcard(userId, frontText, backText); // saves the flashcard
+                flashcardsDAO.saveFlashcard(userId, materialID, frontText, backText); // saves the flashcard
             }
         } catch (SQLException error) {
             throw new IllegalStateException("Flashcards couldn't be saved.", error); // throws error if database couldnt save flashcards
@@ -95,11 +95,11 @@ public class FlashcardService {
     }
 
     // Returns saved flashcards for the selected material.
-    public String getSavedFlashcards(long userId, String materialId) {
+    public String getSavedFlashcards(long userId, long materialID) {
         JSONArray flashcardArray = new JSONArray(); // creates json array that holds the saved flashcards
 
         try {
-            List<Long> cardIDs = flashcardsDAO.getFlashcardIDsByUserID(userId); // gets id of ALL flashcards tied to user
+            List<Long> cardIDs = flashcardsDAO.getFlashcardIDsByUserIDAndMaterialID(userId, materialID); // gets id of ALL flashcards tied to user
 
             for (long cardID : cardIDs) { // loops through every flashcard id
                 Flashcards flashcard = flashcardsDAO.getFlashcardByID(cardID, userId); // gets a flashcard from the database

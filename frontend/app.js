@@ -220,7 +220,8 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
     }
 
     // When finished, it will display and return the answer.
-    if (result?.status === "COMPLETE") {
+    if (result?.status === "COMPLETED") {
+            displayTaskStatus("");
             displayAnswer(result);
             return result.answer;
     }
@@ -229,8 +230,8 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
         throw new Error("Study Buddy could not answer this question.");
     }
 
-       if (result?.status === "PROCESSING") {
-        displayTaskStatus("Study Buddy is answering your question...");
+       if (result?.status === "QUEUED" || result?.status === "PROCESSING") {
+         displayTaskStatus("Study Buddy is answering your question...");
     } else {
         throw new Error("Unexpected question task status.");
     }

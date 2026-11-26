@@ -157,6 +157,34 @@ async function askQuestion(materialId, question) {
     return await pollTaskStatus(result.taskId, 1000);
 }
 
+    const askButton = document.getElementById("ask-btn");
+
+    if (askButton) {
+        askButton.addEventListener("click", async () => {
+            const materialInput = document.getElementById("question-material-id");
+
+            const questionInput = document.getElementById("student-question");
+
+            const questionStatus = document.getElementById("question-status");
+
+            const materialId = materialInput ? materialInput.value.trim() : "";
+
+            const question = questionInput ? questionInput.value.trim() : "";
+
+        try {
+            questionStatus.textContent = "Study Buddy is thinking...";
+
+            questionStatus.classList.remove("error-message");
+
+            await askQuestion(materialId, question);
+
+        } catch (error) {
+            questionStatus.textContent = error.message;
+            questionStatus.classList.add("error-message");
+        }
+    });
+}
+
 
 // Polls the task-status servlet until work completes or fails.
 async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
@@ -311,7 +339,7 @@ function displayTaskStatus(taskStatus) {
  }
 }
 
-const askButton = document.getElementById("ask-btn");
+//const askButton = document.getElementById("ask-btn");
     if (askButton) {
         askButton.addEventListener("click", async () => {
             const materialInput = document.getElementById("question-material-id");
@@ -340,24 +368,23 @@ const askButton = document.getElementById("ask-btn");
     const processingSection =
     document.getElementById("processing-section");
 
-const processingSteps =
-    document.querySelectorAll(".processing-steps li");
+    const processingSteps = document.querySelectorAll(".processing-steps li");
 
-function showProcessing() {
-    if (processingSection) {
-        processingSection.hidden = false;
+    function showProcessing() {
+        if (processingSection) {
+            processingSection.hidden = false;
+        }
     }
-}
 
-function hideProcessing() {
-    if (processingSection) {
-        processingSection.hidden = true;
+    function hideProcessing() {
+        if (processingSection) {
+            processingSection.hidden = true;
+        }
     }
-}
 
-function updateProcessingStep(currentStep) {
-    processingSteps.forEach((step, index) => {
-        step.classList.remove("active", "complete");
+    function updateProcessingStep(currentStep) {
+        processingSteps.forEach((step, index) => {
+            step.classList.remove("active", "complete");
 
         if (index < currentStep) {
             step.classList.add("complete");
@@ -768,6 +795,7 @@ function displayQuizQuestion() {
     const feedback = document.getElementById("quiz-feedback");
     feedback.hidden = true;
     feedback.textContent = "";
+    feedback.classList.remove("correct", "incorrect");
 
     question.choices.forEach((choice, index) => {
         const choiceButton = document.createElement("button");
@@ -808,11 +836,15 @@ if (submitQuizButton) {
 
                 quizAnswers[currentQuestionIndex] = selectedQuizAnswer;
 
+                feedback.classList.remove("correct", "incorrect");
+
         if (selectedQuizAnswer === question.correctAnswer) {
-    feedback.textContent = "Correct!";
-} else {
-    feedback.textContent = "Incorrect. Try again!";
-}
+            feedback.textContent = "Correct!";
+            feedback.classList.add("correct");
+        } else {
+            feedback.textContent = "Incorrect. Try again!";
+            feedback.classList.add("incorrect");
+        }
 
 let correctCount = 0;
 

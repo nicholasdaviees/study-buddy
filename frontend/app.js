@@ -212,7 +212,7 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
     }
 
     // When finished, it will display and return the answer.
-    if (result?.status === "COMPLETED") {
+    if (result?.status === "COMPLETE") {
             displayAnswer(result);
             return result.answer;
     }
@@ -344,29 +344,6 @@ function displayTaskStatus(statusMessage) {
     }
 }
 
-
-//const askButton = document.getElementById("ask-btn");
-    if (askButton) {
-        askButton.addEventListener("click", async () => {
-            const materialInput = document.getElementById("question-material-id");
-            const questionInput = document.getElementById("student-question");
-
-            const materialId = materialInput.value;
-            const question = questionInput.value;
-
-            askButton.disabled = true;
-            
-            document.getElementById("question-answer").textContent = "";
-
-            try {
-                await askQuestion(materialId, question);
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                askButton.disabled = false;
-            }
-        });
-    }
 
      // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");

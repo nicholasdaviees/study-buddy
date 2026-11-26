@@ -43,7 +43,7 @@ public class LlmService {
     // Class constructor
     public LlmService() {
         this.ollamaBaseUrl = "http://localhost:11434";
-        this.modelName = "qwen3:4b";
+        this.modelName = "qwen2.5:7b";
 
         // Starts/builds HTTP client builder with connection timout at 5 secs
         this.httpClient = HttpClient.newBuilder()

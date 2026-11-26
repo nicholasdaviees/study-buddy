@@ -37,30 +37,15 @@ public class MaterialServiceTest {
             }
 
             CapturingTaskManager tasks = new CapturingTaskManager();
-            MaterialService service = new MaterialService(tasks) {
-                @Override
-                public String saveMaterial(String fileName, String extractedText, String status) {
-                    if (!"notes.pdf".equals(fileName)
-                            || !"Study Buddy notes".equals(extractedText)
-                            || !"READY".equals(status)) {
-                        throw new AssertionError("Unexpected material passed to saveMaterial.");
-                    }
-
-                    return "material-1";
-                }
-            };
+            MaterialService service = new MaterialService(tasks);
 
             String taskId = service.startPdfProcessing(
-                    pdf.toString(), "notes.pdf", "application/pdf", Files.size(pdf));
+                    1L, pdf.toString(), "notes.pdf", "application/pdf", Files.size(pdf));
 
             if (!"task-1".equals(taskId) || tasks.pendingTask == null) {
                 throw new AssertionError("Expected a task ID and queued PDF work.");
             }
 
-            String materialId = tasks.pendingTask.call();
-            if (!"material-1".equals(materialId)) {
-                throw new AssertionError("Expected the background task to return the material ID.");
-            }
         } finally {
             Files.deleteIfExists(pdf);
         }

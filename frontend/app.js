@@ -1,3 +1,11 @@
+fetch("api/auth/me", { credentials: "same-origin" })
+    .then(response => {
+        if (!response.ok) {
+            window.location.replace("login.html");
+        }
+    })
+    .catch(() => window.location.replace("login.html"));
+
 // Sends a selected PDF to the upload servlet
 // Sends a selected PDF to the upload servlet and returns its task ID.
 async function uploadPdf(file) {
@@ -212,7 +220,8 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
     }
 
     // When finished, it will display and return the answer.
-    if (result?.status === "COMPLETE") {
+    if (result?.status === "COMPLETED") {
+            displayTaskStatus("");
             displayAnswer(result);
             return result.answer;
     }
@@ -221,8 +230,8 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
         throw new Error("Study Buddy could not answer this question.");
     }
 
-       if (result?.status === "PROCESSING") {
-        displayTaskStatus("Study Buddy is answering your question...");
+       if (result?.status === "QUEUED" || result?.status === "PROCESSING") {
+         displayTaskStatus("Study Buddy is answering your question...");
     } else {
         throw new Error("Unexpected question task status.");
     }
@@ -978,11 +987,24 @@ async function waitForGeneratedQuiz(taskId) {
                 throw new Error("Invalid quiz response.");
             }
 
-            return generated.questions;
+            return generated.questions.map(question => {
+                const choices = Array.isArray(question.choices)
+                    ? question.choices
+                    : ["True", "False"];
+                const correctAnswer = Array.isArray(question.choices)
+                    ? choices.indexOf(question.answer)
+                    : question.answer === true ? 0 : 1;
+
+                if (correctAnswer < 0) {
+                    throw new Error("Invalid quiz answer.");
+                }
+
+                return { ...question, choices, correctAnswer };
+            });
         }
 
         if (result?.status === "FAILED") {
-            throw new Error("Quiz generation failed.");
+            throw new Error(result.error || "Quiz generation failed.");
         }
 
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1042,7 +1064,7 @@ function displaySavedMaterials() {
         const openButton = document.createElement("button");
         openButton.type = "button";
         openButton.className = "open-material-btn";
-        openButton.textContent = "Open Material";
+        openButton.textContent = "Select Material";
          openButton.addEventListener("click", () => {
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");

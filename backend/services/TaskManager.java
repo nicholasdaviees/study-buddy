@@ -63,7 +63,9 @@ public class TaskManager {
             record.error = "Task failed";
             record.status = Status.FAILED;
         } catch(Exception exception) {
-            record.error = "Task failed";
+            record.error = exception.getMessage() == null
+                    ? "Task failed"
+                    : exception.getMessage();
             record.status = Status.FAILED;
         }
     }
@@ -79,18 +81,18 @@ public class TaskManager {
         java.util.Map<String, Object> response = new java.util.LinkedHashMap<>();
 
         if (record == null){
-            response.put("status", "FAILED");
+            response.put("status", "NOT_FOUND");
             response.put("error", "No tasks found");
         } else {
             response.put("taskId", record.taskID);
             response.put("taskType", record.taskType);
 
             Status status = record.status;
-            response.put("taskType", status.name());
+            response.put("status", status.name());
             
             if (status == Status.COMPLETE){
-                response.put("status", record.resultId);
-            } else if(status == status.FAILED){
+                response.put("resultId", record.resultId);
+            } else if(status == Status.FAILED){
                 response.put("error", record.error);
             }
         }

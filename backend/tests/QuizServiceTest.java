@@ -33,9 +33,9 @@ public class QuizServiceTest {
             }
         };
 
-        QuizService service = new QuizService(null,null,fakeTaskManager,null,1L);
+        QuizService service = new QuizService(null, null, fakeTaskManager, null);
 
-        String taskId = service.startQuizGeneration("material-1", "multiple-choice");
+        String taskId = service.startQuizGeneration(1L, "material-1", "multiple-choice");
 
         assertEquals("multiple-choice-task", taskId);
     }
@@ -51,9 +51,9 @@ public class QuizServiceTest {
             }
         };
 
-        QuizService service = new QuizService(null, null, fakeTaskManager, null, 1L);
+        QuizService service = new QuizService(null, null, fakeTaskManager, null);
 
-        String taskId = service.startQuizGeneration("material-1", "true-false");
+        String taskId = service.startQuizGeneration(1L, "material-1", "true-false");
 
         assertEquals("true-false-task", taskId);
     }
@@ -63,15 +63,15 @@ public class QuizServiceTest {
         MaterialService materialService = new MaterialService(new TaskManager()) {
         
             @Override
-            public String getMaterialText(String materialId) {
+            public String getMaterialText(long userId, String materialId) {
                     
                 return "";
             }
         };
 
-        QuizService service = new QuizService(materialService, null, null, null, 1L);
+        QuizService service = new QuizService(materialService, null, null, null);
 
-        assertThrows(IllegalStateException.class, () -> service.generateQuiz("material-1", "multiple-choice"));
+        assertThrows(IllegalStateException.class, () -> service.generateQuiz(1L, "material-1", "multiple-choice"));
     }
 
     @Test // tests to make sure quiz is using the chosen uploaded material
@@ -79,7 +79,7 @@ public class QuizServiceTest {
         MaterialService materialService = new MaterialService(new TaskManager()) {
             
             @Override
-            public String getMaterialText(String materialId) {
+            public String getMaterialText(long userId, String materialId) {
                     
                 return "Sample class notes";
             }
@@ -97,9 +97,9 @@ public class QuizServiceTest {
             }
         };
 
-        QuizService service = new QuizService(materialService, llmService, null, null, 1L);
+        QuizService service = new QuizService(materialService, llmService, null, null);
 
-        String result = service.generateQuiz("material-1", "multiple-choice");
+        String result = service.generateQuiz(1L, "material-1", "multiple-choice");
 
         assertEquals(true, result.contains("What is Java?"));
     }
@@ -108,11 +108,11 @@ public class QuizServiceTest {
     public void validatesAndSavesValidQuiz() {
         RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
 
-        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+        QuizService service = new QuizService(null, null, null, fakeDAO);
 
         String quizJson = "{\"questions\":[{\"question\":\"What is Java?\",\"choices\":[\"Language\",\"Animal\"],\"answer\":\"Language\"}]}";
 
-        service.saveGeneratedQuiz("Java Quiz", quizJson, "multiple-choice");
+        service.saveGeneratedQuiz(25L, "Java Quiz", quizJson, "multiple-choice");
 
         assertEquals(25L, fakeDAO.savedUserID);
         assertEquals("Java Quiz", fakeDAO.savedTitle);
@@ -130,9 +130,9 @@ public class QuizServiceTest {
     @Test // tests if quiz has valid JSON
     public void rejectsInvalidQuizJson() {
     
-        QuizService service = new QuizService(null, null, null, new RecordingQuizDAO(), 1L);
+        QuizService service = new QuizService(null, null, null, new RecordingQuizDAO());
 
-        assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz("Broken Quiz", "not valid JSON", "multiple-choice"));
+        assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz(1L, "Broken Quiz", "not valid JSON", "multiple-choice"));
     }
 
     @Test // tests if saved quiz could be retrieved
@@ -143,9 +143,9 @@ public class QuizServiceTest {
 
         fakeDAO.quizToReturn = savedQuiz;
 
-        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+        QuizService service = new QuizService(null, null, null, fakeDAO);
 
-        Quiz result = service.getSavedQuiz(10L);
+        Quiz result = service.getSavedQuiz(25L, 10L);
 
         assertSame(savedQuiz, result);
         assertEquals(10L, fakeDAO.requestedQuizID);
@@ -157,9 +157,9 @@ public class QuizServiceTest {
         RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
         fakeDAO.deleteResult = true;
 
-        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+        QuizService service = new QuizService(null, null, null, fakeDAO);
 
-        service.deleteQuiz(10L);
+        service.deleteQuiz(25L, 10L);
 
         assertEquals(10L, fakeDAO.deletedQuizID);
         assertEquals(25L, fakeDAO.deletedUserID);
@@ -170,9 +170,9 @@ public class QuizServiceTest {
         RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
         fakeDAO.deleteResult = false;
 
-        QuizService service = new QuizService(null, null, null, fakeDAO, 25L);
+        QuizService service = new QuizService(null, null, null, fakeDAO);
 
-        assertThrows(IllegalArgumentException.class, () -> service.deleteQuiz(99L));
+        assertThrows(IllegalArgumentException.class, () -> service.deleteQuiz(25L, 99L));
     }
 
     private static class RecordingQuizDAO extends QuizDAO { // fake DAO that stores values in memory instead of using MySQL, like in flashcardservice test

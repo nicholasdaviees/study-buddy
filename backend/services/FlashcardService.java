@@ -15,20 +15,22 @@ public class FlashcardService {
     private LlmService llmService; // sends uploaded material to local llm for flashcard generation
     private TaskManager taskManager;
     private FlashcardsDAO flashcardsDAO; // connects this to the flashcard database methods
-    private long userID; // identifies the current user
 
     //creates flashcard generator with required services it depends on
-    public FlashcardService(MaterialService materialService, LlmService llmService, TaskManager taskManager, FlashcardsDAO flashcardsDAO, long userID) {
+    public FlashcardService(MaterialService materialService, LlmService llmService,
+            TaskManager taskManager, FlashcardsDAO flashcardsDAO) {
         this.materialService = materialService; // saves the material service for getting uploaded text 
         this.llmService = llmService; // saves the llmservice for generating flashcards
         this.taskManager = taskManager; // saves the task manager for running work in background
         this.flashcardsDAO = flashcardsDAO;
-        this.userID = userID; 
     }
 
-    
     // Places a flashcard-generation task in the background task manager.
-    public String startFlashcardGeneration(String materialId) {
+    public String startFlashcardGeneration(long userId, String materialId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
+        
         if (materialId == null || materialId.trim().isEmpty()) {
 
             // throws an exception that the material ID is invalid
@@ -41,19 +43,19 @@ public class FlashcardService {
 
         // sends flashcard-generation task to taskmanager
         // lambda waits to call generateflashcards() until worker thread runs the task
-        return taskManager.submitTask("FLASHCARD_GENERATION", () -> generateFlashcards(materialId));
+        return taskManager.submitTask("FLASHCARD_GENERATION", () -> generateFlashcards(userId, materialId));
     }
 
-    // retrieves uploaded material and requests flashcard JSON from the llm service
-    public String generateFlashcards(String materialId) {
+    // Retrieves user-owned material and requests flashcard JSON.
+    public String generateFlashcards(long userId, String materialId) {
 
-        // prevents generating flashcards when no material id present
-        if (materialId == null || materialId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Need Material ID.");
+        // prevents generating flashcards when no material/user id present
+        if (userId <= 0 || materialId == null || materialId.trim().isEmpty()) {
+            throw new IllegalArgumentException("A valid user ID and material ID are required.");
         }
 
         // retrives extracted text for the selected material
-        String uploadedMaterial = materialService.getMaterialText(materialId);
+        String uploadedMaterial = materialService.getMaterialText(userId, materialId);
 
         // prevents LLm from receiving empty material
         if (uploadedMaterial == null || uploadedMaterial.trim().isEmpty()) {
@@ -66,7 +68,7 @@ public class FlashcardService {
     }
 
     // Validates generated JSON and saves valid flashcards.
-    public void validateAndSaveFlashcards(String materialId, String flashcardJson) {
+    public void validateAndSaveFlashcards(long userId, String materialId, String flashcardJson) {
         if (flashcardJson == null || flashcardJson.trim().isEmpty()) {
             throw new IllegalArgumentException("Flashcard JSON cannot be empty."); // this makes sure the LLM returned the JSON
 
@@ -83,7 +85,7 @@ public class FlashcardService {
 
                 String backText = flashcard.getString("answer"); // back of card shows answer
 
-                flashcardsDAO.saveFlashcard(userID, frontText, backText); // saves the flashcard
+                flashcardsDAO.saveFlashcard(userId, frontText, backText); // saves the flashcard
             }
         } catch (SQLException error) {
             throw new IllegalStateException("Flashcards couldn't be saved.", error); // throws error if database couldnt save flashcards
@@ -93,14 +95,14 @@ public class FlashcardService {
     }
 
     // Returns saved flashcards for the selected material.
-    public String getSavedFlashcards(String materialId) {
+    public String getSavedFlashcards(long userId, String materialId) {
         JSONArray flashcardArray = new JSONArray(); // creates json array that holds the saved flashcards
 
         try {
-            List<Long> cardIDs = flashcardsDAO.getFlashcardIDsByUserID(userID); // gets id of ALL flashcards tied to user
+            List<Long> cardIDs = flashcardsDAO.getFlashcardIDsByUserID(userId); // gets id of ALL flashcards tied to user
 
             for (long cardID : cardIDs) { // loops through every flashcard id
-                Flashcards flashcard = flashcardsDAO.getFlashcardByID(cardID, userID); // gets a flashcard from the database
+                Flashcards flashcard = flashcardsDAO.getFlashcardByID(cardID, userId); // gets a flashcard from the database
 
                 if (flashcard != null) {
                     JSONObject flashcardObject = new JSONObject(); // creates JSON object for this flashcard
@@ -128,9 +130,9 @@ public class FlashcardService {
     }
 
     // Deletes one saved flashcard.
-    public void deleteFlashcard(long cardID) {
+    public void deleteFlashcard(long userId, long cardID) {
         try {
-            boolean deleted = flashcardsDAO.deleteFlashcardByID(cardID, userID); // deletes one flashcard
+            boolean deleted = flashcardsDAO.deleteFlashcardByID(cardID, userId); // deletes one flashcard
 
             if (!deleted) {
                 throw new IllegalArgumentException("Flashcard wasn't found."); // reports error if it wasn't found

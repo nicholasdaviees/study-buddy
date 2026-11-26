@@ -14,6 +14,7 @@ CREATE TABLE  IF NOT EXISTS documents (
     userID BIGINT NOT NULL,
     fileName VARCHAR(255) NOT NULL,
     pdfData LONGBLOB NOT NULL,
+    extractedText MEDIUMTEXT,
     fileSizeBytes BIGINT UNSIGNED NOT NULL,
     
 

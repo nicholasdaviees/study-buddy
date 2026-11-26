@@ -12,6 +12,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import services.QuizService;
 
 @WebServlet("/api/quizzes/*") // handles quiz generation, retrieval, and deletion.
@@ -51,7 +52,8 @@ public class QuizServlet extends HttpServlet {
         }
 
         try {
-            String taskId = quizService.startQuizGeneration(materialId, questionType);
+            String taskId = quizService.startQuizGeneration(
+                    userId(request), materialId, questionType);
             writeJson(response, 202, Map.of("taskId", taskId));
 
         } catch (IllegalArgumentException error) {
@@ -74,7 +76,7 @@ public class QuizServlet extends HttpServlet {
 
         try {
             long quizId = Long.parseLong(quizIdText);
-            Quiz quiz = quizService.getSavedQuiz(quizId);
+            Quiz quiz = quizService.getSavedQuiz(userId(request), quizId);
             if (quiz == null) {
                 writeJson(response, 404, Map.of("error", "Quiz not found."));
                 return;
@@ -104,7 +106,7 @@ public class QuizServlet extends HttpServlet {
         try {
             long quizId = Long.parseLong(quizIdText);
 
-            quizService.deleteQuiz(quizId);
+            quizService.deleteQuiz(userId(request), quizId);
 
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);  // 204 mean the quiz was deleted successfully
 
@@ -134,6 +136,15 @@ public class QuizServlet extends HttpServlet {
         }
 
         return quizId;
+    }
+
+    private long userId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object userId = session == null ? null : session.getAttribute("userId");
+        if (!(userId instanceof Long id)) {
+            throw new IllegalArgumentException("Please log in first.");
+        }
+        return id;
     }
  
     private void writeJson(HttpServletResponse response, int status, Object body) // sends a JSON response

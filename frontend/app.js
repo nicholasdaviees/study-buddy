@@ -1,3 +1,11 @@
+fetch("api/auth/me", { credentials: "same-origin" })
+    .then(response => {
+        if (!response.ok) {
+            window.location.replace("login.html");
+        }
+    })
+    .catch(() => window.location.replace("login.html"));
+
 // Sends a selected PDF to the upload servlet
 // Sends a selected PDF to the upload servlet and returns its task ID.
 async function uploadPdf(file) {

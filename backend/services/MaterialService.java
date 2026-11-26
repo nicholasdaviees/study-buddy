@@ -125,6 +125,19 @@ public class MaterialService {
         }
     }
 
+    public boolean deleteMaterial(long userId, String materialId) {
+        if (userId <= 0) {
+            throw new IllegalArgumentException("A valid user ID is required.");
+        }
+        try {
+            return documentsDAO.deleteDocumentByID(Long.parseLong(materialId), userId);
+        } catch (NumberFormatException error) {
+            throw new IllegalArgumentException("Material ID is invalid.", error);
+        } catch (java.sql.SQLException error) {
+            throw new IllegalStateException("Material could not be deleted.", error);
+        }
+    }
+
     public void updateMaterialStatus(String materialId, String status) {
         throw new UnsupportedOperationException("Material status updates are pending database integration.");
     }

@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,33 +65,86 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
-    @Override // gets one saved quiz
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)throws IOException {
 
-        String quizIdText = getQuizId(request);
-        if (quizIdText == null || quizIdText.isBlank()) {
-            writeJson(response, 400, Map.of("error", "A quiz ID is required."));
+    String quizIdText = getQuizId(request);
+
+    // Loads all quizzes for the selected material.
+    if (quizIdText == null || quizIdText.isBlank()) {
+        String materialId = request.getParameter("materialId");
+
+        if (materialId == null || materialId.isBlank()) {
+            writeJson(response, 400, Map.of(
+                "error", "A material ID is required."
+            ));
             return;
         }
 
         try {
-            long quizId = Long.parseLong(quizIdText);
-            Quiz quiz = quizService.getSavedQuiz(userId(request), quizId);
-            if (quiz == null) {
-                writeJson(response, 404, Map.of("error", "Quiz not found."));
-                return;
-            }
+            long materialID = Long.parseLong(materialId);
 
-            writeJson(response, 200, quiz);
+            List<Quiz> quizzes =
+                quizService.getSavedQuizzes(
+                    userId(request),
+                    materialID
+                );
+
+            writeJson(response, 200, quizzes);
 
         } catch (NumberFormatException error) {
-            writeJson(response,400, Map.of("error", "The quiz ID must be a number."));
+            writeJson(response, 400, Map.of(
+                "error", "The material ID must be a number."
+            ));
+
+        } catch (IllegalArgumentException error) {
+            writeJson(response, 401, Map.of(
+                "error", error.getMessage()
+            ));
 
         } catch (IllegalStateException error) {
-            writeJson(response, 500, Map.of("error", error.getMessage()));
+            writeJson(response, 500, Map.of(
+                "error", error.getMessage()
+            ));
         }
+
+        return;
     }
+
+    // Loads one quiz by its quiz ID.
+    try {
+        long quizId = Long.parseLong(quizIdText);
+
+        Quiz quiz = quizService.getSavedQuiz(
+            userId(request),
+            quizId
+        );
+
+        if (quiz == null) {
+            writeJson(response, 404, Map.of(
+                "error", "Quiz not found."
+            ));
+            return;
+        }
+
+        writeJson(response, 200, quiz);
+
+    } catch (NumberFormatException error) {
+        writeJson(response, 400, Map.of(
+            "error", "The quiz ID must be a number."
+        ));
+
+    } catch (IllegalArgumentException error) {
+        writeJson(response, 401, Map.of(
+            "error", error.getMessage()
+        ));
+
+    } catch (IllegalStateException error) {
+        writeJson(response, 500, Map.of(
+            "error", error.getMessage()
+        ));
+    }
+}
 
     @Override // deletes a saved quiz
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)

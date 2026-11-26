@@ -986,11 +986,24 @@ async function waitForGeneratedQuiz(taskId) {
                 throw new Error("Invalid quiz response.");
             }
 
-            return generated.questions;
+            return generated.questions.map(question => {
+                const choices = Array.isArray(question.choices)
+                    ? question.choices
+                    : ["True", "False"];
+                const correctAnswer = Array.isArray(question.choices)
+                    ? choices.indexOf(question.answer)
+                    : question.answer === true ? 0 : 1;
+
+                if (correctAnswer < 0) {
+                    throw new Error("Invalid quiz answer.");
+                }
+
+                return { ...question, choices, correctAnswer };
+            });
         }
 
         if (result?.status === "FAILED") {
-            throw new Error("Quiz generation failed.");
+            throw new Error(result.error || "Quiz generation failed.");
         }
 
         await new Promise(resolve => setTimeout(resolve, 1000));

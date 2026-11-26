@@ -63,7 +63,9 @@ public class TaskManager {
             record.error = "Task failed";
             record.status = Status.FAILED;
         } catch(Exception exception) {
-            record.error = "Task failed";
+            record.error = exception.getMessage() == null
+                    ? "Task failed"
+                    : exception.getMessage();
             record.status = Status.FAILED;
         }
     }

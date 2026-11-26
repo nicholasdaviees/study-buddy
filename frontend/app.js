@@ -326,18 +326,24 @@ async function showSavedFlashcards(materialId) {
 // Displays a user-friendly error message.
 function showError(errorMessage) {
     const statusElement = document.getElementById("question-status");
+
     if (statusElement) {
         statusElement.textContent = errorMessage;
- }
+        statusElement.classList.add("error-message");
+    }
 }
 
-// Updates the interface for queued, processing, complete, or failed work.
-function displayTaskStatus(taskStatus) {
-     const statusElement = document.getElementById("question-status");
-     if (statusElement) {
-        statusElement.textContent = taskStatus;
- }
+
+// updates the interface for queued, processing, complete, or failed work
+function displayTaskStatus(statusMessage) {
+    const statusElement = document.getElementById("question-status");
+
+    if (statusElement) {
+        statusElement.textContent = statusMessage;
+        statusElement.classList.remove("error-message");
+    }
 }
+
 
 //const askButton = document.getElementById("ask-btn");
     if (askButton) {
@@ -415,6 +421,7 @@ function displayTaskStatus(taskStatus) {
             showProcessing();
             updateProcessingStep(0);
             if (fileStatus) {
+                fileStatus.classList.remove("error-message");
                 fileStatus.textContent = "Uploading " + file.name + "...";
             }
             const taskId = await uploadPdf(file);
@@ -442,6 +449,7 @@ displaySavedMaterials();
             if (fileStatus) {
                 fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
                 
+                fileStatus.classList.remove("error-message");
             }
 
             hideProcessing();
@@ -450,6 +458,7 @@ displaySavedMaterials();
             hideProcessing();
             if (fileStatus) {
                 fileStatus.textContent = error.message;
+                fileStatus.classList.add("error-message");
                 
             }
         }

@@ -290,6 +290,7 @@ async function loadQuizzes(materialId) {
 
             questions.push({
                 quizId: quiz.quizID,
+                questionId: question.questionID,
                 question: question.questionText,
                 choices: choices,
                 correctAnswer: correctAnswer
@@ -857,6 +858,8 @@ if (submitQuizButton) {
             return;
         }
 
+        
+
         const question = quizQuestions[currentQuestionIndex];
         const feedback = document.getElementById("quiz-feedback");
 
@@ -872,6 +875,8 @@ if (submitQuizButton) {
             feedback.classList.add("incorrect");
         }
 
+
+        
 let correctCount = 0;
 
 for (let i = 0; i < quizQuestions.length; i++) {
@@ -895,6 +900,69 @@ if (scoreElement) {
     }
 }
          feedback.hidden = false;
+    });
+}
+
+const deleteQuestionButton =
+    document.getElementById("delete-question-btn");
+
+if (deleteQuestionButton) {
+    deleteQuestionButton.addEventListener("click", async () => {
+        if (quizQuestions.length === 0) {
+            alert("No quiz question is loaded.");
+            return;
+        }
+
+        const question =
+            quizQuestions[currentQuestionIndex];
+
+        if (!question.questionId) {
+            alert("This question has not been saved yet.");
+            return;
+        }
+
+        if (!confirm("Delete this question?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "/studybuddy/api/quizzes/questions/" +
+                encodeURIComponent(question.questionId),
+                {
+                    method: "DELETE",
+                    credentials: "same-origin"
+                }
+            );
+
+            if (!response.ok) {
+                const result =
+                    await response.json().catch(() => null);
+
+                throw new Error(
+                    result?.error || "Could not delete the question."
+                );
+            }
+
+            quizQuestions.splice(currentQuestionIndex, 1);
+            quizAnswers.splice(currentQuestionIndex, 1);
+
+            if (quizQuestions.length === 0) {
+                document.getElementById("quiz-question").textContent =
+                    "No quiz questions remaining.";
+                return;
+            }
+
+            if (currentQuestionIndex >= quizQuestions.length) {
+                currentQuestionIndex = quizQuestions.length - 1;
+            }
+
+            displayQuizQuestion();
+            alert("Question deleted successfully.");
+
+        } catch (error) {
+            alert(error.message);
+        }
     });
 }
 

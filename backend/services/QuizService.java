@@ -222,6 +222,37 @@ public class QuizService {
         }
     }
 
+
+    public void deleteQuestion(
+        long userId,
+        long questionID) {
+
+    if (userId <= 0 || questionID <= 0) {
+        throw new IllegalArgumentException(
+            "Valid user and question IDs are required."
+        );
+    }
+
+    try {
+        boolean deleted =
+            quizDAO.deleteQuestionByID(
+                questionID,
+                userId
+            );
+
+        if (!deleted) {
+            throw new IllegalArgumentException(
+                "Question not found."
+            );
+        }
+
+    } catch (SQLException error) {
+        throw new IllegalStateException(
+            "Question couldn't be deleted.",
+            error
+        );
+    }
+}
     
     public void deleteQuiz(long userId, long quizID) { // Deletes one saved quiz question form database
 
@@ -235,4 +266,6 @@ public class QuizService {
             throw new IllegalStateException("Quiz couldn't be deleted.", error); // sends message that the quiz couldnt be deleted from the database
         }
     }
+
+
 }

@@ -218,6 +218,29 @@ public class QuizDAO {
 
     return quizIDs;
 }
+
+public boolean deleteQuestionByID(
+        long questionID,
+        long userID)
+        throws SQLException {
+
+    String sql =
+        "DELETE FROM quiz_questions "
+        + "WHERE questionID = ? "
+        + "AND quizID IN ("
+        + "SELECT quizID FROM quizzes WHERE userID = ?"
+        + ")";
+
+    try (Connection connection = Database.open();
+         PreparedStatement statement =
+             connection.prepareStatement(sql)) {
+
+        statement.setLong(1, questionID);
+        statement.setLong(2, userID);
+
+        return statement.executeUpdate() == 1;
+    }
+}
     
     public boolean deleteQuiz(long quizID, long userID)
             throws SQLException {

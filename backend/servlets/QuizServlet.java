@@ -150,6 +150,43 @@ public class QuizServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
     throws IOException {
 
+        String path = request.getPathInfo();
+
+if (path != null && path.startsWith("/questions/")) {
+    String questionIdText =
+        path.substring("/questions/".length());
+
+    try {
+        long questionID = Long.parseLong(questionIdText);
+
+        quizService.deleteQuestion(
+            userId(request),
+            questionID
+        );
+
+        response.setStatus(
+            HttpServletResponse.SC_NO_CONTENT
+        );
+
+    } catch (NumberFormatException error) {
+        writeJson(response, 400, Map.of(
+            "error", "The question ID must be a number."
+        ));
+
+    } catch (IllegalArgumentException error) {
+        writeJson(response, 404, Map.of(
+            "error", error.getMessage()
+        ));
+
+    } catch (IllegalStateException error) {
+        writeJson(response, 500, Map.of(
+            "error", error.getMessage()
+        ));
+    }
+
+    return;
+}
+
         String quizIdText = getQuizId(request);
 
         if (quizIdText == null || quizIdText.isBlank()) {

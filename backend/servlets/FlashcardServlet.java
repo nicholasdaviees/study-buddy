@@ -7,6 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import services.FlashcardService;
 import java.io.IOException;
 import java.util.Map;
@@ -44,7 +45,8 @@ public class FlashcardServlet extends HttpServlet {
         }
 
         try {
-            String taskId = flashcardService.startFlashcardGeneration(materialId);
+            String taskId = flashcardService.startFlashcardGeneration(
+                    userId(request), materialId);
             writeJson(response, 202, Map.of("taskId", taskId));  // 202 means the task was accepted for background processing
 
         } catch (IllegalArgumentException error) {
@@ -61,7 +63,8 @@ public class FlashcardServlet extends HttpServlet {
             String materialId = request.getParameter("materialId");
 
         try {
-            String savedFlashcards = flashcardService.getSavedFlashcards(materialId);
+            String savedFlashcards = flashcardService.getSavedFlashcards(
+                    userId(request), materialId);
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
@@ -89,7 +92,7 @@ public class FlashcardServlet extends HttpServlet {
 
     try {
         long cardId = Long.parseLong(cardIdText);
-        flashcardService.deleteFlashcard(cardId); // deletes the card only if it belongs to the current user
+        flashcardService.deleteFlashcard(userId(request), cardId); // deletes the card only if it belongs to the current user
         response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 means the card was deleted successfully
 
    
@@ -120,6 +123,15 @@ public class FlashcardServlet extends HttpServlet {
         return cardId;
     }
 
+    private long userId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object userId = session == null ? null : session.getAttribute("userId");
+        if (!(userId instanceof Long id)) {
+            throw new IllegalArgumentException("Please log in first.");
+        }
+        return id;
+    }
+
     private void writeJson(HttpServletResponse response, int status, Object body) // sends a java object as a JSON response
             throws IOException {
 
@@ -129,7 +141,6 @@ public class FlashcardServlet extends HttpServlet {
             json.writeValue(response.getWriter(), body);
     }
 }
-
 
 
 

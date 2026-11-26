@@ -246,29 +246,60 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
 
 // Calls the quiz servlet for saved quiz questions.
 async function loadQuizzes(materialId) {
-     if (!materialId) {
+    if (!materialId) {
         throw new Error("Please select a PDF first.");
     }
+
     const response = await fetch(
-        "/studybuddy/api/quizzes?materialId=" + encodeURIComponent(materialId),
+        "/studybuddy/api/quizzes?materialId=" +
+        encodeURIComponent(materialId),
         {
             method: "GET",
             credentials: "same-origin",
             cache: "no-store"
         }
     );
+
     const result = await response.json().catch(() => null);
 
-     if (!response.ok) {
-        throw new Error(result?.error || "Could not load saved quizzes.");
+    if (!response.ok) {
+        throw new Error(
+            result?.error || "Could not load saved quizzes."
+        );
     }
 
-    if (!result || !Array.isArray(result.questions)) {
+    if (!Array.isArray(result)) {
         throw new Error("Invalid saved quiz response.");
     }
-    
-    return result.questions;
+
+    const questions = [];
+
+    result.forEach(quiz => {
+        if (!Array.isArray(quiz.questions)) {
+            return;
+        }
+
+        quiz.questions.forEach(question => {
+            const choices = question.options.map(
+                option => option.optionText
+            );
+
+            const correctAnswer = question.options.findIndex(
+                option => option.isCorrect
+            );
+
+            questions.push({
+                quizId: quiz.quizID,
+                question: question.questionText,
+                choices: choices,
+                correctAnswer: correctAnswer
+            });
+        });
+    });
+
+    return questions;
 }
+
 // Show saved quizzes.
 async function showSavedQuizzes(materialId) {
     const savedQuestions = await loadQuizzes(materialId);

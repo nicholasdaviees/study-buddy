@@ -44,7 +44,21 @@ public class QuizService {
         if (taskManager == null) {
             throw new IllegalStateException("Taskmanager is currently not available."); // checks if taskmanager is available
         }
-        return taskManager.submitTask("QUIZ_GENERATION", () -> generateQuiz(userId, materialId, questionType)); // this all sends the quiz task to taskmanager
+        return taskManager.submitTask("QUIZ_GENERATION", () -> {
+        String quizJson = generateQuiz(userId, materialId, questionType);
+
+        long materialID = Long.parseLong(materialId);
+
+        saveGeneratedQuiz(
+            userId,
+            materialID,
+            "Generated Quiz",
+            quizJson,
+            questionType
+        );
+
+        return quizJson;
+    });
     }
 
     // Generates multiple-choice or true/false questions from uploaded material.

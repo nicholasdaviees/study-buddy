@@ -43,7 +43,20 @@ public class FlashcardService {
 
         // sends flashcard-generation task to taskmanager
         // lambda waits to call generateflashcards() until worker thread runs the task
-        return taskManager.submitTask("FLASHCARD_GENERATION", () -> generateFlashcards(userId, materialId));
+        return taskManager.submitTask("FLASHCARD_GENERATION", () -> {
+        String flashcardJson = generateFlashcards(userId, materialId);
+
+        long materialID = Long.parseLong(materialId);
+
+        validateAndSaveFlashcards(
+            userId,
+            materialID,
+            flashcardJson
+        );
+
+        return flashcardJson;
+    }
+);
     }
 
     // Retrieves user-owned material and requests flashcard JSON.

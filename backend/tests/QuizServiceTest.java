@@ -112,7 +112,7 @@ public class QuizServiceTest {
 
         String quizJson = "{\"questions\":[{\"question\":\"What is Java?\",\"choices\":[\"Language\",\"Animal\"],\"answer\":\"Language\"}]}";
 
-        service.saveGeneratedQuiz(25L, "Java Quiz", quizJson, "multiple-choice");
+        service.saveGeneratedQuiz(25L, 1L, "Java Quiz", quizJson, "multiple-choice");
 
         assertEquals(25L, fakeDAO.savedUserID);
         assertEquals("Java Quiz", fakeDAO.savedTitle);
@@ -132,14 +132,14 @@ public class QuizServiceTest {
     
         QuizService service = new QuizService(null, null, null, new RecordingQuizDAO());
 
-        assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz(1L, "Broken Quiz", "not valid JSON", "multiple-choice"));
+        assertThrows(RuntimeException.class, () -> service.saveGeneratedQuiz(1L, 1L, "Broken Quiz", "not valid JSON", "multiple-choice"));
     }
 
     @Test // tests if saved quiz could be retrieved
     public void retrievesSavedQuiz() throws SQLException {
         RecordingQuizDAO fakeDAO = new RecordingQuizDAO();
 
-        Quiz savedQuiz = new Quiz(10L, 25L, "Saved Quiz", new ArrayList<>());
+        Quiz savedQuiz = new Quiz(10L, 25L, 1L, "Saved Quiz", new ArrayList<>());
 
         fakeDAO.quizToReturn = savedQuiz;
 
@@ -192,6 +192,7 @@ public class QuizServiceTest {
         @Override
         public void saveQuiz(
                 long userID,
+                long materialID,
                 String title,
                 List<Question> questions)
                 throws SQLException {

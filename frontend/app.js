@@ -337,6 +337,36 @@ const askButton = document.getElementById("ask-btn");
      // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");
 
+    const processingSection =
+    document.getElementById("processing-section");
+
+const processingSteps =
+    document.querySelectorAll(".processing-steps li");
+
+function showProcessing() {
+    if (processingSection) {
+        processingSection.hidden = false;
+    }
+}
+
+function hideProcessing() {
+    if (processingSection) {
+        processingSection.hidden = true;
+    }
+}
+
+function updateProcessingStep(currentStep) {
+    processingSteps.forEach((step, index) => {
+        step.classList.remove("active", "complete");
+
+        if (index < currentStep) {
+            step.classList.add("complete");
+        } else if (index === currentStep) {
+            step.classList.add("active");
+        }
+    });
+}
+
     if (pdfUploadInput) {
         pdfUploadInput.addEventListener("change", async () => {
             const file = pdfUploadInput.files[0];
@@ -355,12 +385,16 @@ const askButton = document.getElementById("ask-btn");
         }
 
         try {
+            showProcessing();
+            updateProcessingStep(0);
             if (fileStatus) {
                 fileStatus.textContent = "Uploading " + file.name + "...";
             }
             const taskId = await uploadPdf(file);
+            updateProcessingStep(1);
 
             const materialId = await waitForUploadedMaterial(taskId);
+            updateProcessingStep(3);
 
             if (materialInput) {
                 materialInput.value = materialId;
@@ -380,13 +414,20 @@ displaySavedMaterials();
 
             if (fileStatus) {
                 fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
+                
             }
+
+            hideProcessing();
+            
         } catch (error) {
+            hideProcessing();
             if (fileStatus) {
                 fileStatus.textContent = error.message;
+                
             }
         }
         });
+        
     }
    // Flashcard Display
     let flashcards = [];

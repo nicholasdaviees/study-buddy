@@ -17,14 +17,15 @@
 
         <!--The #pages can be made into actual pages-->
         <nav aria-label="Main navigation">
-            <a href="studybuddy2.html">Home</a>
-            <a href="#flashcards">Flashcards</a>
-            <a href="#quizzes">Practice Quiz</a>
-            <a href="#saved">Saved Materials</a>
+            <a href="#home">Home</a>
+        <a href="#flashcard-section">Flashcards</a>
+        <a href="#quiz-section">Practice Quiz</a>
+        <a href="#ask-section">Ask Study Buddy</a>
+        <a href="#saved">Saved Materials</a>
         </nav>
     </header>
 
-    <main class="dashboard">
+    <main class="dashboard" id="home">
         <h2>Welcome Back!</h2>
         <p>
             Upload your course material and generate
@@ -48,6 +49,32 @@
                 No file selected.
             </p>
         </section>
+        
+        <section hidden id="processing-section">
+            <h3>Processing Your PDF</h3>
+            <p class="processing-subtitle1">Please wait while we process your document...</p>
+            <p class="processing-subtitle2">This may take a few moments depending on the file size.</p>
+            <div class="loading-spinner">
+              
+            </div>
+              <ul class="processing-steps">
+                <li>
+                    Uploading file...
+                </li>
+                <li>
+                    Extracting text from PDF...  
+                </li>
+                <li>
+                    Validating content...
+                </li>
+                <li>
+                    Finalizing...
+                </li>
+                </ul>
+            <button hidden id="cancel-btn" type="button">
+                Cancel
+            </button>
+        </section>
 
         <section class="study-tools">
             <h3>Study Tools</h3>
@@ -64,13 +91,129 @@
                 <button id="truefalse-btn">
                     Generate True/False Quiz
                 </button>
+            </div>
+            <div class="saved-tools">
+                <button id="load-flashcards-btn" type="button">
+                    Load Saved Flashcards
+                </button>
 
-                <button id="ask-btn">
-                    Ask Study Buddy
+                <button id="load-quizzes-btn" type="button">
+                    Load Saved Quizzes
                 </button>
             </div>
         </section>
+
+        <section id="flashcard-section">
+            <h2>Flashcards</h2>
+            <p class="flashcard-subtitle">Review concepts from your uploaded material.</p>
+            <div class="flashcard-card">
+                <p id="flashcard-count">Card 1 of 10</p>
+                <h3 id="flashcard-question">Flashcard Question</h3>
+                <p hidden id="flashcard-answer">Flashcard answer</p>
+                <button id="reveal-answer-btn" type="button">
+                    Reveal Answer
+                </button>
+            </div>
+            <div class="flashcard-navigation">
+                <button id="previous-card-btn" type="button">
+                    Previous Card
+                </button>
+                <button id="next-card-btn" type="button">
+                    Next Card
+                </button>
+            </div>
+            <div class="flashcard-actions">
+                <button id="save-flashcard-btn" type="button">
+                    Save Flashcard
+                </button>
+                <button id="delete-flashcard-btn" type="button">
+                    Delete Flashcard
+                </button>
+            </div>
+
+        </section>
+
+        <section id="quiz-section">
+        <h2>Practice Quiz</h2>
+        <p>Test your knowledge with questions from the material.</p>
+        <div class="quiz-card">
+            <p id="quiz-count">Question 1 of 5</p>
+            <h3 id="quiz-question">Quiz question</h3>
+            <div id="quiz-choices">
+            <button class="quiz-choice" type="button">
+                Choice 1
+            </button>
+            <button class="quiz-choice" type="button">
+                Choice 2
+            </button>
+             <button class="quiz-choice" type="button">
+                Choice 3
+            </button>
+            <button class="quiz-choice" type="button">
+                Choice 4
+            </button>
+            </div>
+            <button id="submit-quiz-btn" type="button">
+                Submit Answer
+            </button>
+            <p hidden role ="status" id="quiz-feedback">Feedback</p>
+        </div>
+        <div class="quiz-navigation">
+          <button id="previous-question-btn" type="button">
+                Previous Question
+            </button>
+             <button id="next-question-btn" type="button">
+                Next Question
+            </button>
+            </div>
+    </section>
+
+
+<section id="ask-section" class="question-section">
+        <h2>Ask Study Buddy</h2>
+        <p>Ask a question about your uploaded study material.</p>
+
+        <input 
+            type="hidden"
+            id="question-material-id"  
+            />
+
+        <p id="selected-material-name" role="status">
+          No study material selected.
+        </p>
+        <div class="question-controls">
+        <label for="student-question"> </label>
+        <textarea
+          id="student-question"
+          maxlength="2000"
+          rows="3"
+          placeholder="What would you like to know?"
+        ></textarea>
+        <button id="ask-btn" type="button">
+            Send
+        </button>
+        </div>
+        <p id="question-status" role="status"></p>
+        <div class="answer-box">
+          <h3>Answer</h3>
+          <p id="question-answer">Your answer will appear here.</p>
+        </div>
+      </section>
+
+      <section id="saved">
+        <h2>Saved Study Materials</h2>
+        <p>View your saved study materials here.</p>
+        <div id="saved-materials-list">
+          <p>No study material uploaded yet.</p>
+            <button class="open-material-btn" type="button">
+              Open Material
+            </button>
+            <button class="delete-material-btn" type="button">
+              Delete Material
+            </button>
+          </div>
+      </section>
     </main>
 </body>
 </html>
-<!--Add sources for html, css, javascript. Source: web design textbook, coding in 7 book, web development book, geeks for geeks...-->
+<!--Add sources for html, css, javascript. Source: web design textbook, book: "Coding All-in-One For Dummies", book: "Modern Web Development", website: GeeksforGeeks- HTML, CSS..., MDN web docs, Jakarta EE-->

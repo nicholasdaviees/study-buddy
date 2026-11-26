@@ -98,7 +98,7 @@ public class TaskManager {
         try {
             return objectMapper.writeValueAsString(response);
         } catch (JsonProcessingException exception){
-            throw new IllegalStateException("could not serialize task response", exception)'
+            throw new IllegalStateException("could not serialize task response", exception);
         }
         
     }

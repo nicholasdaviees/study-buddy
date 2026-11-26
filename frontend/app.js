@@ -157,6 +157,34 @@ async function askQuestion(materialId, question) {
     return await pollTaskStatus(result.taskId, 1000);
 }
 
+    const askButton = document.getElementById("ask-btn");
+
+    if (askButton) {
+        askButton.addEventListener("click", async () => {
+            const materialInput = document.getElementById("question-material-id");
+
+            const questionInput = document.getElementById("student-question");
+
+            const questionStatus = document.getElementById("question-status");
+
+            const materialId = materialInput ? materialInput.value.trim() : "";
+
+            const question = questionInput ? questionInput.value.trim() : "";
+
+        try {
+            questionStatus.textContent = "Study Buddy is thinking...";
+
+            questionStatus.classList.remove("error-message");
+
+            await askQuestion(materialId, question);
+
+        } catch (error) {
+            questionStatus.textContent = error.message;
+            questionStatus.classList.add("error-message");
+        }
+    });
+}
+
 
 // Polls the task-status servlet until work completes or fails.
 async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
@@ -184,7 +212,7 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
     }
 
     // When finished, it will display and return the answer.
-    if (result?.status === "COMPLETED") {
+    if (result?.status === "COMPLETE") {
             displayAnswer(result);
             return result.answer;
     }
@@ -298,44 +326,56 @@ async function showSavedFlashcards(materialId) {
 // Displays a user-friendly error message.
 function showError(errorMessage) {
     const statusElement = document.getElementById("question-status");
+
     if (statusElement) {
         statusElement.textContent = errorMessage;
- }
-}
-
-// Updates the interface for queued, processing, complete, or failed work.
-function displayTaskStatus(taskStatus) {
-     const statusElement = document.getElementById("question-status");
-     if (statusElement) {
-        statusElement.textContent = taskStatus;
- }
-}
-
-const askButton = document.getElementById("ask-btn");
-    if (askButton) {
-        askButton.addEventListener("click", async () => {
-            const materialInput = document.getElementById("question-material-id");
-            const questionInput = document.getElementById("student-question");
-
-            const materialId = materialInput.value;
-            const question = questionInput.value;
-
-            askButton.disabled = true;
-            
-            document.getElementById("question-answer").textContent = "";
-
-            try {
-                await askQuestion(materialId, question);
-            } catch (error) {
-                showError(error.message);
-            } finally {
-                askButton.disabled = false;
-            }
-        });
+        statusElement.classList.add("error-message");
     }
+}
+
+
+// updates the interface for queued, processing, complete, or failed work
+function displayTaskStatus(statusMessage) {
+    const statusElement = document.getElementById("question-status");
+
+    if (statusElement) {
+        statusElement.textContent = statusMessage;
+        statusElement.classList.remove("error-message");
+    }
+}
+
 
      // Finds the pdf file.
     const pdfUploadInput = document.getElementById("pdf-upload");
+
+    const processingSection =
+    document.getElementById("processing-section");
+
+    const processingSteps = document.querySelectorAll(".processing-steps li");
+
+    function showProcessing() {
+        if (processingSection) {
+            processingSection.hidden = false;
+        }
+    }
+
+    function hideProcessing() {
+        if (processingSection) {
+            processingSection.hidden = true;
+        }
+    }
+
+    function updateProcessingStep(currentStep) {
+        processingSteps.forEach((step, index) => {
+            step.classList.remove("active", "complete");
+
+        if (index < currentStep) {
+            step.classList.add("complete");
+        } else if (index === currentStep) {
+            step.classList.add("active");
+        }
+    });
+}
 
     if (pdfUploadInput) {
         pdfUploadInput.addEventListener("change", async () => {
@@ -355,12 +395,17 @@ const askButton = document.getElementById("ask-btn");
         }
 
         try {
+            showProcessing();
+            updateProcessingStep(0);
             if (fileStatus) {
+                fileStatus.classList.remove("error-message");
                 fileStatus.textContent = "Uploading " + file.name + "...";
             }
             const taskId = await uploadPdf(file);
+            updateProcessingStep(1);
 
             const materialId = await waitForUploadedMaterial(taskId);
+            updateProcessingStep(3);
 
             if (materialInput) {
                 materialInput.value = materialId;
@@ -380,13 +425,22 @@ displaySavedMaterials();
 
             if (fileStatus) {
                 fileStatus.textContent = "PDF ready! You can now ask question about " + file.name + ".";
+                
+                fileStatus.classList.remove("error-message");
             }
+
+            hideProcessing();
+            
         } catch (error) {
+            hideProcessing();
             if (fileStatus) {
                 fileStatus.textContent = error.message;
+                fileStatus.classList.add("error-message");
+                
             }
         }
         });
+        
     }
    // Flashcard Display
     let flashcards = [];
@@ -727,6 +781,7 @@ function displayQuizQuestion() {
     const feedback = document.getElementById("quiz-feedback");
     feedback.hidden = true;
     feedback.textContent = "";
+    feedback.classList.remove("correct", "incorrect");
 
     question.choices.forEach((choice, index) => {
         const choiceButton = document.createElement("button");
@@ -767,11 +822,15 @@ if (submitQuizButton) {
 
                 quizAnswers[currentQuestionIndex] = selectedQuizAnswer;
 
+                feedback.classList.remove("correct", "incorrect");
+
         if (selectedQuizAnswer === question.correctAnswer) {
-    feedback.textContent = "Correct!";
-} else {
-    feedback.textContent = "Incorrect. Try again!";
-}
+            feedback.textContent = "Correct!";
+            feedback.classList.add("correct");
+        } else {
+            feedback.textContent = "Incorrect. Try again!";
+            feedback.classList.add("incorrect");
+        }
 
 let correctCount = 0;
 

@@ -597,7 +597,7 @@ async function waitForGeneratedFlashcards(taskId) {
     throw new Error("Flashcard generation is taking longer than expected.");
 }   
 // Save flashcard button.
-const saveFlashcardButton = document.getElementById("save-flashcard-btn");
+/*const saveFlashcardButton = document.getElementById("save-flashcard-btn");
 
 if (saveFlashcardButton) {
     saveFlashcardButton.addEventListener("click", async () => {
@@ -638,7 +638,7 @@ async function saveFlashcard(card) {
             answer: card.answer
         })
     });
-
+*/
     const result = await response.json().catch(() => null);
 
     if (!response.ok) {

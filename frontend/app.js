@@ -1050,7 +1050,7 @@ function displaySavedMaterials() {
         const openButton = document.createElement("button");
         openButton.type = "button";
         openButton.className = "open-material-btn";
-        openButton.textContent = "Open Material";
+        openButton.textContent = "Select Material";
          openButton.addEventListener("click", () => {
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");

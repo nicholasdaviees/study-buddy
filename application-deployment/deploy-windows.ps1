@@ -7,6 +7,15 @@ $env:DB_USER = if ($env:DB_USER) { $env:DB_USER } else { "studybuddy" }
 $env:DB_PASSWORD = if ($env:DB_PASSWORD) { $env:DB_PASSWORD } else { "studybuddy" }
 $Model = if ($env:OLLAMA_MODEL) { $env:OLLAMA_MODEL } else { "qwen2.5:7b" }
 
+function Refresh-EnvironmentPath {
+    $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+function Find-MySqlClient {
+    return Get-ChildItem "C:\Program Files\MySQL" -Recurse -File -Filter "mysql.exe" -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+}
+
 # Install the Java, build, database, server, and AI dependencies
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     throw "Windows Package Manager (winget) is required. Install App Installer from the Microsoft Store."
@@ -19,13 +28,17 @@ winget install --id Apache.Tomcat --exact --accept-package-agreements --accept-s
 winget install --id Ollama.Ollama --exact --accept-package-agreements --accept-source-agreements
 
 # Locate the installations added by winget
-$env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+Refresh-EnvironmentPath
 $java = Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory -Filter "jdk-21*" | Select-Object -First 1
 if (-not $java) { throw "Java 21 was not found after installation." }
 $env:JAVA_HOME = $java.FullName
 
-$mysql = Get-ChildItem "C:\Program Files\MySQL" -Recurse -Filter "mysql.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
-if (-not $mysql) { throw "MySQL was not found after installation." }
+$mysql = Find-MySqlClient
+if (-not $mysql) {
+    throw "MySQL was not installed. The current winget MySQL package points to a broken download URL. Install MySQL Server manually, then rerun this script."
+}
+
+Get-Service | Where-Object { $_.Name -match "MySQL|MariaDB" } | Start-Service -ErrorAction SilentlyContinue
 
 $tomcat = if ($env:CATALINA_HOME) {
     $env:CATALINA_HOME

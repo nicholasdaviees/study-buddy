@@ -1217,11 +1217,16 @@ function displaySavedMaterials() {
          openButton.addEventListener("click", () => {
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");
+            const fileStatus = document.getElementById("file-status");
             if (materialInput) {
         materialInput.value = material.id;
     }
             if (selectedMaterialName) {
         selectedMaterialName.textContent = "Selected study material: " + material.name;
+    }
+            if (fileStatus) {
+        fileStatus.textContent = "Selected study material: " + material.name;
+        fileStatus.classList.remove("error-message");
     }
             alert(material.name + " is now selected for studying.");
         });
@@ -1243,12 +1248,16 @@ function displaySavedMaterials() {
             saveMaterialsToBrowser();
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");
+            const fileStatus = document.getElementById("file-status");
 
             if (materialInput && materialInput.value === material.id) {
             materialInput.value = "";
 
             if (selectedMaterialName) {
                 selectedMaterialName.textContent = "No study material selected.";
+            }
+            if (fileStatus) {
+                fileStatus.textContent = "No file selected.";
             }
         }
             displaySavedMaterials();

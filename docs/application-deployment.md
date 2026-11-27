@@ -20,359 +20,463 @@ This document covers how to build and deploy the Study Buddy application on MacO
 # MacOS - Deployment From Scratch
 *Estimated time to complete: 15-20 minutes (mostly to download Ollama model)*
 1. Go to the project folder:
-```bash
-cd study-buddy
-```
+  ```bash
+  cd study-buddy
+  ```
 
 2. Install Homebrew:
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew --version # confirm Homebrew installation 
-```
+  ```bash
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  brew --version # confirm Homebrew installation
+  ```
 
 3. Install project dependencies:
-```bash
-brew update
-brew install openjdk@21 maven mysql tomcat ollama
-```
+  ```bash
+  brew update
+  brew install openjdk@21 maven mysql tomcat ollama
+  ```
 
 4. Configure Java and Tomcat:
 
 If using Zsh shell use:
-```bash
-export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
-export PATH="$(brew --prefix openjdk@21)/bin:$PATH"
-export CATALINA_HOME="$(brew --prefix tomcat)/libexec"
-```
+  ```bash
+  export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+  export PATH="$(brew --prefix openjdk@21)/bin:$PATH"
+  export CATALINA_HOME="$(brew --prefix tomcat)/libexec"
+  ```
 
 If using Fish shell use:
-```bash
-set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
-set -gx PATH (brew --prefix openjdk@21)/bin $PATH
-set -gx CATALINA_HOME (brew --prefix tomcat)/libexec
-```
+  ```bash
+  set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
+  set -gx PATH (brew --prefix openjdk@21)/bin $PATH
+  set -gx CATALINA_HOME (brew --prefix tomcat)/libexec
+  ```
 
 5. Start MySQL:
-```bash
-brew services start mysql
-```
+  ```bash
+  brew services start mysql
+  ```
 
 6. Create the database and application user:
-```bash
-mysql -u root <<'SQL'
-CREATE DATABASE IF NOT EXISTS StudyBuddy
-  CHARACTER SET utf8mb4;
-CREATE USER IF NOT EXISTS 'studybuddy'@'localhost'
-  IDENTIFIED BY 'studybuddy';
-ALTER USER 'studybuddy'@'localhost'
-  IDENTIFIED BY 'studybuddy';
-GRANT ALL PRIVILEGES ON StudyBuddy.* 
-  TO 'studybuddy'@'localhost';
-FLUSH PRIVILEGES;
-SQL
-```
+  ```bash
+  mysql -u root <<'SQL'
+  CREATE DATABASE IF NOT EXISTS StudyBuddy
+    CHARACTER SET utf8mb4;
+  CREATE USER IF NOT EXISTS 'studybuddy'@'localhost'
+    IDENTIFIED BY 'studybuddy';
+  ALTER USER 'studybuddy'@'localhost'
+    IDENTIFIED BY 'studybuddy';
+  GRANT ALL PRIVILEGES ON StudyBuddy.*
+    TO 'studybuddy'@'localhost';
+  FLUSH PRIVILEGES;
+  SQL
+  ```
 Load the schema:
-```bash
-mysql -u root < backend/database/schema.sql
-```
-If your MySQL root account has a password, add `-p` to both MySQL commands.
+  ```bash
+  mysql -u root < backend/database/schema.sql
+  ```
 
 7. Start Ollama:
-```bash
-ollama serve # start Ollama
-ollama pull qwen2.5:7b # do this in separate terminal from the ollama serve
-```
+  ```bash
+  ollama serve # start Ollama
+  ollama pull qwen2.5:7b # do this in separate terminal from the ollama serve
+  ```
 
 8. Set database variables:
 If using Zsh shell use:
-```bash
-export DB_URL='jdbc:mysql://localhost:3306/StudyBuddy'
-export DB_USER='studybuddy'
-export DB_PASSWORD='studybuddy'
-```
+  ```bash
+  export DB_URL='jdbc:mysql://localhost:3306/StudyBuddy'
+  export DB_USER='studybuddy'
+  export DB_PASSWORD='studybuddy'
+  ```
 
 If using Fish shell use:
-```bash
-set -gx DB_URL 'jdbc:mysql://localhost:3306/StudyBuddy'
-set -gx DB_USER 'studybuddy'
-set -gx DB_PASSWORD 'studybuddy'
-```
+  ```bash
+  set -gx DB_URL 'jdbc:mysql://localhost:3306/StudyBuddy'
+  set -gx DB_USER 'studybuddy'
+  set -gx DB_PASSWORD 'studybuddy'
+  ```
 
 9. Build the application:
-```bash
-mvn clean package -Dmaven.test.skip=true
-```
+  ```bash
+  mvn clean package -Dmaven.test.skip=true
+  ```
 
 10. Deploy the WAR:
-```bash
-cp target/study-buddy-1.0-SNAPSHOT.war \
-  "$CATALINA_HOME/webapps/studybuddy.war"
-```
+  ```bash
+  cp target/study-buddy-1.0-SNAPSHOT.war \
+    "$CATALINA_HOME/webapps/studybuddy.war"
+  ```
 
 11. Start Tomcat:
-```bash
-"$CATALINA_HOME/bin/catalina.sh" start
-```
+  ```bash
+  "$CATALINA_HOME/bin/catalina.sh" start
+  ```
 
 12. Open Study Buddy:
-```bash
-open "http://localhost:8080/studybuddy/login.html"
-```
+  ```bash
+  open "http://localhost:8080/studybuddy/login.html"
+  ```
 Or open browser and navigate to: http://localhost:8080/studybuddy/login.html
 
 # Windows - Deployment From Scratch
 *Estimated time to complete: 15-20 minutes (mostly to download Ollama model)*
 
+**Open Powershell as Administrator**
 1. Go to the project folder:
-```powershell
-cd study-buddy
-```
+  ```powershell
+  cd study-buddy
+  ```
+
+2. Install winget:
+  ```powershell
+  Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
+  ```
+If the above installation command doesn't work, you may need to enter this one instead:
+  ```powershell
+  Install-PackageProvider -Name NuGet -Force | Out-Null
+  Install-Module -Name Microsoft.WinGet.Client -Force -Repository PSGallery | Out-Null
+  Repair-WinGetPackageManager -Force -Latest
+  ```
+Confirm installation:
+  ```powershell
+  winget --version
+  ```
 
 2. Install project dependencies:
-```powershell
-winget install EclipseAdoptium.Temurin.21.JDK
-winget install Apache.Maven
-winget install Oracle.MySQL
-winget install Ollama.Ollama
-```
+  ```powershell
+  winget install EclipseAdoptium.Temurin.21.JDK
+  winget install Oracle.MySQL
+  winget install Ollama.Ollama
+  ```
 
-Install Tomcat 11 from the Apache Tomcat website, then set the Tomcat path:
-```powershell
-$env:CATALINA_HOME = "C:\Program Files\Apache Software Foundation\Tomcat 11.0"
-```
+3. Install Maven:
 
-3. Configure Java and Tomcat:
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21"
-$env:CATALINA_HOME = "C:\Program Files\Apache Software Foundation\Tomcat 11.0"
-```
+Can use Scoop or Chocolatey to install:
+  ```powershell
+  scoop install main/maven # scoop
+  choco install maven # Chocolatey
+  ```
+If you don't have those package managers installed, you can download it directly from the website.
+  ```powershell
+  $mavenVersion = "3.9.11"
+  $installRoot = "$env:USERPROFILE\Tools"
+  $zipPath = "$env:TEMP\apache-maven.zip"
+  $downloadUrl = "https://archive.apache.org/dist/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.zip"
 
-4. Start MySQL:
-```powershell
-Start-Service MySQL80
-```
+  New-Item -ItemType Directory -Force $installRoot | Out-Null
 
-5. Create the database and application user:
-```powershell
-@"
-CREATE DATABASE IF NOT EXISTS StudyBuddy CHARACTER SET utf8mb4;
-CREATE USER IF NOT EXISTS 'studybuddy'@'localhost' IDENTIFIED BY 'studybuddy';
-ALTER USER 'studybuddy'@'localhost' IDENTIFIED BY 'studybuddy';
-GRANT ALL PRIVILEGES ON StudyBuddy.* TO 'studybuddy'@'localhost';
-FLUSH PRIVILEGES;
-"@ | mysql -u root
-```
+  Invoke-WebRequest `
+    -Uri $downloadUrl `
+    -OutFile $zipPath
+
+  Expand-Archive `
+    -Path $zipPath `
+    -DestinationPath $installRoot `
+    -Force
+
+  $mavenHome = "$installRoot\apache-maven-$mavenVersion"
+
+  [Environment]::SetEnvironmentVariable(
+    "MAVEN_HOME",
+    $mavenHome,
+    "User"
+  )
+
+  $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+
+  [Environment]::SetEnvironmentVariable(
+    "Path",
+    "$userPath;$mavenHome\bin",
+    "User"
+  )
+  ```
+- After installing, you may need to close and reopen the powershell window. Then verify the installation with:
+  ```powershell
+  mvn --version
+  ```
+
+3. Install Apache Tomcat:
+- Navigate to and download the zip: https://tomcat.apache.org/download-11.cgi
+- Go to downloads folder, right click, and choose **Extract All**
+  - You can extract to any folder, but this documentation assumes you extract to the Downloads folder.
+  - If you extract to a different folder, then update the path below to the appropriate folder.
+
+4. Configure Java and Tomcat:
+
+**NOTE:** ```REPLACE_WITH_YOUR_USERNAME``` in the ```CATALINA_HOME``` path.
+Double check both paths below, they might need to be changed if your files are named differently.
+  ```powershell
+  $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.10002-hotspot"
+  $env:CATALINA_HOME = "C:\Users\*********REPLACE_WITH_YOUR_USERNAME*********\Downloads\apache-tomcat-11.0.29-windows-x64\apache-tomcat-11.0.29" # your path to the extracted folder may be different. Change accordingly
+  ```
+
+5. Configure MySQL:
+- Press Windows key and open up "MySQL Configurator"
+- Go through setup screens:
+  - Create a root password
+  - Click **Add User**
+    - Username: studybuddy
+    - Host: localhost
+    - Password: studybuddy
+    - Leave role as **DB Admin**
+  - Enable Configure MySQL Server as a Windows Service
+  - Use the service name
+  - Enable Start the MySQL Server at System Startup
+  - In **Apply Configuration**, click **Execute**, then finish
+- Start MySQL:
+   ```powershell
+   Get-Service MySQL84
+   Start-Service MySQL84
+   # may get an "error" on last command if MySQL is already started. This is fine verify it's running with below command
+   ```
+- Verify it's up and running:
+   ```powershell
+   $mysqlBin = "C:\Program Files\MySQL\MySQL Server 8.4\bin"
+   & "$mysqlBin\mysqladmin.exe" -u root -p ping
+   # Expected result: mysqld is alive
+   ```
+- Lastly, load the database schema:
+   ```powershell
+    Get-Content backend\database\schema.sql -Raw | & "$mysqlBin\mysql.exe" -u root -p
+    # enter root password
+   ```
+- You can verify the tables if you want:
+   ```powershell
+   & "$mysqlBin\mysql.exe" -u studybuddy -p StudyBuddy -e "SHOW TABLES;"
+   # enter "studybuddy" as password
+   ```
+
+6. Create the database and application user:
+  ```powershell
+  $mysqlBin = "C:\Program Files\MySQL\MySQL Server 8.4\bin"
+
+  @"
+  CREATE DATABASE IF NOT EXISTS StudyBuddy CHARACTER SET utf8mb4;
+  CREATE USER IF NOT EXISTS 'studybuddy'@'localhost' IDENTIFIED BY 'studybuddy';
+  ALTER USER 'studybuddy'@'localhost' IDENTIFIED BY 'studybuddy';
+  GRANT ALL PRIVILEGES ON StudyBuddy.* TO 'studybuddy'@'localhost';
+  FLUSH PRIVILEGES;
+  "@ | & "$mysqlBin\mysql.exe" -u root -p
+
+  # enter your root password
+  ```
 Load the schema:
-```powershell
-Get-Content backend\database\schema.sql | mysql -u root
-```
+  ```powershell
+  Get-Content backend\database\schema.sql -Raw | & "$mysqlBin\mysql.exe" -u root -p
+  # enter your root password
+  ```
 
-6. Start Ollama:
-```powershell
-Start-Process ollama -ArgumentList "serve"
-ollama pull qwen2.5:7b
-```
+7. Start Ollama:
+  ```powershell
+  Start-Process ollama -ArgumentList "serve"
+  ollama pull qwen2.5:7b
+  ```
 
-7. Set database variables:
-```powershell
-$env:DB_URL = 'jdbc:mysql://localhost:3306/StudyBuddy'
-$env:DB_USER = 'studybuddy'
-$env:DB_PASSWORD = 'studybuddy'
-```
+8. Set database variables:
+  ```powershell
+  $env:DB_URL = 'jdbc:mysql://localhost:3306/StudyBuddy'
+  $env:DB_USER = 'studybuddy'
+  $env:DB_PASSWORD = 'studybuddy'
+  ```
 
-8. Build the application:
-```powershell
-mvn clean package -Dmaven.test.skip=true
-```
+9. Build the application:
+  ```powershell
+  mvn clean package "-Dmaven.test.skip=true"
+  ```
 
-9. Deploy the WAR:
-```powershell
-Copy-Item target\study-buddy-1.0-SNAPSHOT.war `
-  "$env:CATALINA_HOME\webapps\studybuddy.war"
-```
+10. Deploy the WAR:
+  ```powershell
+  Copy-Item target\study-buddy-1.0-SNAPSHOT.war `
+    "$env:CATALINA_HOME\webapps\studybuddy.war"
+  ```
 
-10. Start Tomcat:
-```powershell
-& "$env:CATALINA_HOME\bin\catalina.bat" start
-```
+11. Start Tomcat:
+  ```powershell
+  & "$env:CATALINA_HOME\bin\catalina.bat" start
+  ```
 
-11. Open Study Buddy:
-```powershell
-Start-Process "http://localhost:8080/studybuddy/login.html"
-```
+12. Open Study Buddy:
+  ```powershell
+  Start-Process "http://localhost:8080/studybuddy/login.html"
+  ```
 Or open browser and navigate to: http://localhost:8080/studybuddy/login.html
 
 
 # MacOS - Deployment Post Dependency Install
 *Estimated time to complete: 1-2 minutes*
 1. Go to the project folder:
-```bash
-cd study-buddy
-```
+  ```bash
+  cd study-buddy
+  ```
 
 2. Configure Java and Tomcat:
 
 If using Zsh shell use:
-```bash
-export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
-export PATH="$(brew --prefix openjdk@21)/bin:$PATH"
-export CATALINA_HOME="$(brew --prefix tomcat)/libexec"
-```
+  ```bash
+  export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+  export PATH="$(brew --prefix openjdk@21)/bin:$PATH"
+  export CATALINA_HOME="$(brew --prefix tomcat)/libexec"
+  ```
 
 If using Fish shell use:
-```bash
-set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
-set -gx PATH (brew --prefix openjdk@21)/bin $PATH
-set -gx CATALINA_HOME (brew --prefix tomcat)/libexec
-```
+  ```bash
+  set -gx JAVA_HOME (brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home
+  set -gx PATH (brew --prefix openjdk@21)/bin $PATH
+  set -gx CATALINA_HOME (brew --prefix tomcat)/libexec
+  ```
 
 3. Start MySQL:
-```bash
-brew services start mysql
-```
+  ```bash
+  brew services start mysql
+  ```
 
 4. Start Ollama:
-```bash
-ollama serve
-```
+  ```bash
+  ollama serve
+  ```
 
 5. Set database variables:
 
 If using Zsh shell use:
-```bash
-# do this in separate terminal from the ollama serve
-export DB_URL='jdbc:mysql://localhost:3306/StudyBuddy'
-export DB_USER='studybuddy'
-export DB_PASSWORD='studybuddy'
-```
+  ```bash
+  # do this in separate terminal from the ollama serve
+  export DB_URL='jdbc:mysql://localhost:3306/StudyBuddy'
+  export DB_USER='studybuddy'
+  export DB_PASSWORD='studybuddy'
+  ```
 
 If using Fish shell use:
-```bash
-# do this in separate terminal from the ollama serve
-set -gx DB_URL 'jdbc:mysql://localhost:3306/StudyBuddy'
-set -gx DB_USER 'studybuddy'
-set -gx DB_PASSWORD 'studybuddy'
-```
+  ```bash
+  # do this in separate terminal from the ollama serve
+  set -gx DB_URL 'jdbc:mysql://localhost:3306/StudyBuddy'
+  set -gx DB_USER 'studybuddy'
+  set -gx DB_PASSWORD 'studybuddy'
+  ```
 
 6. Build the application:
-```bash
-mvn clean package -Dmaven.test.skip=true
-```
+  ```bash
+  mvn clean package -Dmaven.test.skip=true
+  ```
 
 7. Deploy the WAR:
-```bash
-cp target/study-buddy-1.0-SNAPSHOT.war \
-  "$CATALINA_HOME/webapps/studybuddy.war"
-```
+  ```bash
+  cp target/study-buddy-1.0-SNAPSHOT.war \
+    "$CATALINA_HOME/webapps/studybuddy.war"
+  ```
 
 8. Start Tomcat:
-```bash
-"$CATALINA_HOME/bin/catalina.sh" start
-```
+  ```bash
+  "$CATALINA_HOME/bin/catalina.sh" start
+  ```
 
 12. Open Study Buddy:
-```bash
-open "http://localhost:8080/studybuddy/login.html"
-```
+  ```bash
+  open "http://localhost:8080/studybuddy/login.html"
+  ```
 Or open browser and navigate to: http://localhost:8080/studybuddy/login.html
 
 # Windows - Deployment Post Dependency Install
 
 *Estimated time to complete: 1-2 minutes*
 1. Go to the project folder:
-```powershell
-cd study-buddy
-```
+  ```powershell
+  cd study-buddy
+  ```
 
 2. Configure Java and Tomcat:
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21"
-$env:CATALINA_HOME = "C:\Program Files\Apache Software Foundation\Tomcat 11.0"
-```
+**NOTE:** ```REPLACE_WITH_YOUR_USERNAME``` in the ```CATALINA_HOME``` path.
+Double check both paths below, they might need to be changed if your files are named differently.
+  ```powershell
+  $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.13.10002-hotspot"
+  $env:CATALINA_HOME = "C:\Users\*********REPLACE_WITH_YOUR_USERNAME*********\Downloads\apache-tomcat-11.0.29-windows-x64\apache-tomcat-11.0.29" # your path to the extracted folder may be different. Change accordingly
+  ```
 
 3. Start MySQL:
-```powershell
-Start-Service MySQL80
-```
+  ```powershell
+  Get-Service MySQL84
+  Start-Service MySQL84
+  # may get an "error" on last command if MySQL is already started. This is fine verify it's running with below command
+  ```
 
 4. Start Ollama:
-```powershell
-Start-Process ollama -ArgumentList "serve"
-```
+  ```powershell
+  Start-Process ollama -ArgumentList "serve"
+  ```
 
 5. Set database variables:
-```powershell
-$env:DB_URL = 'jdbc:mysql://localhost:3306/StudyBuddy'
-$env:DB_USER = 'studybuddy'
-$env:DB_PASSWORD = 'studybuddy'
-```
+  ```powershell
+  $env:DB_URL = 'jdbc:mysql://localhost:3306/StudyBuddy'
+  $env:DB_USER = 'studybuddy'
+  $env:DB_PASSWORD = 'studybuddy'
+  ```
 
 6. Build the application:
-```powershell
-mvn clean package -Dmaven.test.skip=true
-```
+  ```powershell
+  mvn clean package "-Dmaven.test.skip=true"
+  ```
 
 7. Deploy the WAR:
-```powershell
-Copy-Item target\study-buddy-1.0-SNAPSHOT.war `
-  "$env:CATALINA_HOME\webapps\studybuddy.war"
-```
+  ```powershell
+  Copy-Item target\study-buddy-1.0-SNAPSHOT.war `
+    "$env:CATALINA_HOME\webapps\studybuddy.war"
+  ```
 
 8. Start Tomcat:
-```powershell
-& "$env:CATALINA_HOME\bin\catalina.bat" start
-```
+  ```powershell
+  & "$env:CATALINA_HOME\bin\catalina.bat" start
+  ```
 
 12. Open Study Buddy:
-```powershell
-Start-Process "http://localhost:8080/studybuddy/login.html"
-```
+  ```powershell
+  Start-Process "http://localhost:8080/studybuddy/login.html"
+  ```
 Or open browser and navigate to: http://localhost:8080/studybuddy/login.html
 
 # MacOS - Deployment With Automated Scripts
 
 1. Go to the project folder:
-```bash
-cd study-buddy
-```
+  ```bash
+  cd study-buddy
+  ```
 
 2. Make the script executable:
-```bash
-chmod +x scripts/deploy-macos.sh
-```
+  ```bash
+  chmod +x scripts/deploy-macos.sh
+  ```
 
 3. Run the deployment script:
-```bash
-./scripts/deploy-macos.sh
-```
+  ```bash
+  ./scripts/deploy-macos.sh
+  ```
 
 # Windows - Deployment With Automated Scripts
 
 1. Go to the project folder:
-```powershell
-cd study-buddy
-```
+  ```powershell
+  cd study-buddy
+  ```
 
 2. Set the Tomcat and MySQL paths:
-```powershell
-$env:CATALINA_HOME = "C:\Program Files\Apache Software Foundation\Tomcat 11.0"
-$env:MYSQL_SERVICE = "MySQL80"
-```
+  ```powershell
+  $env:CATALINA_HOME = "C:\Users\Nicholas\Downloads\apache-tomcat-11.0.29-windows-x64\apache-tomcat-11.0.29"
+  $env:MYSQL_SERVICE = "MySQL80"
+  ```
 
 3. Run the deployment script:
-```powershell
-.\scripts\deploy-windows.ps1
-```
+  ```powershell
+  .\scripts\deploy-windows.ps1
+  ```
 
 # MacOS - Stopping Study Buddy
-```bash
-"$CATALINA_HOME/bin/catalina.sh" stop # stop Tomcat
-brew services stop mysql # stop MySQL
-pkill -x ollama # stop Ollama
-```
+  ```bash
+  "$CATALINA_HOME/bin/catalina.sh" stop # stop Tomcat
+  brew services stop mysql # stop MySQL
+  pkill -x ollama # stop Ollama
+  ```
 # Windows - Stopping Study Buddy
-```bash
-& "$env:CATALINA_HOME\bin\catalina.bat" stop # stop Tomcat
-Stop-Service MySQL80 # stop MySQL
-Get-Process ollama -ErrorAction SilentlyContinue | Stop-Process -Force # stop Ollama
-```
+  ```powershell
+  & "$env:CATALINA_HOME\bin\catalina.bat" stop # stop Tomcat
+  Stop-Service MySQL80 # stop MySQL
+  Get-Process ollama -ErrorAction SilentlyContinue | Stop-Process -Force # stop Ollama
+  ```

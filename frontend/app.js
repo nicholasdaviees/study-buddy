@@ -1,11 +1,33 @@
-fetch("api/auth/me", { credentials: "same-origin" })
+/*fetch("api/auth/me", { credentials: "same-origin" })
     .then(response => {
         if (!response.ok) {
             window.location.replace("login.html");
         }
     })
     .catch(() => window.location.replace("login.html"));
+*/
 
+const logoutButton = document.getElementById("logout-btn");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+        try {
+            const response = await fetch("api/auth/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                throw new Error("Logout failed.");
+            }
+
+            window.location.replace("login.html");
+
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
 // Sends a selected PDF to the upload servlet
 // Sends a selected PDF to the upload servlet and returns its task ID.
 async function uploadPdf(file) {
@@ -318,7 +340,7 @@ async function showSavedQuizzes(materialId) {
     }
 
     displayQuizQuestion();
-
+    alert("Saved quizzes loaded successfully!");
     document.getElementById("quiz-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -359,6 +381,7 @@ async function showSavedFlashcards(materialId) {
     flashcards = savedCards;
     currentFlashcardIndex = 0;
     displayFlashcard();
+    alert("Flashcards generated successfully!");
     document.getElementById("flashcard-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -790,6 +813,7 @@ const quizButton = document.getElementById("quiz-btn");
         }
                  
     displayQuizQuestion();
+    alert("Practice quiz generated successfully!");
     document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
 });
@@ -1044,6 +1068,7 @@ if (trueFalseButton) {
             }
             
             displayQuizQuestion();
+            alert("True/False quiz generated successfully!");
             document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
 });

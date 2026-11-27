@@ -1,5 +1,5 @@
 # Study Buddy Deployment Document
-This document covers how to build and deploy the Study Buddy application on MacOS and Windows. On each OS, there are three paths covered in this document: deploying the application from scratch, deploying the application after the dependencies have already been installed, and deploying the application using the automated scripts.
+This document covers how to build and deploy the Study Buddy application on MacOS and Windows. On each OS, there are two paths covered in this document: deploying the application from scratch and deploying the application after the dependencies have already been installed.
 
 ---
 ### Table of Contents:
@@ -9,9 +9,6 @@ This document covers how to build and deploy the Study Buddy application on MacO
 - Deployment Post Dependency Install
   - [MacOS](#macos---deployment-post-dependency-install)
   - [Windows](#windows---deployment-post-dependency-install)
-- Deployment With Automated Scripts
-  - [MacOS](#macos---deployment-automated-scripts)
-  - [Windows](#windows---deployment-automated-scripts)
 - Stopping Study Buddy
   - [MacOS](#macos---stopping-study-buddy)
   - [Windows](#windows---stopping-study-buddy)
@@ -433,50 +430,17 @@ Double check both paths below, they might need to be changed if your files are n
   ```
 Or open browser and navigate to: http://localhost:8080/studybuddy/login.html
 
-# MacOS - Deployment With Automated Scripts
-
-1. Go to the project folder:
-  ```bash
-  cd study-buddy
-  ```
-
-2. Make the script executable:
-  ```bash
-  chmod +x scripts/deploy-macos.sh
-  ```
-
-3. Run the deployment script:
-  ```bash
-  ./scripts/deploy-macos.sh
-  ```
-
-# Windows - Deployment With Automated Scripts
-
-1. Go to the project folder:
-  ```powershell
-  cd study-buddy
-  ```
-
-2. Set the Tomcat and MySQL paths:
-  ```powershell
-  $env:CATALINA_HOME = "C:\Users\Nicholas\Downloads\apache-tomcat-11.0.29-windows-x64\apache-tomcat-11.0.29"
-  $env:MYSQL_SERVICE = "MySQL80"
-  ```
-
-3. Run the deployment script:
-  ```powershell
-  .\scripts\deploy-windows.ps1
-  ```
-
 # MacOS - Stopping Study Buddy
   ```bash
-  "$CATALINA_HOME/bin/catalina.sh" stop # stop Tomcat
-  brew services stop mysql # stop MySQL
-  pkill -x ollama # stop Ollama
+  # stop tomcat, stop mysql, stop ollama
+  "$CATALINA_HOME/bin/catalina.sh" stop
+  brew services stop mysql
+  pkill -x ollama
   ```
 # Windows - Stopping Study Buddy
   ```powershell
-  & "$env:CATALINA_HOME\bin\catalina.bat" stop # stop Tomcat
-  Stop-Service MySQL80 # stop MySQL
-  Get-Process ollama -ErrorAction SilentlyContinue | Stop-Process -Force # stop Ollama
+  # stop tomcat, stop mysql, stop ollama
+  & "$env:CATALINA_HOME\bin\catalina.bat" stop
+  Stop-Service MySQL84
+  Get-Process ollama -ErrorAction SilentlyContinue | Stop-Process -Force
   ```

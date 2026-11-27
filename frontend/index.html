@@ -22,10 +22,14 @@
         <a href="#quiz-section">Practice Quiz</a>
         <a href="#ask-section">Ask Study Buddy</a>
         <a href="#saved">Saved Materials</a>
+        <button id="logout-btn" type="button">
+            Log Out
+        </button>
         </nav>
     </header>
 
-    <main class="dashboard" id="home">
+    <main class="dashboard">
+        <section id="home" class="tab-panel">
         <h2>Welcome Back!</h2>
         <p>
             Upload your course material and generate
@@ -102,14 +106,14 @@
                 </button>
             </div>
         </section>
-
-        <section id="flashcard-section">
+</section>
+        <section id="flashcard-section" class="tab-panel">
             <h2>Flashcards</h2>
             <p class="flashcard-subtitle">Review concepts from your uploaded material.</p>
             <div class="flashcard-card">
-                <p id="flashcard-count">Card 1 of 10</p>
-                <h3 id="flashcard-question">Flashcard Question</h3>
-                <p hidden id="flashcard-answer">Flashcard answer</p>
+                <p id="flashcard-count">No flashcards available.</p>
+                <h3 id="flashcard-question">No flashcard material has been uploaded or selected.</h3>
+                <p hidden id="flashcard-answer"></p>
                 <button id="reveal-answer-btn" type="button">
                     Reveal Answer
                 </button>
@@ -123,9 +127,9 @@
                 </button>
             </div>
             <div class="flashcard-actions">
-                <button id="save-flashcard-btn" type="button">
+             <!--  <button id="save-flashcard-btn" type="button">
                     Save Flashcard
-                </button>
+                </button> -->
                 <button id="delete-flashcard-btn" type="button">
                     Delete Flashcard
                 </button>
@@ -133,30 +137,27 @@
 
         </section>
 
-        <section id="quiz-section">
+        <section id="quiz-section" class="tab-panel">
         <h2>Practice Quiz</h2>
         <p>Test your knowledge with questions from the material.</p>
         <div class="quiz-card">
-            <p id="quiz-count">Question 1 of 5</p>
-            <h3 id="quiz-question">Quiz question</h3>
+            <p id="quiz-count">No quiz available.</p>
+            <h3 id="quiz-question">No quiz material has been uploaded or selected.</h3>
             <div id="quiz-choices">
-            <button class="quiz-choice" type="button">
-                Choice 1
-            </button>
-            <button class="quiz-choice" type="button">
-                Choice 2
-            </button>
-             <button class="quiz-choice" type="button">
-                Choice 3
-            </button>
-            <button class="quiz-choice" type="button">
-                Choice 4
-            </button>
+            <p id="quiz-empty-message">
+                No quiz material has been uploaded or selected.
+            </p>
             </div>
             <button id="submit-quiz-btn" type="button">
                 Submit Answer
             </button>
+            <button id="delete-question-btn" type="button">
+                Delete Question
+            </button>
             <p hidden role ="status" id="quiz-feedback">Feedback</p>
+            <p id="quiz-score" role="status">
+                Score: 0 out of 0
+            </p>
         </div>
         <div class="quiz-navigation">
           <button id="previous-question-btn" type="button">

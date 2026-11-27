@@ -1,10 +1,55 @@
-fetch("api/auth/me", { credentials: "same-origin" })
+/*fetch("api/auth/me", { credentials: "same-origin" })
     .then(response => {
         if (!response.ok) {
             window.location.replace("login.html");
         }
     })
     .catch(() => window.location.replace("login.html"));
+*/
+
+const logoutButton = document.getElementById("logout-btn");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+        try {
+            const response = await fetch("api/auth/logout", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                throw new Error("Logout failed.");
+            }
+
+            window.location.replace("login.html");
+
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
+
+const tabLinks = document.querySelectorAll('nav a[href^="#"]');
+
+const tabPanels = document.querySelectorAll(".tab-panel");
+
+function showTab(tabId) {
+    tabPanels.forEach(panel => {
+        panel.hidden = panel.id !== tabId;
+    });
+}
+
+tabLinks.forEach(link => {
+    link.addEventListener("click", event => {
+        event.preventDefault();
+
+        const tabId = link.getAttribute("href").substring(1);
+        showTab(tabId);
+        history.replaceState(null, "", "#" + tabId);
+    });
+});
+
+showTab("home");
 
 // Sends a selected PDF to the upload servlet
 // Sends a selected PDF to the upload servlet and returns its task ID.
@@ -246,29 +291,61 @@ async function pollTaskStatus(taskId, intervalMilliseconds = 1000) {
 
 // Calls the quiz servlet for saved quiz questions.
 async function loadQuizzes(materialId) {
-     if (!materialId) {
+    if (!materialId) {
         throw new Error("Please select a PDF first.");
     }
+
     const response = await fetch(
-        "/studybuddy/api/quizzes?materialId=" + encodeURIComponent(materialId),
+        "/studybuddy/api/quizzes?materialId=" +
+        encodeURIComponent(materialId),
         {
             method: "GET",
             credentials: "same-origin",
             cache: "no-store"
         }
     );
+
     const result = await response.json().catch(() => null);
 
-     if (!response.ok) {
-        throw new Error(result?.error || "Could not load saved quizzes.");
+    if (!response.ok) {
+        throw new Error(
+            result?.error || "Could not load saved quizzes."
+        );
     }
 
-    if (!result || !Array.isArray(result.questions)) {
+    if (!Array.isArray(result)) {
         throw new Error("Invalid saved quiz response.");
     }
-    
-    return result.questions;
+
+    const questions = [];
+
+    result.forEach(quiz => {
+        if (!Array.isArray(quiz.questions)) {
+            return;
+        }
+
+        quiz.questions.forEach(question => {
+            const choices = question.options.map(
+                option => option.optionText
+            );
+
+            const correctAnswer = question.options.findIndex(
+                option => option.isCorrect
+            );
+
+            questions.push({
+                quizId: quiz.quizID,
+                questionId: question.questionID,
+                question: question.questionText,
+                choices: choices,
+                correctAnswer: correctAnswer
+            });
+        });
+    });
+
+    return questions;
 }
+
 // Show saved quizzes.
 async function showSavedQuizzes(materialId) {
     const savedQuestions = await loadQuizzes(materialId);
@@ -286,7 +363,7 @@ async function showSavedQuizzes(materialId) {
     }
 
     displayQuizQuestion();
-
+    alert("Saved quizzes loaded successfully!");
     document.getElementById("quiz-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -327,6 +404,7 @@ async function showSavedFlashcards(materialId) {
     flashcards = savedCards;
     currentFlashcardIndex = 0;
     displayFlashcard();
+    alert("Flashcards generated successfully!");
     document.getElementById("flashcard-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -597,7 +675,7 @@ async function waitForGeneratedFlashcards(taskId) {
     throw new Error("Flashcard generation is taking longer than expected.");
 }   
 // Save flashcard button.
-const saveFlashcardButton = document.getElementById("save-flashcard-btn");
+/*const saveFlashcardButton = document.getElementById("save-flashcard-btn");
 
 if (saveFlashcardButton) {
     saveFlashcardButton.addEventListener("click", async () => {
@@ -646,6 +724,7 @@ async function saveFlashcard(card) {
     }
     return result;
 }
+*/
 // Delete Flashcard button.
 const deleteFlashcardButton = document.getElementById("delete-flashcard-btn");
 
@@ -757,6 +836,7 @@ const quizButton = document.getElementById("quiz-btn");
         }
                  
     displayQuizQuestion();
+    alert("Practice quiz generated successfully!");
     document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
 });
@@ -826,6 +906,8 @@ if (submitQuizButton) {
             return;
         }
 
+        
+
         const question = quizQuestions[currentQuestionIndex];
         const feedback = document.getElementById("quiz-feedback");
 
@@ -841,6 +923,8 @@ if (submitQuizButton) {
             feedback.classList.add("incorrect");
         }
 
+
+        
 let correctCount = 0;
 
 for (let i = 0; i < quizQuestions.length; i++) {
@@ -864,6 +948,69 @@ if (scoreElement) {
     }
 }
          feedback.hidden = false;
+    });
+}
+
+const deleteQuestionButton =
+    document.getElementById("delete-question-btn");
+
+if (deleteQuestionButton) {
+    deleteQuestionButton.addEventListener("click", async () => {
+        if (quizQuestions.length === 0) {
+            alert("No quiz question is loaded.");
+            return;
+        }
+
+        const question =
+            quizQuestions[currentQuestionIndex];
+
+        if (!question.questionId) {
+            alert("This question has not been saved yet.");
+            return;
+        }
+
+        if (!confirm("Delete this question?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "/studybuddy/api/quizzes/questions/" +
+                encodeURIComponent(question.questionId),
+                {
+                    method: "DELETE",
+                    credentials: "same-origin"
+                }
+            );
+
+            if (!response.ok) {
+                const result =
+                    await response.json().catch(() => null);
+
+                throw new Error(
+                    result?.error || "Could not delete the question."
+                );
+            }
+
+            quizQuestions.splice(currentQuestionIndex, 1);
+            quizAnswers.splice(currentQuestionIndex, 1);
+
+            if (quizQuestions.length === 0) {
+                document.getElementById("quiz-question").textContent =
+                    "No quiz questions remaining.";
+                return;
+            }
+
+            if (currentQuestionIndex >= quizQuestions.length) {
+                currentQuestionIndex = quizQuestions.length - 1;
+            }
+
+            displayQuizQuestion();
+            alert("Question deleted successfully.");
+
+        } catch (error) {
+            alert(error.message);
+        }
     });
 }
 
@@ -944,6 +1091,7 @@ if (trueFalseButton) {
             }
             
             displayQuizQuestion();
+            alert("True/False quiz generated successfully!");
             document.getElementById("quiz-section").scrollIntoView({
     behavior: "smooth"
 });

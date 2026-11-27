@@ -44,7 +44,21 @@ public class QuizService {
         if (taskManager == null) {
             throw new IllegalStateException("Taskmanager is currently not available."); // checks if taskmanager is available
         }
-        return taskManager.submitTask("QUIZ_GENERATION", () -> generateQuiz(userId, materialId, questionType)); // this all sends the quiz task to taskmanager
+        return taskManager.submitTask("QUIZ_GENERATION", () -> {
+        String quizJson = generateQuiz(userId, materialId, questionType);
+
+        long materialID = Long.parseLong(materialId);
+
+        saveGeneratedQuiz(
+            userId,
+            materialID,
+            "Generated Quiz",
+            quizJson,
+            questionType
+        );
+
+        return quizJson;
+    });
     }
 
     // Generates multiple-choice or true/false questions from uploaded material.
@@ -69,29 +83,40 @@ public class QuizService {
     }
 
     
-    public void saveQuiz(long userId, String title, List<Question> questions) { // saves a quiz and its questions through QuizDAO
+    public void saveQuiz(
+        long userId,
+        long materialID,
+        String title,
+        List<Question> questions) {
 
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("The title of the quiz is required."); // this makes sure the quiz has a title
-
-        }
-
-        if (questions == null || questions.isEmpty()) {
-            throw new IllegalArgumentException("This quiz has to contain a question."); // this makes sure the quiz has at least 1 question
-        }
-        
-        try {
-
-            quizDAO.saveQuiz(userId, title, questions); // saves quiz by user's id, QuizDAO also saves questions and answer options
-
-        } catch (SQLException error) {
-
-            throw new IllegalStateException("The quiz couldn't be saved.", error); // throws error if quiz couldnt be saved
-        }
-
+    if (userId <= 0 || materialID <= 0) {
+        throw new IllegalArgumentException(
+            "Valid user and material IDs are required."
+        );
     }
+
+    if (title == null || title.trim().isEmpty()) {
+        throw new IllegalArgumentException(
+            "The title of the quiz is required."
+        );
+    }
+
+    if (questions == null || questions.isEmpty()) {
+        throw new IllegalArgumentException(
+            "This quiz has to contain a question."
+        );
+    }
+
+    try {
+        quizDAO.saveQuiz(userId, materialID, title, questions);
+    } catch (SQLException error) {
+        throw new IllegalStateException(
+            "The quiz couldn't be saved.", error
+        );
+    }
+}
     
-    public void saveGeneratedQuiz(long userId, String title, String quizJson, String questionType) { // convers the llm created JSON into objects in our database and saves them
+    public void saveGeneratedQuiz(long userId, long materialID, String title, String quizJson, String questionType) { // convers the llm created JSON into objects in our database and saves them
         if (quizJson == null || quizJson.trim().isEmpty()) {
             throw new IllegalArgumentException("Quiz JSON cannot be empty."); // makes sure llm returned the JSON
         }
@@ -148,9 +173,45 @@ public class QuizService {
 
         }
         
-        saveQuiz(userId, title, questions); // we call the our existing database saving method
+        saveQuiz(userId, materialID, title, questions); // we call the our existing database saving method
 
     }
+
+    public List<Quiz> getSavedQuizzes(
+        long userId,
+        long materialID) {
+
+    if (userId <= 0 || materialID <= 0) {
+        throw new IllegalArgumentException(
+            "Valid user and material IDs are required."
+        );
+    }
+
+    List<Quiz> quizzes = new ArrayList<>();
+
+    try {
+        List<Long> quizIDs =
+            quizDAO.getQuizIDsByUserIDAndMaterialID(
+                userId,
+                materialID
+            );
+
+        for (long quizID : quizIDs) {
+            Quiz quiz = quizDAO.getSavedQuiz(quizID, userId);
+
+            if (quiz != null) {
+                quizzes.add(quiz);
+            }
+        }
+
+        return quizzes;
+
+    } catch (SQLException error) {
+        throw new IllegalStateException(
+            "The quizzes couldn't be retrieved.", error
+        );
+    }
+}
     public Quiz getSavedQuiz(long userId, long quizID) { // Returns saved quiz questions frm database
         
         try {
@@ -161,6 +222,37 @@ public class QuizService {
         }
     }
 
+
+    public void deleteQuestion(
+        long userId,
+        long questionID) {
+
+    if (userId <= 0 || questionID <= 0) {
+        throw new IllegalArgumentException(
+            "Valid user and question IDs are required."
+        );
+    }
+
+    try {
+        boolean deleted =
+            quizDAO.deleteQuestionByID(
+                questionID,
+                userId
+            );
+
+        if (!deleted) {
+            throw new IllegalArgumentException(
+                "Question not found."
+            );
+        }
+
+    } catch (SQLException error) {
+        throw new IllegalStateException(
+            "Question couldn't be deleted.",
+            error
+        );
+    }
+}
     
     public void deleteQuiz(long userId, long quizID) { // Deletes one saved quiz question form database
 
@@ -174,4 +266,6 @@ public class QuizService {
             throw new IllegalStateException("Quiz couldn't be deleted.", error); // sends message that the quiz couldnt be deleted from the database
         }
     }
+
+
 }

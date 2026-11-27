@@ -27,11 +27,16 @@ CREATE TABLE  IF NOT EXISTS documents (
 CREATE TABLE IF NOT EXISTS quizzes (
     quizID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userID BIGINT NOT NULL,
+    materialID BIGINT NOT NULL,
     title VARCHAR(255) NOT NULL,
 
     CONSTRAINT fk_quizzes_user
         FOREIGN KEY (userID) REFERENCES users(userID)
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_quizzes_document
+        FOREIGN KEY (materialID) REFERENCES documents(docID)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -78,10 +83,15 @@ CREATE TABLE IF NOT EXISTS question_options (
 CREATE TABLE IF NOT EXISTS flashcards (
     cardID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userID BIGINT NOT NULL,
+    materialID BIGINT NOT NULL,
     frontText TEXT NOT NULL,
     backText TEXT NOT NULL,
 
     CONSTRAINT fk_flashcards_user
         FOREIGN KEY (userID) REFERENCES users(userID)
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_flashcards_document
+        FOREIGN KEY (materialID) REFERENCES documents(docID)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

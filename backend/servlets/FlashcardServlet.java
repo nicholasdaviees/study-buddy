@@ -57,25 +57,36 @@ public class FlashcardServlet extends HttpServlet {
         }
     }
 
-    @Override // returns the saved flashcards for the current user
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws IOException {
-            String materialId = request.getParameter("materialId");
+    @Override // returns the saved flashcards for the user
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        try {
-            String savedFlashcards = flashcardService.getSavedFlashcards(
-                    userId(request), materialId);
+    String materialId = request.getParameter("materialId");
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(savedFlashcards);
-
-        } catch (IllegalStateException error) {
-            writeJson(response, 500, Map.of("error", error.getMessage())
-            );
-        }
+    if (materialId == null || materialId.isBlank()) {
+        writeJson(response, 400, Map.of("error", "A material ID is required."));
+        return;
     }
+
+    try {
+        long materialID = Long.parseLong(materialId);
+
+        String savedFlashcards = flashcardService.getSavedFlashcards(userId(request), materialID);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(savedFlashcards);
+
+    } catch (NumberFormatException error) {
+        writeJson(response, 400, Map.of("error", "The material ID must be a number."));
+
+    } catch (IllegalArgumentException error) {
+        writeJson(response, 401, Map.of("error", error.getMessage()));
+
+    } catch (IllegalStateException error) {
+        writeJson(response, 500, Map.of("error", error.getMessage()));
+    }
+}
 
     @Override // deletes one saved flashcard
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)

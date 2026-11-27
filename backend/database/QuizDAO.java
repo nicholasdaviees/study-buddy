@@ -13,13 +13,19 @@ import java.util.Set;
 public class QuizDAO {
 
     
-    public void saveQuiz(long userID, String title, List<Question> questions)
+    public void saveQuiz(long userID, long materialID, String title, List<Question> questions)
             throws SQLException {
 
         validateQuiz(title, questions);
 
+        if (userID <= 0 || materialID <= 0) {
+    throw new IllegalArgumentException(
+        "Valid user and material IDs are required.");
+}
+
         String quizSQL =
-            "INSERT INTO quizzes (userID, title) VALUES (?, ?)";
+            "INSERT INTO quizzes (userID, materialID, title) "
+            + "VALUES (?, ?, ?)";
 
         String questionSQL =
             "INSERT INTO quiz_questions "
@@ -47,7 +53,8 @@ public class QuizDAO {
                          connection.prepareStatement(optionSQL)) {
 
                     quizStatement.setLong(1, userID);
-                    quizStatement.setString(2, title);
+                    quizStatement.setLong(2, materialID);
+                    quizStatement.setString(3, title);
                     long quizID = insertAndGetID(quizStatement);
 
                     for (Question question : questions) {
@@ -90,7 +97,7 @@ public class QuizDAO {
     public Quiz getSavedQuiz(long quizID, long userID) throws SQLException {
 
         String sql =
-            "SELECT q.quizID, q.userID, q.title, "
+            "SELECT q.quizID, q.userID, q.materialID, q.title, "
             + "qq.questionID, qq.questionText, qq.questionType, "
             + "qq.questionOrder, "
             + "o.optionID, o.optionText, o.optionOrder, o.isCorrect "
@@ -116,6 +123,7 @@ public class QuizDAO {
                         quiz = new Quiz(
                             results.getLong("quizID"),
                             results.getLong("userID"),
+                            results.getLong("materialID"),
                             results.getString("title"),
                             new ArrayList<Question>()
                         );
@@ -183,6 +191,56 @@ public class QuizDAO {
         return quizIDs;
     }
 
+    public List<Long> getQuizIDsByUserIDAndMaterialID(
+        long userID,
+        long materialID)
+        throws SQLException {
+
+    String sql =
+        "SELECT quizID FROM quizzes "
+        + "WHERE userID = ? AND materialID = ? "
+        + "ORDER BY quizID";
+
+    List<Long> quizIDs = new ArrayList<>();
+
+    try (Connection connection = Database.open();
+         PreparedStatement statement = connection.prepareStatement(sql)) {
+
+        statement.setLong(1, userID);
+        statement.setLong(2, materialID);
+
+        try (ResultSet results = statement.executeQuery()) {
+            while (results.next()) {
+                quizIDs.add(results.getLong("quizID"));
+            }
+        }
+    }
+
+    return quizIDs;
+}
+
+public boolean deleteQuestionByID(
+        long questionID,
+        long userID)
+        throws SQLException {
+
+    String sql =
+        "DELETE FROM quiz_questions "
+        + "WHERE questionID = ? "
+        + "AND quizID IN ("
+        + "SELECT quizID FROM quizzes WHERE userID = ?"
+        + ")";
+
+    try (Connection connection = Database.open();
+         PreparedStatement statement =
+             connection.prepareStatement(sql)) {
+
+        statement.setLong(1, questionID);
+        statement.setLong(2, userID);
+
+        return statement.executeUpdate() == 1;
+    }
+}
     
     public boolean deleteQuiz(long quizID, long userID)
             throws SQLException {

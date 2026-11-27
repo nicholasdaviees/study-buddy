@@ -1,6 +1,6 @@
 # Ollama Setup
 
-Study Buddy uses Ollama with the `qwen3:4b` model
+Study Buddy uses Ollama with the `qwen2.5:7b` model
 
 ## Install Ollama
 

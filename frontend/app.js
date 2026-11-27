@@ -1,11 +1,11 @@
-/*fetch("api/auth/me", { credentials: "same-origin" })
+fetch("api/auth/me", { credentials: "same-origin" })
     .then(response => {
         if (!response.ok) {
             window.location.replace("login.html");
         }
     })
     .catch(() => window.location.replace("login.html"));
-*/
+
 
 const logoutButton = document.getElementById("logout-btn");
 

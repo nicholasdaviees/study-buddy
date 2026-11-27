@@ -28,7 +28,8 @@
         </nav>
     </header>
 
-    <main class="dashboard" id="home">
+    <main class="dashboard">
+        <section id="home" class="tab-panel">
         <h2>Welcome Back!</h2>
         <p>
             Upload your course material and generate
@@ -105,14 +106,14 @@
                 </button>
             </div>
         </section>
-
-        <section id="flashcard-section">
+</section>
+        <section id="flashcard-section" class="tab-panel">
             <h2>Flashcards</h2>
             <p class="flashcard-subtitle">Review concepts from your uploaded material.</p>
             <div class="flashcard-card">
-                <p id="flashcard-count">Card 1 of 10</p>
-                <h3 id="flashcard-question">Flashcard Question</h3>
-                <p hidden id="flashcard-answer">Flashcard answer</p>
+                <p id="flashcard-count">No flashcards available.</p>
+                <h3 id="flashcard-question">No flashcard material has been uploaded or selected.</h3>
+                <p hidden id="flashcard-answer"></p>
                 <button id="reveal-answer-btn" type="button">
                     Reveal Answer
                 </button>
@@ -136,25 +137,16 @@
 
         </section>
 
-        <section id="quiz-section">
+        <section id="quiz-section" class="tab-panel">
         <h2>Practice Quiz</h2>
         <p>Test your knowledge with questions from the material.</p>
         <div class="quiz-card">
-            <p id="quiz-count">Question 1 of 5</p>
-            <h3 id="quiz-question">Quiz question</h3>
+            <p id="quiz-count">No quiz available.</p>
+            <h3 id="quiz-question">No quiz material has been uploaded or selected.</h3>
             <div id="quiz-choices">
-            <button class="quiz-choice" type="button">
-                Choice 1
-            </button>
-            <button class="quiz-choice" type="button">
-                Choice 2
-            </button>
-             <button class="quiz-choice" type="button">
-                Choice 3
-            </button>
-            <button class="quiz-choice" type="button">
-                Choice 4
-            </button>
+            <p id="quiz-empty-message">
+                No quiz material has been uploaded or selected.
+            </p>
             </div>
             <button id="submit-quiz-btn" type="button">
                 Submit Answer

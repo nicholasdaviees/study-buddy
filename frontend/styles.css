@@ -158,6 +158,11 @@ nav a, #logout-btn {
     text-decoration: underline;
 }
 
+/* Tab panels */
+.tab-panel[hidden] {
+    display: none;
+}
+
 /* Main dashboard */
 
 .dashboard {

@@ -28,6 +28,29 @@ if (logoutButton) {
         }
     });
 }
+
+const tabLinks = document.querySelectorAll('nav a[href^="#"]');
+
+const tabPanels = document.querySelectorAll(".tab-panel");
+
+function showTab(tabId) {
+    tabPanels.forEach(panel => {
+        panel.hidden = panel.id !== tabId;
+    });
+}
+
+tabLinks.forEach(link => {
+    link.addEventListener("click", event => {
+        event.preventDefault();
+
+        const tabId = link.getAttribute("href").substring(1);
+        showTab(tabId);
+        history.replaceState(null, "", "#" + tabId);
+    });
+});
+
+showTab("home");
+
 // Sends a selected PDF to the upload servlet
 // Sends a selected PDF to the upload servlet and returns its task ID.
 async function uploadPdf(file) {

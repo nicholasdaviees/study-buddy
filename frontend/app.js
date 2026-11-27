@@ -29,7 +29,7 @@ if (logoutButton) {
     });
 }
 
-const tabLinks = document.querySelectorAll('nav a[href^="#"]');
+const tabLinks = document.querySelectorAll('nav a[href^="#"], .site-title-link[href="#home"]');
 
 const tabPanels = document.querySelectorAll(".tab-panel");
 
@@ -363,7 +363,7 @@ async function showSavedQuizzes(materialId) {
     }
 
     displayQuizQuestion();
-    alert("Saved quizzes loaded successfully!");
+    alert("Saved quizzes from selected material loaded successfully!");
     document.getElementById("quiz-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -404,7 +404,7 @@ async function showSavedFlashcards(materialId) {
     flashcards = savedCards;
     currentFlashcardIndex = 0;
     displayFlashcard();
-    alert("Flashcards generated successfully!");
+    alert("Saved flashcards from selected material loaded successfully!");
     document.getElementById("flashcard-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -626,6 +626,7 @@ if (flashcardButton) {
         flashcards = await waitForGeneratedFlashcards(result.taskId);
 currentFlashcardIndex = 0;
 displayFlashcard();
+alert("Flashcards generated successfully!");
 document.getElementById("flashcard-section").scrollIntoView({
     behavior: "smooth"
 });

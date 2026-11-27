@@ -125,6 +125,11 @@ body {
     margin: 0;
 }
 
+.site-title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
 nav {
     display: flex;
     gap: 20px;

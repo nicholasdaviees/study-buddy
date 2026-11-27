@@ -1218,12 +1218,16 @@ function displaySavedMaterials() {
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");
             const fileStatus = document.getElementById("file-status");
+            const pdfUploadInput = document.getElementById("pdf-upload");
             if (materialInput) {
         materialInput.value = material.id;
     }
             if (selectedMaterialName) {
         selectedMaterialName.textContent = "Selected study material: " + material.name;
     }
+            if (pdfUploadInput) {
+        pdfUploadInput.value = null;
+            }
             if (fileStatus) {
         fileStatus.textContent = "Selected study material: " + material.name;
         fileStatus.classList.remove("error-message");

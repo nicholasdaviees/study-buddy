@@ -8,12 +8,14 @@
           content="width=device-width, initial-scale=1.0">
     <title>Study Buddy</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
+    <script src="app.js?v=3" defer></script>
 </head>
 
 <body>
     <header class="site-header">
-        <h1>Study Buddy</h1>
+        <a href="#home" class="site-title-link">
+            <h1>Study Buddy</h1>
+        </a>
 
         <!--The #pages can be made into actual pages-->
         <nav aria-label="Main navigation">
@@ -21,7 +23,6 @@
         <a href="#flashcard-section">Flashcards</a>
         <a href="#quiz-section">Practice Quiz</a>
         <a href="#ask-section">Ask Study Buddy</a>
-        <a href="#saved">Saved Materials</a>
         <button id="logout-btn" type="button">
             Log Out
         </button>

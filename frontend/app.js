@@ -29,7 +29,7 @@ if (logoutButton) {
     });
 }
 
-const tabLinks = document.querySelectorAll('nav a[href^="#"]');
+const tabLinks = document.querySelectorAll('nav a[href^="#"], .site-title-link[href="#home"]');
 
 const tabPanels = document.querySelectorAll(".tab-panel");
 
@@ -363,7 +363,7 @@ async function showSavedQuizzes(materialId) {
     }
 
     displayQuizQuestion();
-    alert("Saved quizzes loaded successfully!");
+    alert("Saved quizzes from selected material loaded successfully!");
     document.getElementById("quiz-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -404,7 +404,7 @@ async function showSavedFlashcards(materialId) {
     flashcards = savedCards;
     currentFlashcardIndex = 0;
     displayFlashcard();
-    alert("Flashcards generated successfully!");
+    alert("Saved flashcards from selected material loaded successfully!");
     document.getElementById("flashcard-section").scrollIntoView({
         behavior: "smooth"
     });
@@ -626,6 +626,7 @@ if (flashcardButton) {
         flashcards = await waitForGeneratedFlashcards(result.taskId);
 currentFlashcardIndex = 0;
 displayFlashcard();
+alert("Flashcards generated successfully!");
 document.getElementById("flashcard-section").scrollIntoView({
     behavior: "smooth"
 });
@@ -1216,11 +1217,20 @@ function displaySavedMaterials() {
          openButton.addEventListener("click", () => {
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");
+            const fileStatus = document.getElementById("file-status");
+            const pdfUploadInput = document.getElementById("pdf-upload");
             if (materialInput) {
         materialInput.value = material.id;
     }
             if (selectedMaterialName) {
         selectedMaterialName.textContent = "Selected study material: " + material.name;
+    }
+            if (pdfUploadInput) {
+        pdfUploadInput.value = null;
+            }
+            if (fileStatus) {
+        fileStatus.textContent = "Selected study material: " + material.name;
+        fileStatus.classList.remove("error-message");
     }
             alert(material.name + " is now selected for studying.");
         });
@@ -1242,12 +1252,16 @@ function displaySavedMaterials() {
             saveMaterialsToBrowser();
             const materialInput = document.getElementById("question-material-id");
             const selectedMaterialName = document.getElementById("selected-material-name");
+            const fileStatus = document.getElementById("file-status");
 
             if (materialInput && materialInput.value === material.id) {
             materialInput.value = "";
 
             if (selectedMaterialName) {
                 selectedMaterialName.textContent = "No study material selected.";
+            }
+            if (fileStatus) {
+                fileStatus.textContent = "No file selected.";
             }
         }
             displaySavedMaterials();

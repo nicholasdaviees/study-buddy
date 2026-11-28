@@ -12,7 +12,7 @@ Users can discard any uploaded material, and individually discard any flashcard 
 ## Getting Started
 
 To deploy study buddy on your own, please follow these instructions: 
-[Contributing Guidelines](https://github.com/nicholasdaviees/study-buddy/tree/main/docs)
+[Application Deployment Instructions](https://github.com/nicholasdaviees/study-buddy/tree/main/docs)
 
 ### Prerequisites
 

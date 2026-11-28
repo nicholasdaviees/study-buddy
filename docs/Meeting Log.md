@@ -44,7 +44,7 @@ Went over the weekly report, discussed our code to each other and plan to merge 
 
 **12th Meeting: November 19, 2026 @ 3:30 PM** 
 
-Met and mostly fixed errors in my classes, everyone else code is done and just need to merge and complete assignment 3 zip file. 
+Met and mostly fixed errors Brian's classes, everyone else code is done and just need to merge and complete assignment 3 zip file. 
 
 **13th Meeting: November 27, 2026 @ 3:30 PM** 
 
